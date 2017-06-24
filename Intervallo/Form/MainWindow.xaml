@@ -1,0 +1,31 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Intervallo"
+        xmlns:UI="clr-namespace:Intervallo.UI" x:Class="Intervallo.Form.MainWindow"
+        mc:Ignorable="d"
+        AllowDrop="True"
+        Title="MainWindow" Height="610" Width="945" Drop="WaveCanvas_Drop" PreviewDragOver="WaveCanvas_PreviewDragOver" KeyDown="Window_KeyDown" Closing="Window_Closing">
+    <Grid>
+        <Button x:Name="Save" Content="Save" Margin="0,0,10,34" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom"/>
+        <Menu x:Name="menu" Height="24" VerticalAlignment="Top"/>
+        <StatusBar Height="24" VerticalAlignment="Bottom"/>
+        <Grid Name="WaveCanvas" Margin="10,104,10,59">
+            <Border BorderBrush="LightGray" BorderThickness="1"/>
+            <UI:WaveView
+                x:Name="WaveView"
+                IndicatorMoved="WaveView_IndicatorMoved"
+                IndicatorMoveFinish="WaveView_IndicatorMoveFinish"
+                IndicatorMoveStart="WaveView_IndicatorMoveStart" />
+        </Grid>
+        <UI:WaveScaler
+            Margin="10,29,10,0"
+            VerticalAlignment="Top"
+            x:Name="WaveScaler"
+            Height="70"
+            ShowableSampleCount="{Binding ElementName=WaveView, Path=ShowableSampleCount, Mode=TwoWay}"
+            ViewStartSample="{Binding ElementName=WaveView, Path=ViewStartSample, Mode=TwoWay}"/>
+    </Grid>
+</Window>
