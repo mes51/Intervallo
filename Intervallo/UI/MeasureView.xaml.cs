@@ -1,4 +1,5 @@
 ﻿using Intervallo.Converter;
+using Intervallo.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -46,22 +47,12 @@ namespace Intervallo.UI
             new BorderScale() { Threshold = 0.0, Scale = 2.0, SubBorderCount = 1 },
         };
 
-        public static readonly DependencyProperty ViewStartSampleProperty = DependencyProperty.Register(
-            nameof(ViewStartSample),
-            typeof(int),
+        public static readonly DependencyProperty SampleRangeProperty = DependencyProperty.Register(
+            nameof(SampleRange),
+            typeof(Range),
             typeof(MeasureView),
             new FrameworkPropertyMetadata(
-                0,
-                FrameworkPropertyMetadataOptions.AffectsRender
-            )
-        );
-
-        public static readonly DependencyProperty ShowableSampleCountProperty = DependencyProperty.Register(
-            nameof(ShowableSampleCount),
-            typeof(int),
-            typeof(MeasureView),
-            new FrameworkPropertyMetadata(
-                0,
+                new Range(),
                 FrameworkPropertyMetadataOptions.AffectsRender
             )
         );
@@ -116,16 +107,10 @@ namespace Intervallo.UI
             InitializeComponent();
         }
 
-        public int ViewStartSample
+        public Range SampleRange
         {
-            get { return (int)GetValue(ViewStartSampleProperty); }
-            set { SetValue(ViewStartSampleProperty, Math.Max(0, value)); }
-        }
-
-        public int ShowableSampleCount
-        {
-            get { return (int)GetValue(ShowableSampleCountProperty); }
-            set { SetValue(ShowableSampleCountProperty, value); }
+            get { return (Range)GetValue(SampleRangeProperty); }
+            set { SetValue(SampleRangeProperty, value); }
         }
 
         public int SampleRate
@@ -161,7 +146,7 @@ namespace Intervallo.UI
             drawingContext.PushClip(new RectangleGeometry(new Rect(0.0, 0.0, ActualWidth, ActualHeight)));
             
             var textWidth = CreateTimecodeText(new TimeSpan(2)).Width * 2.0 + TimeHorizontalGap;
-            var sampleInterval = ActualWidth / ShowableSampleCount;
+            var sampleInterval = ActualWidth / SampleRange.Length;
             var timePerSample = 1.0 / SampleRate;
             if (double.IsInfinity(sampleInterval) || double.IsInfinity(timePerSample))
             {
@@ -196,8 +181,8 @@ namespace Intervallo.UI
             }
 
             var subBorderInterval = borderInterval / (subBorderCount + 1);
-            var startTime = (int)((ViewStartSample * timePerSample) / timeUnit);
-            var startX = -((ViewStartSample * sampleInterval) % borderInterval);
+            var startTime = (int)((SampleRange.Begin * timePerSample) / timeUnit);
+            var startX = -((SampleRange.Begin * sampleInterval) % borderInterval);
             var borderCount = Math.Ceiling(ActualWidth / borderInterval) + 1;
             for (var i = 0; i < borderCount; i++)
             {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Intervallo.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,19 +30,10 @@ namespace Intervallo.UI
             )
         );
 
-        public static readonly DependencyProperty ViewStartSampleProperty = WaveCanvas.ViewStartSampleProperty.AddOwner(
+        public static readonly DependencyProperty SampleRangeProperty = WaveCanvas.SampleRangeProperty.AddOwner(
             typeof(WaveView),
             new FrameworkPropertyMetadata(
-                0,
-                FrameworkPropertyMetadataOptions.AffectsRender,
-                ViewStartSampleChanged
-            )
-        );
-
-        public static readonly DependencyProperty ShowableSampleCountProperty = WaveCanvas.ShowableSampleCountProperty.AddOwner(
-            typeof(WaveView),
-            new FrameworkPropertyMetadata(
-                0,
+                new Range(),
                 FrameworkPropertyMetadataOptions.AffectsRender,
                 ViewDependOnPropertyChanged
             )
@@ -80,16 +72,10 @@ namespace Intervallo.UI
             set { SetValue(WaveProperty, value); }
         }
 
-        public int ShowableSampleCount
+        public Range SampleRange
         {
-            get { return (int)GetValue(ShowableSampleCountProperty); }
-            set { SetValue(ShowableSampleCountProperty, value); }
-        }
-
-        public int ViewStartSample
-        {
-            get { return (int)GetValue(ViewStartSampleProperty); }
-            set { SetValue(ViewStartSampleProperty, Math.Min(ScrollableSampleCount, Math.Max(0, value))); }
+            get { return (Range)GetValue(SampleRangeProperty); }
+            set { SetValue(SampleRangeProperty, value.Adjust(0.To(WaveSampleCount))); }
         }
 
         public int SampleRate
@@ -101,7 +87,7 @@ namespace Intervallo.UI
         public int IndicatorPosition
         {
             get { return (int)GetValue(IndicatorPositionProperty); }
-            set { SetValue(IndicatorPositionProperty, Math.Min(ScrollableSampleCount, Math.Max(0, value))); }
+            set { SetValue(IndicatorPositionProperty, Math.Min(WaveSampleCount, Math.Max(0, value))); }
         }
 
         public int WaveSampleCount
@@ -116,7 +102,7 @@ namespace Intervallo.UI
         {
             get
             {
-                return Math.Max(0, WaveSampleCount - ShowableSampleCount);
+                return Math.Max(0, WaveSampleCount - SampleRange.Length);
             }
         }
 
@@ -142,7 +128,7 @@ namespace Intervallo.UI
         {
             if (!IndicatorIsVisible)
             {
-                ViewStartSample = IndicatorPosition;
+                SampleRange = SampleRange.MoveTo(IndicatorPosition);
             }
         }
 
@@ -153,12 +139,13 @@ namespace Intervallo.UI
             ScrollBar.IsEnabled = scrollable > 0;
             ScrollBar.ViewportSize = ScrollBar.IsEnabled ? 1.0 / (ScrollBar.Maximum - ScrollBar.Minimum) : 0;
             ScrollBar.LargeChange = Math.Max(1.0, scrollable / 100.0);
+            ScrollBar.Value = SampleRange.Begin;
         }
 
         void RefreshIndicator()
         {
             var center = Indicator.ActualWidth * 0.5;
-            var x = IndicatorCanvas.ActualWidth / ShowableSampleCount * (IndicatorPosition - ViewStartSample) - center;
+            var x = IndicatorCanvas.ActualWidth / SampleRange.Length * (IndicatorPosition - SampleRange.Begin) - center;
             Canvas.SetLeft(Indicator, x);
             Indicator.Visibility = IndicatorIsVisible ? Visibility.Visible : Visibility.Hidden;
             UpdateLayout();
@@ -174,14 +161,14 @@ namespace Intervallo.UI
                 }
 
                 var x = e.GetPosition(this).X;
-                IndicatorPosition = (int)Math.Round(x / ActualWidth * ShowableSampleCount) + ViewStartSample;
+                IndicatorPosition = (int)Math.Round(x / ActualWidth * SampleRange.Length) + SampleRange.Begin;
                 if (x > ActualWidth)
                 {
-                    ViewStartSample = IndicatorPosition - ShowableSampleCount;
+                    SampleRange = SampleRange.MoveTo(IndicatorPosition - SampleRange.Length);
                 }
                 else if (x < 0.0)
                 {
-                    ViewStartSample = IndicatorPosition;
+                    SampleRange = SampleRange.MoveTo(IndicatorPosition);
                 }
                 OnIndicatorMoved();
             }
@@ -242,7 +229,7 @@ namespace Intervallo.UI
 
         void ScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            ViewStartSample = (int)e.NewValue;
+            SampleRange = SampleRange.MoveTo((int)e.NewValue);
         }
 
         static void IndicatorPositionChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
@@ -254,13 +241,6 @@ namespace Intervallo.UI
         {
             (dependencyObject as WaveView).RefreshScrollBar();
             (dependencyObject as WaveView).RefreshIndicator();
-        }
-
-        static void ViewStartSampleChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
-        {
-            var waveView = dependencyObject as WaveView;
-            waveView.ScrollBar.Value = waveView.ViewStartSample;
-            waveView.RefreshIndicator();
         }
     }
 }

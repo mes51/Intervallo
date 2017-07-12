@@ -1,4 +1,5 @@
 ﻿using Intervallo.Audio.Filter;
+using Intervallo.Util;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -28,23 +29,12 @@ namespace Intervallo.UI
             )
         );
 
-        public static readonly DependencyProperty ViewStartSampleProperty = DependencyProperty.Register(
-            nameof(ViewStartSample),
-            typeof(int),
+        public static readonly DependencyProperty SampleRangeProperty = DependencyProperty.Register(
+            nameof(SampleRange),
+            typeof(Range),
             typeof(WaveCanvas),
             new FrameworkPropertyMetadata(
-                0,
-                FrameworkPropertyMetadataOptions.AffectsRender,
-                VisibleSampleChanged
-            )
-        );
-
-        public static readonly DependencyProperty ShowableSampleCountProperty = DependencyProperty.Register(
-            nameof(ShowableSampleCount),
-            typeof(int),
-            typeof(WaveCanvas),
-            new FrameworkPropertyMetadata(
-                0,
+                new Range(),
                 FrameworkPropertyMetadataOptions.AffectsRender,
                 VisibleSampleChanged
             )
@@ -56,16 +46,10 @@ namespace Intervallo.UI
             set { SetValue(WaveProperty, value); }
         }
 
-        public int ViewStartSample
+        public Range SampleRange
         {
-            get { return (int)GetValue(ViewStartSampleProperty); }
-            set { SetValue(ViewStartSampleProperty, Math.Min(ScrollableSampleCount, Math.Max(0, value))); }
-        }
-
-        public int ShowableSampleCount
-        {
-            get { return (int)GetValue(ShowableSampleCountProperty); }
-            set { SetValue(ShowableSampleCountProperty, value); }
+            get { return (Range)GetValue(SampleRangeProperty); }
+            set { SetValue(SampleRangeProperty, value.Adjust(0.To(WaveSampleCount))); }
         }
 
         public int WaveSampleCount
@@ -80,7 +64,7 @@ namespace Intervallo.UI
         {
             get
             {
-                return Math.Max(0, WaveSampleCount - ShowableSampleCount);
+                return Math.Max(0, WaveSampleCount - SampleRange.Length);
             }
         }
 
@@ -103,7 +87,7 @@ namespace Intervallo.UI
         public WaveCanvas()
         {
             var prevSize = new { Width = ActualWidth, Height = ActualHeight };
-            var prevShowableSamples = ShowableSampleCount;
+            var prevRange = SampleRange;
             Timer.Tick += (sender, e) =>
             {
                 if (prevSize.Width != ActualWidth || prevSize.Height != ActualHeight)
@@ -114,9 +98,9 @@ namespace Intervallo.UI
                     NativeBitmap = new System.Drawing.Bitmap(intWidth, intHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                     DataLength = intWidth * intHeight * 4;
                     prevSize = new { Width = ActualWidth, Height = ActualHeight };
-                    if (prevShowableSamples != ShowableSampleCount)
+                    if (prevRange != SampleRange)
                     {
-                        prevShowableSamples = ShowableSampleCount;
+                        prevRange = SampleRange;
                         RefreshPath();
                     }
                     RedrawBitmap();
@@ -133,27 +117,27 @@ namespace Intervallo.UI
 
         double GetSampleProgress()
         {
-            return ActualWidth / Math.Max(1, ShowableSampleCount);
+            return ActualWidth / Math.Max(1, SampleRange.Length);
         }
 
         void RefreshPath()
         {
-            if (Disposed || (WaveSampleCount - ViewStartSample) < 2)
+            if (Disposed || (WaveSampleCount - SampleRange.Begin) < 2)
             {
                 return;
             }
 
             Path.Reset();
 
-            var samplesPerLine = ShowableSampleCount / ActualWidth;
+            var samplesPerLine = SampleRange.Length / ActualWidth;
             var kvp = LineMap.WaveLines.GetPair(samplesPerLine);
 
             switch(kvp.Value.Type)
             {
                 case WaveLineType.PolyLine:
-                    var showableSamples = ShowableSampleCount;
+                    var showableSamples = SampleRange.Length;
                     Path.AddLines(
-                        kvp.Value.Line.Skip(ViewStartSample)
+                        kvp.Value.Line.Skip(SampleRange.Begin)
                             .TakeWhile((w, i) => i <= showableSamples)
                             .Select((w, i) => new PointF(i, w[0]))
                             .ToArray()
@@ -161,8 +145,8 @@ namespace Intervallo.UI
                     break;
                 case WaveLineType.Bar:
                     var reductionCount = (int)kvp.Key;
-                    var showableLines = ShowableSampleCount / reductionCount + 1;
-                    for (int i = ViewStartSample / reductionCount, c = 0; i < kvp.Value.Line.Length && c < showableLines; i++, c++)
+                    var showableLines = SampleRange.Length / reductionCount + 1;
+                    for (int i = SampleRange.Begin / reductionCount, c = 0; i < kvp.Value.Line.Length && c < showableLines; i++, c++)
                     {
                         Path.AddLine(new PointF(c * reductionCount, kvp.Value.Line[i][0]), new PointF(c * reductionCount, kvp.Value.Line[i][1]));
                     }

@@ -1,5 +1,6 @@
 ﻿using Intervallo.Audio;
 using Intervallo.Audio.Player;
+using Intervallo.Util;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using System;
@@ -15,6 +16,8 @@ namespace Intervallo.Form
     /// </summary>
     public partial class MainWindow : Window
     {
+        const int DoubleSize = sizeof(double);
+
         public MainWindow()
         {
             InitializeComponent();
@@ -76,12 +79,12 @@ namespace Intervallo.Form
                 Wavefile = Wavefile.Read((e.Data.GetData(DataFormats.FileDrop, true) as string[])[0]);
                 WaveView.Wave = Wavefile.Data;
                 WaveScaler.Wave = Wavefile.Data;
-                WaveView.ShowableSampleCount = Math.Min(30000, Wavefile.Data.Length);
+                WaveView.SampleRange = 0.To(Math.Min(30000, Wavefile.Data.Length));
                 WaveView.SampleRate = Wavefile.Fs;
 
-                SeekPlayer = new SeekPlayer(Wavefile.Bit, Wavefile.Fs);
+                SeekPlayer = new SeekPlayer(Wavefile.Fs);
 
-                Player = new WavePlayer(Wavefile.RawData, Wavefile.Bit, Wavefile.Fs);
+                Player = new WavePlayer(Wavefile.Data, Wavefile.Fs);
                 Player.EnableLoop = true;
                 Player.PlaybackStopped += (s, ea) =>
                 {
@@ -123,9 +126,9 @@ namespace Intervallo.Form
         {
             Player.SamplePosition = WaveView.IndicatorPosition;
             var bytePerSample = Wavefile.Bit / 8;
-            var sample = new byte[bytePerSample * (int)(Wavefile.Fs * 0.05)];
-            Buffer.BlockCopy(Wavefile.RawData, WaveView.IndicatorPosition * bytePerSample, sample, 0, Math.Min(sample.Length, Wavefile.RawData.Length - WaveView.IndicatorPosition * bytePerSample));
-            SeekPlayer.AddSample(sample);
+            var samples = new double[(int)(Wavefile.Fs * 0.05)];
+            Buffer.BlockCopy(Wavefile.Data, WaveView.IndicatorPosition * DoubleSize, samples, 0, Math.Min(samples.Length, Wavefile.Data.Length - WaveView.IndicatorPosition) * DoubleSize);
+            SeekPlayer.AddSample(samples);
         }
 
         void WaveView_IndicatorMoveFinish(object sender, EventArgs e)

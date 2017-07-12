@@ -66,14 +66,11 @@ namespace Intervallo.Audio
 
         public double[] Data { get; }
 
-        public byte[] RawData { get; }
-
-        public Wavefile(int fs, int bit, double[] data, byte[] rawData = null)
+        public Wavefile(int fs, int bit, double[] data)
         {
             Fs = fs;
             Bit = bit;
             Data = data;
-            RawData = rawData;
         }
 
         /// <summary>
@@ -120,11 +117,7 @@ namespace Intervallo.Audio
                         break;
                 }
 
-                fs.Seek(waveStartPos, SeekOrigin.Begin);
-                var rawData = new byte[length];
-                fs.Read(rawData, 0, length);
-
-                return new Wavefile((int)header.Format.nSamplesPerSec, header.Format.wBitsPerSample, waveData, rawData);
+                return new Wavefile((int)header.Format.nSamplesPerSec, header.Format.wBitsPerSample, waveData);
             }
         }
 

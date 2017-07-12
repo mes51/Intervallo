@@ -11,6 +11,7 @@
              MouseMove="WaveScaler_MouseMove"
              MouseUp="WaveScaler_MouseUp">
     <Grid Cursor="SizeAll">
+        <Rectangle Stroke="LightGray"/>
         <local:WaveCanvas x:Name="WaveCanvas" Margin="0,0,0,0" Wave="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:WaveScaler}}, Path=Wave }" />
         <Grid Name="Scaler">
             <Rectangle Fill="#7FB0FF92" Stroke="Gray"/>

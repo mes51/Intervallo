@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Intervallo.Util;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace Intervallo.UI
     /// </summary>
     public partial class WaveScaler : UserControl
     {
-        const int MinShowableSampleCount = 100;
+        const double MinScalerWidth = 5.0;
 
         public static readonly DependencyProperty WaveProperty = WaveCanvas.WaveProperty.AddOwner(
             typeof(WaveScaler),
@@ -32,23 +33,12 @@ namespace Intervallo.UI
             )
         );
 
-        public static readonly DependencyProperty ViewStartSampleProperty = DependencyProperty.Register(
-            nameof(ViewStartSample),
-            typeof(int),
+        public static readonly DependencyProperty SampleRangeProperty = DependencyProperty.Register(
+            nameof(SampleRange),
+            typeof(Range),
             typeof(WaveScaler),
             new FrameworkPropertyMetadata(
-                0,
-                FrameworkPropertyMetadataOptions.AffectsRender,
-                ViewDependOnPropertyChanged
-            )
-        );
-
-        public static readonly DependencyProperty ShowableSampleCountProperty = DependencyProperty.Register(
-            nameof(ShowableSampleCount),
-            typeof(int),
-            typeof(WaveScaler),
-            new FrameworkPropertyMetadata(
-                0,
+                new Range(),
                 FrameworkPropertyMetadataOptions.AffectsRender,
                 ViewDependOnPropertyChanged
             )
@@ -65,16 +55,10 @@ namespace Intervallo.UI
             set { SetValue(WaveProperty, value); }
         }
 
-        public int ViewStartSample
+        public Range SampleRange
         {
-            get { return (int)GetValue(ViewStartSampleProperty); }
-            set { SetValue(ViewStartSampleProperty, Math.Min(ScrollableSampleCount, Math.Max(0, value))); }
-        }
-
-        public int ShowableSampleCount
-        {
-            get { return (int)GetValue(ShowableSampleCountProperty); }
-            set { SetValue(ShowableSampleCountProperty, Math.Max(Math.Min(MinShowableSampleCount, WaveSampleCount), value)); }
+            get { return (Range)GetValue(SampleRangeProperty); }
+            set { SetValue(SampleRangeProperty, value.Adjust(0.To(WaveSampleCount))); }
         }
 
         public int WaveSampleCount
@@ -89,7 +73,7 @@ namespace Intervallo.UI
         {
             get
             {
-                return Math.Max(0, WaveSampleCount - ShowableSampleCount);
+                return Math.Max(0, WaveSampleCount - SampleRange.Length);
             }
         }
 
@@ -97,15 +81,13 @@ namespace Intervallo.UI
 
         Point ClickPosition { get; set; } = new Point();
 
-        int PrevViewStartSample { get; set; }
-
-        int PrevShowableSampleCount { get; set; }
+        Range PrevSampleRange { get; set; } = new Range();
 
         void UpdateScaler()
         {
-            WaveCanvas.ShowableSampleCount = WaveSampleCount;
-            var scalerSize =  ActualWidth * ShowableSampleCount / WaveSampleCount;
-            var scalerPos = ActualWidth * ViewStartSample / WaveSampleCount;
+            WaveCanvas.SampleRange = 0.To(WaveSampleCount);
+            var scalerSize =  ActualWidth * SampleRange.Length / WaveSampleCount;
+            var scalerPos = ActualWidth * SampleRange.Begin / WaveSampleCount;
             if (WaveSampleCount < 1)
             {
                 scalerSize = ActualWidth;
@@ -117,15 +99,14 @@ namespace Intervallo.UI
         void MoveViewStartSample(double mouseX)
         {
             var targetSample = (int)Math.Round(mouseX / ActualWidth * WaveSampleCount);
-            ViewStartSample = targetSample - ShowableSampleCount / 2;
+            SampleRange = SampleRange.MoveTo(targetSample - SampleRange.Length / 2);
         }
 
         void WaveScaler_MouseDown(object sender, MouseButtonEventArgs e)
         {
             ClickedElement = e.OriginalSource as FrameworkElement;
             ClickPosition = e.GetPosition(this);
-            PrevViewStartSample = ViewStartSample;
-            PrevShowableSampleCount = ShowableSampleCount;
+            PrevSampleRange = SampleRange;
             Mouse.Capture(this, CaptureMode.Element);
             if (ClickedElement != RightScale && ClickedElement != LeftScale)
             {
@@ -138,18 +119,18 @@ namespace Intervallo.UI
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 var pos = e.GetPosition(this);
+                var minDiff = MinScalerWidth - ActualWidth * PrevSampleRange.Length / WaveSampleCount;
                 if (ClickedElement == RightScale)
                 {
-                    var diffX = pos.X - ClickPosition.X;
-                    var moveSample = (int)Math.Round(diffX / ActualWidth * WaveSampleCount);
-                    ShowableSampleCount = PrevShowableSampleCount + moveSample;
+                    var diffX = Math.Max(pos.X - ClickPosition.X, minDiff);
+                    var moveSample = Math.Min((int)Math.Round(diffX / ActualWidth * WaveSampleCount), WaveSampleCount - PrevSampleRange.End);
+                    SampleRange = PrevSampleRange.Stretch(moveSample);
                 }
                 else if (ClickedElement == LeftScale)
                 {
-                    var diffX = ClickPosition.X - pos.X;
-                    var moveSample = (int)Math.Round(diffX / ActualWidth * WaveSampleCount);
-                    ShowableSampleCount = PrevShowableSampleCount + moveSample;
-                    ViewStartSample = PrevViewStartSample - moveSample;
+                    var diffX = Math.Max(ClickPosition.X - pos.X, minDiff);
+                    var moveSample = Math.Min((int)Math.Round(diffX / ActualWidth * WaveSampleCount), PrevSampleRange.Begin);
+                    SampleRange = PrevSampleRange.Stretch(moveSample).Move(-moveSample);
                 }
                 else
                 {

@@ -110,6 +110,7 @@
     <Compile Include="Audio\Filter\FIRFilter.cs" />
     <Compile Include="Audio\Player\LoopableWaveStream.cs" />
     <Compile Include="Audio\Player\LoopRange.cs" />
+    <Compile Include="Audio\Player\SampleBufferedWaveProvider.cs" />
     <Compile Include="Audio\Player\SeekPlayer.cs" />
     <Compile Include="Audio\Player\WavePlayer.cs" />
     <Compile Include="Audio\Wavefile.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="Converter\PenConverter.cs" />
     <Compile Include="UI\Partial\WaveCanvas.cs" />
     <Compile Include="Util\Optional.cs" />
+    <Compile Include="Util\Range.cs" />
     <Compile Include="Util\RangeDictionary.cs" />
     <Compile Include="Util\RingBuffer.cs" />
     <Compile Include="UI\IndicatorView.xaml.cs">

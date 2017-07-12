@@ -25,7 +25,6 @@
             VerticalAlignment="Top"
             x:Name="WaveScaler"
             Height="70"
-            ShowableSampleCount="{Binding ElementName=WaveView, Path=ShowableSampleCount, Mode=TwoWay}"
-            ViewStartSample="{Binding ElementName=WaveView, Path=ViewStartSample, Mode=TwoWay}"/>
+            SampleRange="{Binding ElementName=WaveView, Path=SampleRange, Mode=TwoWay}"/>
     </Grid>
 </Window>
