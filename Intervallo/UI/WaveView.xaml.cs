@@ -150,14 +150,14 @@ namespace Intervallo.UI
 
         void MouseMoveHandler(MouseEventArgs e)
         {
+            if (Wave == null)
+            {
+                return;
+            }
+
             var x = e.GetPosition(this).X;
             if (ClickedElement == IndicatorMoveArea)
             {
-                if (Wave == null)
-                {
-                    return;
-                }
-
                 IndicatorPosition = (int)Math.Round(x / ActualWidth * SampleRange.Length) + SampleRange.Begin;
                 if (x > ActualWidth)
                 {
@@ -238,6 +238,11 @@ namespace Intervallo.UI
 
         void WaveView_MouseWheel(object sender, MouseWheelEventArgs e)
         {
+            if (Wave == null)
+            {
+                return;
+            }
+
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
             {
                 ScrollSample(-e.Delta);
@@ -259,6 +264,11 @@ namespace Intervallo.UI
 
         void ScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            if (Wave == null)
+            {
+                return;
+            }
+
             SampleRange = SampleRange.MoveTo((int)e.NewValue);
         }
 

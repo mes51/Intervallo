@@ -23,6 +23,7 @@ namespace Intervallo.UI
     public partial class WaveScaler : UserControl
     {
         const double MinScalerWidth = 5.0;
+        const int MinSampleCount = 5;
 
         public static readonly DependencyProperty WaveProperty = WaveCanvas.WaveProperty.AddOwner(
             typeof(WaveScaler),
@@ -96,27 +97,47 @@ namespace Intervallo.UI
             Scaler.Margin = new Thickness(scalerPos, 0, ActualWidth - scalerSize - scalerPos, 0);
         }
 
-        void MoveViewStartSample(double mouseX)
+        void MoveSampleRange(double mouseX)
         {
             var targetSample = (int)Math.Round(mouseX / ActualWidth * WaveSampleCount);
             SampleRange = SampleRange.MoveTo(targetSample - SampleRange.Length / 2);
         }
 
+        void ScrollSample(int direction)
+        {
+            SampleRange = SampleRange.Move((int)Math.Ceiling(SampleRange.Length * 0.1) * Math.Sign(direction));
+        }
+
         void WaveScaler_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (Wave == null)
+            {
+                return;
+            }
+
             ClickedElement = e.OriginalSource as FrameworkElement;
+            var clicked = ClickedElement;
+            while (clicked != null && clicked != RightScale && clicked != LeftScale)
+            {
+                clicked = clicked.Parent as FrameworkElement;
+            }
+            if (clicked != null)
+            {
+                ClickedElement = clicked;
+            }
+
             ClickPosition = e.GetPosition(this);
             PrevSampleRange = SampleRange;
             Mouse.Capture(this, CaptureMode.Element);
             if (ClickedElement != RightScale && ClickedElement != LeftScale)
             {
-                MoveViewStartSample(e.GetPosition(this).X);
+                MoveSampleRange(e.GetPosition(this).X);
             }
         }
 
         void WaveScaler_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (Wave != null && e.LeftButton == MouseButtonState.Pressed)
             {
                 var pos = e.GetPosition(this);
                 var minDiff = MinScalerWidth - ActualWidth * PrevSampleRange.Length / WaveSampleCount;
@@ -134,7 +155,7 @@ namespace Intervallo.UI
                 }
                 else
                 {
-                    MoveViewStartSample(pos.X);
+                    MoveSampleRange(pos.X);
                 }
             }
             else
@@ -146,6 +167,42 @@ namespace Intervallo.UI
         void WaveScaler_MouseUp(object sender, MouseButtonEventArgs e)
         {
             ReleaseMouseCapture();
+        }
+
+        void WaveScaler_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (Wave == null)
+            {
+                return;
+            }
+
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                ScrollSample(-e.Delta);
+            }
+            else
+            {
+                if (e.Delta > 0)
+                {
+                    var stretch = (int)Math.Ceiling((SampleRange.Length * 1.1)) - SampleRange.Length;
+                    SampleRange = SampleRange.Stretch(stretch).Move(stretch / -2);
+                }
+                else
+                {
+                    var stretch = Math.Max((int)(SampleRange.Length * 0.9), MinSampleCount) - SampleRange.Length;
+                    SampleRange = SampleRange.Stretch(stretch).Move(stretch / -2);
+                }
+            }
+        }
+
+        void MouseTiltWheelBehavior_MouseTiltWheel(object sender, Behavior.MouseTiltWheelEventArgs e)
+        {
+            if (Wave == null)
+            {
+                return;
+            }
+
+            ScrollSample(e.Delta);
         }
 
         static void ViewDependOnPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)

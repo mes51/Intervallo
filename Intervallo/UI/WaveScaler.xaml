@@ -3,20 +3,42 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:Intervallo.UI"
+             xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
+             xmlns:b="clr-namespace:Intervallo.UI.Behavior"
              mc:Ignorable="d"
              d:DesignHeight="70"
              d:DesignWidth="400"
              MouseDown="WaveScaler_MouseDown"
              MouseMove="WaveScaler_MouseMove"
-             MouseUp="WaveScaler_MouseUp">
+             MouseUp="WaveScaler_MouseUp" MouseWheel="WaveScaler_MouseWheel">
     <Grid Cursor="SizeAll">
         <Rectangle Stroke="LightGray"/>
         <local:WaveCanvas x:Name="WaveCanvas" Margin="0,0,0,0" Wave="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:WaveScaler}}, Path=Wave }" />
         <Grid Name="Scaler">
-            <Rectangle Fill="#7FB0FF92" Stroke="Gray"/>
-            <Rectangle Name="RightScale" HorizontalAlignment="Right" Width="10" Cursor="SizeWE" Fill="Transparent"/>
-            <Rectangle Name="LeftScale" HorizontalAlignment="Left" Width="10" Cursor="SizeWE" Fill="Transparent"/>
+            <Rectangle Fill="#7FB0FF92" Stroke="#FF9C9C9C"/>
+            <Canvas>
+                <Grid Name="RightScale" Width="8" Height="{Binding ElementName=Scaler, Path=ActualHeight}" Cursor="SizeWE" Canvas.Right="{c:Binding ElementName=Scaler, Path='Math.Min(0,ActualWidth-16)*0.5'}">
+                    <Grid Visibility="{c:Binding ElementName=Scaler, Path='!(ActualWidth less= 16)', FalseToVisibility=Hidden}">
+                        <Rectangle Fill="#FF9C9C9C" />
+                        <Rectangle Fill="White" RadiusY="0.75" RadiusX="0.75" Width="1" Margin="2,2,0,2" HorizontalAlignment="Left" />
+                        <Rectangle Fill="White" RadiusY="0.75" RadiusX="0.75" Width="1" Margin="5,2,0,2" HorizontalAlignment="Left" />
+                    </Grid>
+                    <Rectangle Fill="Transparent" Visibility="{c:Binding ElementName=Scaler, Path='ActualWidth less= 16', FalseToVisibility=Hidden}"/>
+                </Grid>
+                <Grid Name="LeftScale" Width="8" Height="{Binding ElementName=Scaler, Path=ActualHeight}" Cursor="SizeWE" Canvas.Left="{c:Binding ElementName=Scaler, Path='Math.Min(0,ActualWidth-16)*0.5'}">
+                    <Grid Visibility="{c:Binding ElementName=Scaler, Path='!(ActualWidth less= 16)', FalseToVisibility=Hidden}">
+                        <Rectangle Fill="#FF9C9C9C" />
+                        <Rectangle Fill="White" RadiusY="0.75" RadiusX="0.75" Width="1" Margin="2,2,0,2" HorizontalAlignment="Left" />
+                        <Rectangle Fill="White" RadiusY="0.75" RadiusX="0.75" Width="1" Margin="5,2,0,2" HorizontalAlignment="Left" />
+                    </Grid>
+                    <Rectangle Fill="Transparent" Visibility="{c:Binding ElementName=Scaler, Path='ActualWidth less= 16', FalseToVisibility=Hidden}"/>
+                </Grid>
+            </Canvas>
         </Grid>
     </Grid>
+    <i:Interaction.Behaviors>
+        <b:MouseTiltWheelBehavior MouseTiltWheel="MouseTiltWheelBehavior_MouseTiltWheel"/>
+    </i:Interaction.Behaviors>
 </UserControl>
