@@ -115,7 +115,11 @@ namespace Intervallo.UI
 
         public event EventHandler IndicatorMoveFinish;
 
+        Point ClickPosition { get; set; }
+
         FrameworkElement ClickedElement { get; set; }
+
+        Range PrevSampleRange { get; set; }
 
         public void ScrollToIndicatorIfOutOfScreen()
         {
@@ -146,6 +150,7 @@ namespace Intervallo.UI
 
         void MouseMoveHandler(MouseEventArgs e)
         {
+            var x = e.GetPosition(this).X;
             if (ClickedElement == IndicatorMoveArea)
             {
                 if (Wave == null)
@@ -153,7 +158,6 @@ namespace Intervallo.UI
                     return;
                 }
 
-                var x = e.GetPosition(this).X;
                 IndicatorPosition = (int)Math.Round(x / ActualWidth * SampleRange.Length) + SampleRange.Begin;
                 if (x > ActualWidth)
                 {
@@ -164,6 +168,11 @@ namespace Intervallo.UI
                     SampleRange = SampleRange.MoveTo(IndicatorPosition);
                 }
                 OnIndicatorMoved();
+            }
+            else if (ClickedElement == HandScrollArea)
+            {
+                var move = x - ClickPosition.X;
+                SampleRange = SampleRange.MoveTo(PrevSampleRange.Begin - (int)(move / ActualWidth * SampleRange.Length));
             }
         }
 
@@ -203,6 +212,8 @@ namespace Intervallo.UI
         void WaveView_MouseDown(object sender, MouseButtonEventArgs e)
         {
             ClickedElement = e.OriginalSource as FrameworkElement;
+            ClickPosition = e.GetPosition(this);
+            PrevSampleRange = SampleRange;
             Mouse.Capture(this);
 
             if (ClickedElement == IndicatorMoveArea)

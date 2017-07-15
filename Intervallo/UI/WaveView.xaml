@@ -31,6 +31,7 @@
         <Canvas Name="IndicatorCanvas" Margin="0,0,0,17">
             <local:IndicatorView x:Name="Indicator" Canvas.Top="13" Canvas.Left="-5" Height="{c:Binding ElementName=IndicatorCanvas, Path=ActualHeight-13}" />
         </Canvas>
+        <Rectangle x:Name="HandScrollArea" Fill="#00000000" Height="13" VerticalAlignment="Top" Cursor="Hand" />
         <Rectangle x:Name="IndicatorMoveArea" Fill="#00000000" Height="12" Margin="0,13,0,0" VerticalAlignment="Top" />
         <i:Interaction.Behaviors>
             <b:MouseTiltWheelBehavior MouseTiltWheel="MouseTiltWheelBehavior_MouseTiltWheel"/>
