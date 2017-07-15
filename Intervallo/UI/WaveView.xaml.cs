@@ -1,18 +1,9 @@
 ﻿using Intervallo.Util;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Intervallo.UI
 {
@@ -58,6 +49,8 @@ namespace Intervallo.UI
                 IndicatorPositionChanged
             )
         );
+
+        const int MinSampleCount = 5;
 
         readonly Pen Pen = new Pen(new SolidColorBrush(Color.FromRgb(43, 137, 201)), 1.0);
 
@@ -174,6 +167,11 @@ namespace Intervallo.UI
             }
         }
 
+        void ScrollSample(int direction)
+        {
+            SampleRange = SampleRange.Move((int)Math.Ceiling(SampleRange.Length * 0.1) * Math.Sign(direction));
+        }
+
         void OnIndicatorMoveStart()
         {
             IndicatorMoveStart?.Invoke(this, EventArgs.Empty);
@@ -227,9 +225,35 @@ namespace Intervallo.UI
             ClickedElement = null;
         }
 
+        void WaveView_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                ScrollSample(-e.Delta);
+            }
+            else
+            {
+                if (e.Delta > 0)
+                {
+                    var stretch = (int)Math.Ceiling((SampleRange.Length * 1.1)) - SampleRange.Length;
+                    SampleRange = SampleRange.Stretch(stretch).Move(stretch / -2);
+                }
+                else
+                {
+                    var stretch = Math.Max((int)(SampleRange.Length * 0.9), MinSampleCount) - SampleRange.Length;
+                    SampleRange = SampleRange.Stretch(stretch).Move(stretch / -2);
+                }
+            }
+        }
+
         void ScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             SampleRange = SampleRange.MoveTo((int)e.NewValue);
+        }
+
+        void MouseTiltWheelBehavior_MouseTiltWheel(object sender, Behavior.MouseTiltWheelEventArgs e)
+        {
+            ScrollSample(e.Delta);
         }
 
         static void IndicatorPositionChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)

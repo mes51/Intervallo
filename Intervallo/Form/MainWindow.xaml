@@ -3,11 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Intervallo"
+        xmlns:local="clr-namespace:Intervallo" xmlns:Form="clr-namespace:Intervallo.Form"
         xmlns:UI="clr-namespace:Intervallo.UI" x:Class="Intervallo.Form.MainWindow"
         mc:Ignorable="d"
         AllowDrop="True"
-        Title="MainWindow" Height="610" Width="945" Drop="WaveCanvas_Drop" PreviewDragOver="WaveCanvas_PreviewDragOver" KeyDown="Window_KeyDown" Closing="Window_Closing">
+        Title="MainWindow" Height="610" Width="945"
+        Drop="WaveCanvas_Drop"
+        PreviewDragOver="WaveCanvas_PreviewDragOver"
+        KeyDown="Window_KeyDown"
+        Closing="Window_Closing">
     <Grid>
         <Button x:Name="Save" Content="Save" Margin="0,0,10,34" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom"/>
         <Menu x:Name="menu" Height="24" VerticalAlignment="Top"/>
@@ -18,7 +22,7 @@
                 x:Name="WaveView"
                 IndicatorMoved="WaveView_IndicatorMoved"
                 IndicatorMoveFinish="WaveView_IndicatorMoveFinish"
-                IndicatorMoveStart="WaveView_IndicatorMoveStart" />
+                IndicatorMoveStart="WaveView_IndicatorMoveStart"/>
         </Grid>
         <UI:WaveScaler
             Margin="10,29,10,0"

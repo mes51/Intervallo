@@ -1,9 +1,9 @@
 ﻿using Intervallo.Audio;
 using Intervallo.Audio.Player;
 using Intervallo.Util;
-using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -115,7 +115,7 @@ namespace Intervallo.Form
             }
         }
 
-        void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        void Window_Closing(object sender, CancelEventArgs e)
         {
             Player?.Stop();
             Player?.Dispose();

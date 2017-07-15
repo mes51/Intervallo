@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-             xmlns:li="clr-namespace:Intervallo.Behavior"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:Intervallo.UI"
+             xmlns:b="clr-namespace:Intervallo.UI.Behavior"
              xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
              mc:Ignorable="d" 
              Name="Root"
@@ -13,7 +13,8 @@
              SizeChanged="WaveView_SizeChanged"
              MouseMove="WaveView_MouseMove"
              MouseDown="WaveView_MouseDown"
-             MouseUp="WaveView_MouseUp">
+             MouseUp="WaveView_MouseUp"
+             MouseWheel="WaveView_MouseWheel">
     <Grid>
         <ScrollBar x:Name="ScrollBar" Width="Auto" Height="17" VerticalAlignment="Bottom" Orientation="Horizontal" ValueChanged="ScrollBar_ValueChanged"/>
         <local:MeasureView
@@ -31,5 +32,8 @@
             <local:IndicatorView x:Name="Indicator" Canvas.Top="13" Canvas.Left="-5" Height="{c:Binding ElementName=IndicatorCanvas, Path=ActualHeight-13}" />
         </Canvas>
         <Rectangle x:Name="IndicatorMoveArea" Fill="#00000000" Height="12" Margin="0,13,0,0" VerticalAlignment="Top" />
+        <i:Interaction.Behaviors>
+            <b:MouseTiltWheelBehavior MouseTiltWheel="MouseTiltWheelBehavior_MouseTiltWheel"/>
+        </i:Interaction.Behaviors>
     </Grid>
 </UserControl>

@@ -114,8 +114,8 @@
     <Compile Include="Audio\Player\SeekPlayer.cs" />
     <Compile Include="Audio\Player\WavePlayer.cs" />
     <Compile Include="Audio\Wavefile.cs" />
-    <Compile Include="Behavior\PropertyChangeAction.cs" />
     <Compile Include="Converter\PenConverter.cs" />
+    <Compile Include="UI\Behavior\MouseTiltWheelBehavior.cs" />
     <Compile Include="UI\Partial\WaveCanvas.cs" />
     <Compile Include="Util\Optional.cs" />
     <Compile Include="Util\Range.cs" />
@@ -202,6 +202,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Behavior\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
