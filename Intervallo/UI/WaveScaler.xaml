@@ -1,18 +1,18 @@
-﻿<UserControl x:Class="Intervallo.UI.WaveScaler"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:local="clr-namespace:Intervallo.UI"
-             xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
-             xmlns:b="clr-namespace:Intervallo.UI.Behavior"
-             mc:Ignorable="d"
-             d:DesignHeight="70"
-             d:DesignWidth="400"
-             MouseDown="WaveScaler_MouseDown"
-             MouseMove="WaveScaler_MouseMove"
-             MouseUp="WaveScaler_MouseUp" MouseWheel="WaveScaler_MouseWheel">
+﻿<local:SampleRangeChangeableControl x:Class="Intervallo.UI.WaveScaler"
+                                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                                    xmlns:local="clr-namespace:Intervallo.UI"
+                                    xmlns:b="clr-namespace:Intervallo.UI.Behavior"
+                                    xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
+                                    mc:Ignorable="d"
+                                    d:DesignHeight="70"
+                                    d:DesignWidth="400"
+                                    MouseDown="WaveScaler_MouseDown"
+                                    MouseMove="WaveScaler_MouseMove"
+                                    MouseUp="WaveScaler_MouseUp">
     <Grid Cursor="SizeAll">
         <Rectangle Stroke="LightGray"/>
         <local:WaveCanvas x:Name="WaveCanvas" Margin="0,0,0,0" Wave="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:WaveScaler}}, Path=Wave }" />
@@ -39,6 +39,6 @@
         </Grid>
     </Grid>
     <i:Interaction.Behaviors>
-        <b:MouseTiltWheelBehavior MouseTiltWheel="MouseTiltWheelBehavior_MouseTiltWheel"/>
+        <b:SampleScrollBehavior />
     </i:Interaction.Behaviors>
-</UserControl>
+</local:SampleRangeChangeableControl>

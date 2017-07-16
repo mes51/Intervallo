@@ -1,20 +1,20 @@
-﻿<UserControl x:Class="Intervallo.UI.WaveView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:local="clr-namespace:Intervallo.UI"
-             xmlns:b="clr-namespace:Intervallo.UI.Behavior"
-             xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
-             mc:Ignorable="d" 
-             Name="Root"
-             d:DesignHeight="300" d:DesignWidth="300"
-             SizeChanged="WaveView_SizeChanged"
-             MouseMove="WaveView_MouseMove"
-             MouseDown="WaveView_MouseDown"
-             MouseUp="WaveView_MouseUp"
-             MouseWheel="WaveView_MouseWheel">
+﻿<local:SampleRangeChangeableControl x:Class="Intervallo.UI.WaveView"
+                                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                    xmlns:local="clr-namespace:Intervallo.UI"
+                                    xmlns:b="clr-namespace:Intervallo.UI.Behavior"
+                                    xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
+                                    mc:Ignorable="d" 
+                                    x:Name="Root"
+                                    d:DesignHeight="300" d:DesignWidth="300"
+                                    SizeChanged="WaveView_SizeChanged"
+                                    MouseMove="WaveView_MouseMove"
+                                    MouseDown="WaveView_MouseDown"
+                                    MouseUp="WaveView_MouseUp"
+                                    MouseWheel="WaveView_MouseWheel">
     <Grid>
         <ScrollBar x:Name="ScrollBar" Width="Auto" Height="17" VerticalAlignment="Bottom" Orientation="Horizontal" ValueChanged="ScrollBar_ValueChanged"/>
         <local:MeasureView
@@ -35,6 +35,6 @@
         <Rectangle x:Name="IndicatorMoveArea" Fill="#00000000" Height="12" Margin="0,13,0,0" VerticalAlignment="Top" />
     </Grid>
     <i:Interaction.Behaviors>
-        <b:MouseTiltWheelBehavior MouseTiltWheel="MouseTiltWheelBehavior_MouseTiltWheel"/>
+        <b:SampleScrollBehavior />
     </i:Interaction.Behaviors>
-</UserControl>
+</local:SampleRangeChangeableControl>

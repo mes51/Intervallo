@@ -20,26 +20,14 @@ namespace Intervallo.UI
     /// <summary>
     /// WaveScaler.xaml の相互作用ロジック
     /// </summary>
-    public partial class WaveScaler : UserControl
+    public partial class WaveScaler : SampleRangeChangeableControl
     {
         const double MinScalerWidth = 5.0;
-        const int MinSampleCount = 5;
 
         public static readonly DependencyProperty WaveProperty = WaveCanvas.WaveProperty.AddOwner(
             typeof(WaveScaler),
             new FrameworkPropertyMetadata(
                 null,
-                FrameworkPropertyMetadataOptions.AffectsRender,
-                ViewDependOnPropertyChanged
-            )
-        );
-
-        public static readonly DependencyProperty SampleRangeProperty = DependencyProperty.Register(
-            nameof(SampleRange),
-            typeof(Range),
-            typeof(WaveScaler),
-            new FrameworkPropertyMetadata(
-                new Range(),
                 FrameworkPropertyMetadataOptions.AffectsRender,
                 ViewDependOnPropertyChanged
             )
@@ -56,25 +44,11 @@ namespace Intervallo.UI
             set { SetValue(WaveProperty, value); }
         }
 
-        public Range SampleRange
-        {
-            get { return (Range)GetValue(SampleRangeProperty); }
-            set { SetValue(SampleRangeProperty, value.Adjust(0.To(WaveSampleCount))); }
-        }
-
-        public int WaveSampleCount
+        public override int SampleCount
         {
             get
             {
                 return Wave?.Length ?? 0;
-            }
-        }
-
-        public int ScrollableSampleCount
-        {
-            get
-            {
-                return Math.Max(0, WaveSampleCount - SampleRange.Length);
             }
         }
 
@@ -84,12 +58,19 @@ namespace Intervallo.UI
 
         Range PrevSampleRange { get; set; } = new Range();
 
+        protected override void OnSampleRangeChanged()
+        {
+            base.OnSampleRangeChanged();
+
+            UpdateScaler();
+        }
+
         void UpdateScaler()
         {
-            WaveCanvas.SampleRange = 0.To(WaveSampleCount);
-            var scalerSize =  ActualWidth * SampleRange.Length / WaveSampleCount;
-            var scalerPos = ActualWidth * SampleRange.Begin / WaveSampleCount;
-            if (WaveSampleCount < 1)
+            WaveCanvas.SampleRange = 0.To(SampleCount);
+            var scalerSize =  ActualWidth * SampleRange.Length / SampleCount;
+            var scalerPos = ActualWidth * SampleRange.Begin / SampleCount;
+            if (SampleCount < 1)
             {
                 scalerSize = ActualWidth;
                 scalerPos = 0;
@@ -99,13 +80,8 @@ namespace Intervallo.UI
 
         void MoveSampleRange(double mouseX)
         {
-            var targetSample = (int)Math.Round(mouseX / ActualWidth * WaveSampleCount);
+            var targetSample = (int)Math.Round(mouseX / ActualWidth * SampleCount);
             SampleRange = SampleRange.MoveTo(targetSample - SampleRange.Length / 2);
-        }
-
-        void ScrollSample(int direction)
-        {
-            SampleRange = SampleRange.Move((int)Math.Ceiling(SampleRange.Length * 0.1) * Math.Sign(direction));
         }
 
         void WaveScaler_MouseDown(object sender, MouseButtonEventArgs e)
@@ -140,17 +116,17 @@ namespace Intervallo.UI
             if (Wave != null && e.LeftButton == MouseButtonState.Pressed)
             {
                 var pos = e.GetPosition(this);
-                var minDiff = MinScalerWidth - ActualWidth * PrevSampleRange.Length / WaveSampleCount;
+                var minDiff = MinScalerWidth - ActualWidth * PrevSampleRange.Length / SampleCount;
                 if (ClickedElement == RightScale)
                 {
                     var diffX = Math.Max(pos.X - ClickPosition.X, minDiff);
-                    var moveSample = Math.Min((int)Math.Round(diffX / ActualWidth * WaveSampleCount), WaveSampleCount - PrevSampleRange.End);
+                    var moveSample = Math.Min((int)Math.Round(diffX / ActualWidth * SampleCount), SampleCount - PrevSampleRange.End);
                     SampleRange = PrevSampleRange.Stretch(moveSample);
                 }
                 else if (ClickedElement == LeftScale)
                 {
                     var diffX = Math.Max(ClickPosition.X - pos.X, minDiff);
-                    var moveSample = Math.Min((int)Math.Round(diffX / ActualWidth * WaveSampleCount), PrevSampleRange.Begin);
+                    var moveSample = Math.Min((int)Math.Round(diffX / ActualWidth * SampleCount), PrevSampleRange.Begin);
                     SampleRange = PrevSampleRange.Stretch(moveSample).Move(-moveSample);
                 }
                 else
@@ -167,42 +143,6 @@ namespace Intervallo.UI
         void WaveScaler_MouseUp(object sender, MouseButtonEventArgs e)
         {
             ReleaseMouseCapture();
-        }
-
-        void WaveScaler_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            if (Wave == null)
-            {
-                return;
-            }
-
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-            {
-                ScrollSample(-e.Delta);
-            }
-            else
-            {
-                if (e.Delta > 0)
-                {
-                    var stretch = (int)Math.Ceiling((SampleRange.Length * 1.1)) - SampleRange.Length;
-                    SampleRange = SampleRange.Stretch(stretch).Move(stretch / -2);
-                }
-                else
-                {
-                    var stretch = Math.Max((int)(SampleRange.Length * 0.9), MinSampleCount) - SampleRange.Length;
-                    SampleRange = SampleRange.Stretch(stretch).Move(stretch / -2);
-                }
-            }
-        }
-
-        void MouseTiltWheelBehavior_MouseTiltWheel(object sender, Behavior.MouseTiltWheelEventArgs e)
-        {
-            if (Wave == null)
-            {
-                return;
-            }
-
-            ScrollSample(e.Delta);
         }
 
         static void ViewDependOnPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)

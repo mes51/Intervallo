@@ -116,7 +116,9 @@
     <Compile Include="Audio\Wavefile.cs" />
     <Compile Include="Converter\PenConverter.cs" />
     <Compile Include="UI\Behavior\MouseTiltWheelBehavior.cs" />
+    <Compile Include="UI\Behavior\SampleScrollBehavior.cs" />
     <Compile Include="UI\Partial\WaveCanvas.cs" />
+    <Compile Include="UI\SampleRangeChangeableControl.cs" />
     <Compile Include="Util\Optional.cs" />
     <Compile Include="Util\Range.cs" />
     <Compile Include="Util\RangeDictionary.cs" />

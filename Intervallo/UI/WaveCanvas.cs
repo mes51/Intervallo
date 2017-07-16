@@ -16,7 +16,7 @@ using System.Windows.Threading;
 
 namespace Intervallo.UI
 {
-    public partial class WaveCanvas : UserControl, IDisposable
+    public partial class WaveCanvas : SampleRangeChangeableControl, IDisposable
     {
         public static readonly DependencyProperty WaveProperty = DependencyProperty.Register(
             nameof(Wave),
@@ -29,42 +29,17 @@ namespace Intervallo.UI
             )
         );
 
-        public static readonly DependencyProperty SampleRangeProperty = DependencyProperty.Register(
-            nameof(SampleRange),
-            typeof(Range),
-            typeof(WaveCanvas),
-            new FrameworkPropertyMetadata(
-                new Range(),
-                FrameworkPropertyMetadataOptions.AffectsRender,
-                VisibleSampleChanged
-            )
-        );
-
         public double[] Wave
         {
             get { return (double[])GetValue(WaveProperty); }
             set { SetValue(WaveProperty, value); }
         }
 
-        public Range SampleRange
-        {
-            get { return (Range)GetValue(SampleRangeProperty); }
-            set { SetValue(SampleRangeProperty, value.Adjust(0.To(WaveSampleCount))); }
-        }
-
-        public int WaveSampleCount
+        public override int SampleCount
         {
             get
             {
                 return Wave?.Length ?? 0;
-            }
-        }
-
-        public int ScrollableSampleCount
-        {
-            get
-            {
-                return Math.Max(0, WaveSampleCount - SampleRange.Length);
             }
         }
 
@@ -115,6 +90,14 @@ namespace Intervallo.UI
             drawingContext.DrawImage(Bitmap, new Rect(0.0, 0.0, Bitmap.Width, Bitmap.Height));
         }
 
+        protected override void OnSampleRangeChanged()
+        {
+            base.OnSampleRangeChanged();
+
+            RefreshPath();
+            RedrawBitmap();
+        }
+
         double GetSampleProgress()
         {
             return ActualWidth / Math.Max(1, SampleRange.Length);
@@ -122,7 +105,7 @@ namespace Intervallo.UI
 
         void RefreshPath()
         {
-            if (Disposed || (WaveSampleCount - SampleRange.Begin) < 2)
+            if (Disposed || (SampleCount - SampleRange.Begin) < 2)
             {
                 return;
             }
@@ -194,13 +177,6 @@ namespace Intervallo.UI
         {
             var waveCanvas = dependencyObject as WaveCanvas;
             waveCanvas.LineMap = new WaveLineMap(waveCanvas.Wave);
-            waveCanvas.RefreshPath();
-            waveCanvas.RedrawBitmap();
-        }
-
-        static void VisibleSampleChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
-        {
-            var waveCanvas = dependencyObject as WaveCanvas;
             waveCanvas.RefreshPath();
             waveCanvas.RedrawBitmap();
         }

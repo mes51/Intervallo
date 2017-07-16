@@ -10,21 +10,12 @@ namespace Intervallo.UI
     /// <summary>
     /// WaveView.xaml の相互作用ロジック
     /// </summary>
-    public partial class WaveView : UserControl
+    public partial class WaveView : SampleRangeChangeableControl
     {
         public static readonly DependencyProperty WaveProperty = WaveCanvas.WaveProperty.AddOwner(
             typeof(WaveView),
             new FrameworkPropertyMetadata(
                 null,
-                FrameworkPropertyMetadataOptions.AffectsRender,
-                ViewDependOnPropertyChanged
-            )
-        );
-
-        public static readonly DependencyProperty SampleRangeProperty = WaveCanvas.SampleRangeProperty.AddOwner(
-            typeof(WaveView),
-            new FrameworkPropertyMetadata(
-                new Range(),
                 FrameworkPropertyMetadataOptions.AffectsRender,
                 ViewDependOnPropertyChanged
             )
@@ -50,8 +41,6 @@ namespace Intervallo.UI
             )
         );
 
-        const int MinSampleCount = 5;
-
         readonly Pen Pen = new Pen(new SolidColorBrush(Color.FromRgb(43, 137, 201)), 1.0);
 
         public WaveView()
@@ -65,12 +54,6 @@ namespace Intervallo.UI
             set { SetValue(WaveProperty, value); }
         }
 
-        public Range SampleRange
-        {
-            get { return (Range)GetValue(SampleRangeProperty); }
-            set { SetValue(SampleRangeProperty, value.Adjust(0.To(WaveSampleCount))); }
-        }
-
         public int SampleRate
         {
             get { return (int)GetValue(SampleRateProperty); }
@@ -80,22 +63,14 @@ namespace Intervallo.UI
         public int IndicatorPosition
         {
             get { return (int)GetValue(IndicatorPositionProperty); }
-            set { SetValue(IndicatorPositionProperty, Math.Min(WaveSampleCount, Math.Max(0, value))); }
+            set { SetValue(IndicatorPositionProperty, Math.Min(SampleCount, Math.Max(0, value))); }
         }
 
-        public int WaveSampleCount
+        public override int SampleCount
         {
             get
             {
                 return Wave?.Length ?? 0;
-            }
-        }
-
-        public int ScrollableSampleCount
-        {
-            get
-            {
-                return Math.Max(0, WaveSampleCount - SampleRange.Length);
             }
         }
 
@@ -127,6 +102,14 @@ namespace Intervallo.UI
             {
                 SampleRange = SampleRange.MoveTo(IndicatorPosition);
             }
+        }
+
+        protected override void OnSampleRangeChanged()
+        {
+            base.OnSampleRangeChanged();
+
+            RefreshScrollBar();
+            RefreshIndicator();
         }
 
         void RefreshScrollBar()
@@ -174,11 +157,6 @@ namespace Intervallo.UI
                 var move = x - ClickPosition.X;
                 SampleRange = SampleRange.MoveTo(PrevSampleRange.Begin - (int)(move / ActualWidth * SampleRange.Length));
             }
-        }
-
-        void ScrollSample(int direction)
-        {
-            SampleRange = SampleRange.Move((int)Math.Ceiling(SampleRange.Length * 0.1) * Math.Sign(direction));
         }
 
         void OnIndicatorMoveStart()
@@ -243,22 +221,8 @@ namespace Intervallo.UI
                 return;
             }
 
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
-                ScrollSample(-e.Delta);
-            }
-            else
-            {
-                if (e.Delta > 0)
-                {
-                    var stretch = (int)Math.Ceiling((SampleRange.Length * 1.1)) - SampleRange.Length;
-                    SampleRange = SampleRange.Stretch(stretch).Move(stretch / -2);
-                }
-                else
-                {
-                    var stretch = Math.Max((int)(SampleRange.Length * 0.9), MinSampleCount) - SampleRange.Length;
-                    SampleRange = SampleRange.Stretch(stretch).Move(stretch / -2);
-                }
             }
         }
 
@@ -270,11 +234,6 @@ namespace Intervallo.UI
             }
 
             SampleRange = SampleRange.MoveTo((int)e.NewValue);
-        }
-
-        void MouseTiltWheelBehavior_MouseTiltWheel(object sender, Behavior.MouseTiltWheelEventArgs e)
-        {
-            ScrollSample(e.Delta);
         }
 
         static void IndicatorPositionChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
