@@ -115,7 +115,6 @@
     <Compile Include="Audio\Player\WavePlayer.cs" />
     <Compile Include="Audio\Wavefile.cs" />
     <Compile Include="Converter\PenConverter.cs" />
-    <Compile Include="UI\Behavior\MouseTiltWheelBehavior.cs" />
     <Compile Include="UI\Behavior\SampleScrollBehavior.cs" />
     <Compile Include="UI\Partial\WaveCanvas.cs" />
     <Compile Include="UI\SampleRangeChangeableControl.cs" />
@@ -205,9 +204,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Behavior\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
