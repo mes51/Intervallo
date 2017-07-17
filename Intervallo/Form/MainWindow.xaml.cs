@@ -40,7 +40,7 @@ namespace Intervallo.Form
 
         SeekPlayer SeekPlayer { get; set; }
 
-        Wavefile Wavefile { get; set; }
+        WaveData WaveData { get; set; }
 
         bool PlayingBeforeIndicatorMoving { get; set; }
 
@@ -76,15 +76,18 @@ namespace Intervallo.Form
                 Player?.Stop();
                 Player?.Dispose();
 
-                Wavefile = Wavefile.Read((e.Data.GetData(DataFormats.FileDrop, true) as string[])[0]);
-                WaveView.Wave = Wavefile.Data;
-                WaveScaler.Wave = Wavefile.Data;
-                WaveView.SampleRange = 0.To(Math.Min(30000, Wavefile.Data.Length));
-                WaveView.SampleRate = Wavefile.Fs;
+                var fileName = (e.Data.GetData(DataFormats.FileDrop, true) as string[])[0];
+                var wavefile = Wavefile.Read(fileName);
 
-                SeekPlayer = new SeekPlayer(Wavefile.Fs);
+                WaveData = new WaveData(fileName, wavefile.Data, wavefile.Fs);
+                WaveView.Wave = WaveData.Wave;
+                WaveScaler.Wave = WaveData.Wave;
+                WaveView.SampleRange = 0.To(Math.Min(30000, WaveData.Wave.Length));
+                WaveView.SampleRate = WaveData.SampleRate;
 
-                Player = new WavePlayer(Wavefile.Data, Wavefile.Fs);
+                SeekPlayer = new SeekPlayer(WaveData.SampleRate);
+
+                Player = new WavePlayer(WaveData.Wave, WaveData.SampleRate);
                 Player.EnableLoop = true;
                 Player.PlaybackStopped += (s, ea) =>
                 {
@@ -125,15 +128,14 @@ namespace Intervallo.Form
         void WaveView_IndicatorMoved(object sender, EventArgs e)
         {
             Player.SamplePosition = WaveView.IndicatorPosition;
-            var bytePerSample = Wavefile.Bit / 8;
-            var samples = new double[(int)(Wavefile.Fs * 0.05)];
-            Buffer.BlockCopy(Wavefile.Data, WaveView.IndicatorPosition * DoubleSize, samples, 0, Math.Min(samples.Length, Wavefile.Data.Length - WaveView.IndicatorPosition) * DoubleSize);
+            var samples = new double[(int)(WaveData.SampleRate * 0.05)];
+            Buffer.BlockCopy(WaveData.Wave, WaveView.IndicatorPosition * DoubleSize, samples, 0, Math.Min(samples.Length, WaveData.Wave.Length - WaveView.IndicatorPosition) * DoubleSize);
             SeekPlayer.AddSample(samples);
         }
 
         void WaveView_IndicatorMoveFinish(object sender, EventArgs e)
         {
-            if (Wavefile == null)
+            if (WaveData == null)
             {
                 return;
             }
@@ -147,12 +149,12 @@ namespace Intervallo.Form
 
         void WaveView_IndicatorMoveStart(object sender, EventArgs e)
         {
-            if (Wavefile == null)
+            if (WaveData == null)
             {
                 return;
             }
 
-            PlayingBeforeIndicatorMoving = Wavefile != null && Player.PlaybackState == PlaybackState.Playing;
+            PlayingBeforeIndicatorMoving = WaveData != null && Player.PlaybackState == PlaybackState.Playing;
             PauseAudio();
             SeekPlayer.Play();
         }

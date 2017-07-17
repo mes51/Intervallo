@@ -113,9 +113,12 @@
     <Compile Include="Audio\Player\SampleBufferedWaveProvider.cs" />
     <Compile Include="Audio\Player\SeekPlayer.cs" />
     <Compile Include="Audio\Player\WavePlayer.cs" />
+    <Compile Include="Audio\WaveData.cs" />
     <Compile Include="Audio\Wavefile.cs" />
     <Compile Include="Converter\PenConverter.cs" />
     <Compile Include="UI\Behavior\SampleScrollBehavior.cs" />
+    <Compile Include="UI\GDIControl.cs" />
+    <Compile Include="UI\GDILineDrawableControl.cs" />
     <Compile Include="UI\Partial\WaveCanvas.cs" />
     <Compile Include="UI\SampleRangeChangeableControl.cs" />
     <Compile Include="Util\Optional.cs" />
@@ -204,7 +207,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
