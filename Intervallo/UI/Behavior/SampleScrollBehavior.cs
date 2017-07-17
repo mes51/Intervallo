@@ -90,7 +90,7 @@ namespace Intervallo.UI.Behavior
             else
             {
                 var sampleRange = AssociatedObject.SampleRange;
-                if (e.Delta > 0)
+                if (e.Delta < 0)
                 {
                     var stretch = (int)Math.Ceiling((sampleRange.Length * 1.1)) - sampleRange.Length;
                     AssociatedObject.SampleRange = sampleRange.Stretch(stretch).Move(stretch / -2);
