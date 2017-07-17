@@ -22,7 +22,7 @@ namespace Intervallo.UI
     /// <summary>
     /// MeasureView.xaml の相互作用ロジック
     /// </summary>
-    public partial class MeasureView : UserControl
+    public partial class MeasureView : SampleRangeChangeableControl
     {
         class BorderScale
         {
@@ -46,16 +46,6 @@ namespace Intervallo.UI
             new BorderScale() { Threshold = 2.0, Scale = 5.0, SubBorderCount = 4 },
             new BorderScale() { Threshold = 0.0, Scale = 2.0, SubBorderCount = 1 },
         };
-
-        public static readonly DependencyProperty SampleRangeProperty = DependencyProperty.Register(
-            nameof(SampleRange),
-            typeof(Range),
-            typeof(MeasureView),
-            new FrameworkPropertyMetadata(
-                new Range(),
-                FrameworkPropertyMetadataOptions.AffectsRender
-            )
-        );
 
         public static readonly DependencyProperty SampleRateProperty = DependencyProperty.Register(
             nameof(SampleRate),
@@ -105,12 +95,6 @@ namespace Intervallo.UI
         public MeasureView()
         {
             InitializeComponent();
-        }
-
-        public Range SampleRange
-        {
-            get { return (Range)GetValue(SampleRangeProperty); }
-            set { SetValue(SampleRangeProperty, value); }
         }
 
         public int SampleRate

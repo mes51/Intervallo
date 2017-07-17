@@ -80,10 +80,9 @@ namespace Intervallo.Form
                 var wavefile = Wavefile.Read(fileName);
 
                 WaveData = new WaveData(fileName, wavefile.Data, wavefile.Fs);
-                WaveView.Wave = WaveData.Wave;
-                WaveScaler.Wave = WaveData.Wave;
+                WaveView.Wave = WaveData;
+                WaveScaler.Wave = WaveData;
                 WaveView.SampleRange = 0.To(Math.Min(30000, WaveData.Wave.Length));
-                WaveView.SampleRate = WaveData.SampleRate;
 
                 SeekPlayer = new SeekPlayer(WaveData.SampleRate);
 

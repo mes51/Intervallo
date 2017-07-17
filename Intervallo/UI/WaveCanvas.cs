@@ -1,4 +1,4 @@
-﻿using Intervallo.Audio.Filter;
+﻿using Intervallo.Audio;
 using Intervallo.Util;
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace Intervallo.UI
     {
         public static readonly DependencyProperty WaveProperty = DependencyProperty.Register(
             nameof(Wave),
-            typeof(double[]),
+            typeof(WaveData),
             typeof(WaveCanvas),
             new FrameworkPropertyMetadata(
                 null,
@@ -29,9 +29,9 @@ namespace Intervallo.UI
             )
         );
 
-        public double[] Wave
+        public WaveData Wave
         {
-            get { return (double[])GetValue(WaveProperty); }
+            get { return (WaveData)GetValue(WaveProperty); }
             set { SetValue(WaveProperty, value); }
         }
 
@@ -39,7 +39,7 @@ namespace Intervallo.UI
         {
             get
             {
-                return Wave?.Length ?? 0;
+                return Wave?.Wave.Length ?? 0;
             }
         }
 
@@ -95,7 +95,7 @@ namespace Intervallo.UI
         static void WaveChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             var waveCanvas = dependencyObject as WaveCanvas;
-            waveCanvas.LineMap = new WaveLineMap(waveCanvas.Wave);
+            waveCanvas.LineMap = new WaveLineMap(waveCanvas.Wave.Wave);
             waveCanvas.RefreshPath();
             waveCanvas.RedrawBitmap();
         }

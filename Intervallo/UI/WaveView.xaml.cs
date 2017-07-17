@@ -1,4 +1,5 @@
-﻿using Intervallo.Util;
+﻿using Intervallo.Audio;
+using Intervallo.Util;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,15 +17,6 @@ namespace Intervallo.UI
             typeof(WaveView),
             new FrameworkPropertyMetadata(
                 null,
-                FrameworkPropertyMetadataOptions.AffectsRender,
-                ViewDependOnPropertyChanged
-            )
-        );
-
-        public static readonly DependencyProperty SampleRateProperty = MeasureView.SampleRateProperty.AddOwner(
-            typeof(WaveView),
-            new FrameworkPropertyMetadata(
-                0,
                 FrameworkPropertyMetadataOptions.AffectsRender,
                 ViewDependOnPropertyChanged
             )
@@ -48,16 +40,10 @@ namespace Intervallo.UI
             InitializeComponent();
         }
 
-        public double[] Wave
+        public WaveData Wave
         {
-            get { return (double[])GetValue(WaveProperty); }
+            get { return (WaveData)GetValue(WaveProperty); }
             set { SetValue(WaveProperty, value); }
-        }
-
-        public int SampleRate
-        {
-            get { return (int)GetValue(SampleRateProperty); }
-            set { SetValue(SampleRateProperty, value); }
         }
 
         public int IndicatorPosition
@@ -70,7 +56,7 @@ namespace Intervallo.UI
         {
             get
             {
-                return Wave?.Length ?? 0;
+                return Wave?.Wave.Length ?? 0;
             }
         }
 
@@ -80,7 +66,7 @@ namespace Intervallo.UI
             {
                 var center = Indicator.ActualWidth * 0.5;
                 var x = Canvas.GetLeft(Indicator);
-                return x >= -center && x <= IndicatorCanvas.ActualWidth - center;
+                return x > -center - 0.5 && x < IndicatorCanvas.ActualWidth - center + 0.5;
             }
         }
 

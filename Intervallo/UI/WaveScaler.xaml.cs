@@ -1,4 +1,5 @@
-﻿using Intervallo.Util;
+﻿using Intervallo.Audio;
+using Intervallo.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -38,9 +39,9 @@ namespace Intervallo.UI
             InitializeComponent();
         }
 
-        public double[] Wave
+        public WaveData Wave
         {
-            get { return (double[])GetValue(WaveProperty); }
+            get { return (WaveData)GetValue(WaveProperty); }
             set { SetValue(WaveProperty, value); }
         }
 
@@ -48,7 +49,7 @@ namespace Intervallo.UI
         {
             get
             {
-                return Wave?.Length ?? 0;
+                return Wave?.Wave.Length ?? 0;
             }
         }
 

@@ -22,7 +22,7 @@
             Margin="0,0,0,17"
             MeasurePen="{Binding Source=LightGray}"
             SampleRange="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:WaveView}}, Path=SampleRange}"
-            SampleRate="{Binding ElementName=Root, Path=SampleRate}"/>
+            SampleRate="{Binding ElementName=Root, Path=Wave.SampleRate}"/>
         <local:WaveCanvas
             x:Name="WaveCanvas"
             Margin="0,25,0,17"
