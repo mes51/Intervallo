@@ -119,6 +119,7 @@
     <Compile Include="UI\Behavior\SampleScrollBehavior.cs" />
     <Compile Include="UI\GDIControl.cs" />
     <Compile Include="UI\GDILineDrawableControl.cs" />
+    <Compile Include="UI\MeasureView.cs" />
     <Compile Include="UI\Partial\WaveCanvas.cs" />
     <Compile Include="UI\SampleRangeChangeableControl.cs" />
     <Compile Include="Util\Optional.cs" />
@@ -127,9 +128,6 @@
     <Compile Include="Util\RingBuffer.cs" />
     <Compile Include="UI\IndicatorView.xaml.cs">
       <DependentUpon>IndicatorView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\MeasureView.xaml.cs">
-      <DependentUpon>MeasureView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WaveCanvas.cs" />
     <Compile Include="UI\WaveScaler.xaml.cs">
@@ -151,10 +149,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UI\IndicatorView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\MeasureView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

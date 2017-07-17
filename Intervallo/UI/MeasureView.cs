@@ -1,5 +1,4 @@
 ﻿using Intervallo.Converter;
-using Intervallo.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,21 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Intervallo.UI
 {
-    /// <summary>
-    /// MeasureView.xaml の相互作用ロジック
-    /// </summary>
-    public partial class MeasureView : SampleRangeChangeableControl
+    public class MeasureView : SampleRangeChangeableControl
     {
         class BorderScale
         {
@@ -30,6 +19,7 @@ namespace Intervallo.UI
             public double Scale { get; set; }
             public int SubBorderCount { get; set; }
         }
+
         const double TimeHorizontalGap = 20.0;
         static readonly double Log60 = Math.Log(60.0);
         static readonly BorderScale[] LargeBorderScales = new BorderScale[]
@@ -92,11 +82,6 @@ namespace Intervallo.UI
             PenConverter.Register();
         }
 
-        public MeasureView()
-        {
-            InitializeComponent();
-        }
-
         public int SampleRate
         {
             get { return (int)GetValue(SampleRateProperty); }
@@ -128,7 +113,7 @@ namespace Intervallo.UI
         {
             base.OnRender(drawingContext);
             drawingContext.PushClip(new RectangleGeometry(new Rect(0.0, 0.0, ActualWidth, ActualHeight)));
-            
+
             var textWidth = CreateTimecodeText(new TimeSpan(2)).Width * 2.0 + TimeHorizontalGap;
             var sampleInterval = ActualWidth / SampleRange.Length;
             var timePerSample = 1.0 / SampleRate;
