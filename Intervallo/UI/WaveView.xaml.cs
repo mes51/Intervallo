@@ -80,7 +80,7 @@ namespace Intervallo.UI
 
         FrameworkElement ClickedElement { get; set; }
 
-        Range PrevSampleRange { get; set; }
+        IntRange PrevSampleRange { get; set; }
 
         public void ScrollToIndicatorIfOutOfScreen()
         {
@@ -94,18 +94,19 @@ namespace Intervallo.UI
         {
             base.OnSampleRangeChanged();
 
-            RefreshScrollBar();
+            RefreshTimeScrollBar();
             RefreshIndicator();
         }
 
-        void RefreshScrollBar()
+        void RefreshTimeScrollBar()
         {
             var scrollable = ScrollableSampleCount;
-            ScrollBar.Maximum = scrollable;
-            ScrollBar.IsEnabled = scrollable > 0;
-            ScrollBar.ViewportSize = ScrollBar.IsEnabled ? 1.0 / (ScrollBar.Maximum - ScrollBar.Minimum) : 0;
-            ScrollBar.LargeChange = Math.Max(1.0, scrollable / 100.0);
-            ScrollBar.Value = SampleRange.Begin;
+            TimeScrollBar.Maximum = scrollable;
+            TimeScrollBar.IsEnabled = scrollable > 0;
+            TimeScrollBar.ViewportSize = TimeScrollBar.IsEnabled ? 1.0 / (TimeScrollBar.Maximum - TimeScrollBar.Minimum) : 0;
+            TimeScrollBar.SmallChange = Math.Max(1.0, scrollable / 10000.0);
+            TimeScrollBar.LargeChange = Math.Max(1.0, scrollable / 100.0);
+            TimeScrollBar.Value = SampleRange.Begin;
         }
 
         void RefreshIndicator()
@@ -124,11 +125,11 @@ namespace Intervallo.UI
                 return;
             }
 
-            var x = e.GetPosition(this).X;
+            var x = e.GetPosition(ClickedElement).X;
             if (ClickedElement == IndicatorMoveArea)
             {
-                IndicatorPosition = (int)Math.Round(x / ActualWidth * SampleRange.Length) + SampleRange.Begin;
-                if (x > ActualWidth)
+                IndicatorPosition = (int)Math.Round(x / IndicatorMoveArea.ActualWidth * SampleRange.Length) + SampleRange.Begin;
+                if (x > IndicatorMoveArea.ActualWidth)
                 {
                     SampleRange = SampleRange.MoveTo(IndicatorPosition - SampleRange.Length);
                 }
@@ -141,7 +142,7 @@ namespace Intervallo.UI
             else if (ClickedElement == HandScrollArea)
             {
                 var move = x - ClickPosition.X;
-                SampleRange = SampleRange.MoveTo(PrevSampleRange.Begin - (int)(move / ActualWidth * SampleRange.Length));
+                SampleRange = SampleRange.MoveTo(PrevSampleRange.Begin - (int)(move / HandScrollArea.ActualWidth * SampleRange.Length));
             }
         }
 
@@ -162,7 +163,7 @@ namespace Intervallo.UI
 
         void WaveView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            RefreshScrollBar();
+            RefreshTimeScrollBar();
         }
 
         void WaveView_MouseMove(object sender, MouseEventArgs e)
@@ -176,7 +177,7 @@ namespace Intervallo.UI
         void WaveView_MouseDown(object sender, MouseButtonEventArgs e)
         {
             ClickedElement = e.OriginalSource as FrameworkElement;
-            ClickPosition = e.GetPosition(this);
+            ClickPosition = e.GetPosition(ClickedElement);
             PrevSampleRange = SampleRange;
             Mouse.Capture(this);
 
@@ -202,17 +203,32 @@ namespace Intervallo.UI
 
         void WaveView_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (Wave == null)
-            {
-                return;
-            }
-
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
+                var scaleRange = ScaleMeasureView.ScaleRange;
+                var stretch = 0.0;
+                if (e.Delta < 0)
+                {
+                    stretch = Math.Min(scaleRange.Length * 1.1, ScaleMeasureView.MaxOctave) - scaleRange.Length;
+                }
+                else
+                {
+                    stretch = Math.Max(scaleRange.Length * 0.9, ScaleMeasureView.ScaleGap) - scaleRange.Length;
+                }
+                ScaleMeasureView.ScaleRange = scaleRange.Stretch(stretch);
+                ScaleScrollBar.SmallChange = ScaleMeasureView.ScaleRange.Length * 0.05;
+                ScaleScrollBar.LargeChange = ScaleMeasureView.ScaleRange.Length * 0.5;
+                ScaleScrollBar.Maximum = ScaleMeasureView.MaxOctave - ScaleMeasureView.ScaleRange.Length;
+                ScaleScrollBar.IsEnabled = ScaleMeasureView.ScaleRange.Length < ScaleMeasureView.MaxOctave;
+                ScaleScrollBar.ViewportSize = ScaleScrollBar.IsEnabled ? 1.0 / (ScaleScrollBar.Maximum - ScaleScrollBar.Minimum) : 0;
+            }
+            else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+            {
+                ScaleScrollBar.Value += ScaleScrollBar.SmallChange * Math.Sign(e.Delta);
             }
         }
 
-        void ScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        void TimeScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (Wave == null)
             {
@@ -222,6 +238,14 @@ namespace Intervallo.UI
             SampleRange = SampleRange.MoveTo((int)e.NewValue);
         }
 
+        void ScaleScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (ScaleMeasureView != null)
+            {
+                ScaleMeasureView.ScaleRange = ScaleMeasureView.ScaleRange.MoveTo(ScaleScrollBar.Value);
+            }
+        }
+
         static void IndicatorPositionChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             (dependencyObject as WaveView).RefreshIndicator();
@@ -229,7 +253,7 @@ namespace Intervallo.UI
 
         static void ViewDependOnPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
-            (dependencyObject as WaveView).RefreshScrollBar();
+            (dependencyObject as WaveView).RefreshTimeScrollBar();
             (dependencyObject as WaveView).RefreshIndicator();
         }
     }

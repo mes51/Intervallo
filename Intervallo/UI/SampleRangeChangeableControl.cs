@@ -16,20 +16,20 @@ namespace Intervallo.UI
     {
         public static readonly DependencyProperty SampleRangeProperty = DependencyProperty.Register(
             nameof(SampleRange),
-            typeof(Range),
+            typeof(IntRange),
             typeof(SampleRangeChangeableControl),
             new FrameworkPropertyMetadata(
-                new Range(),
+                new IntRange(),
                 FrameworkPropertyMetadataOptions.AffectsRender,
                 SampleRangeChanged
             )
         );
 
-        public Range SampleRange
+        public IntRange SampleRange
         {
             get
             {
-                return (Range)GetValue(SampleRangeProperty);
+                return (IntRange)GetValue(SampleRangeProperty);
             }
             set
             {

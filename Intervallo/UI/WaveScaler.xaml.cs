@@ -57,7 +57,7 @@ namespace Intervallo.UI
 
         Point ClickPosition { get; set; } = new Point();
 
-        Range PrevSampleRange { get; set; } = new Range();
+        IntRange PrevSampleRange { get; set; } = new IntRange();
 
         protected override void OnSampleRangeChanged()
         {

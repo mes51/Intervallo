@@ -119,9 +119,10 @@
     <Compile Include="UI\Behavior\SampleScrollBehavior.cs" />
     <Compile Include="UI\GDIControl.cs" />
     <Compile Include="UI\GDILineDrawableControl.cs" />
-    <Compile Include="UI\MeasureView.cs" />
+    <Compile Include="UI\TimeMeasureView.cs" />
     <Compile Include="UI\Partial\WaveCanvas.cs" />
     <Compile Include="UI\SampleRangeChangeableControl.cs" />
+    <Compile Include="UI\ScaleMeasureView.cs" />
     <Compile Include="Util\Optional.cs" />
     <Compile Include="Util\Range.cs" />
     <Compile Include="Util\RangeDictionary.cs" />

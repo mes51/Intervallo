@@ -11,7 +11,7 @@ using System.Windows.Media;
 
 namespace Intervallo.UI
 {
-    public class MeasureView : SampleRangeChangeableControl
+    public class TimeMeasureView : SampleRangeChangeableControl
     {
         class BorderScale
         {
@@ -40,7 +40,7 @@ namespace Intervallo.UI
         public static readonly DependencyProperty SampleRateProperty = DependencyProperty.Register(
             nameof(SampleRate),
             typeof(int),
-            typeof(MeasureView),
+            typeof(TimeMeasureView),
             new FrameworkPropertyMetadata(
                 0,
                 FrameworkPropertyMetadataOptions.AffectsRender
@@ -50,7 +50,7 @@ namespace Intervallo.UI
         public static readonly DependencyProperty HeaderHeightProperty = DependencyProperty.Register(
             nameof(HeaderHeight),
             typeof(double),
-            typeof(MeasureView),
+            typeof(TimeMeasureView),
             new FrameworkPropertyMetadata(
                 25.0,
                 FrameworkPropertyMetadataOptions.AffectsRender
@@ -60,7 +60,7 @@ namespace Intervallo.UI
         public static readonly DependencyProperty MeasurePenProperty = DependencyProperty.Register(
             nameof(MeasurePen),
             typeof(Pen),
-            typeof(MeasureView),
+            typeof(TimeMeasureView),
             new FrameworkPropertyMetadata(
                 new Pen(new SolidColorBrush(Colors.Black), 1.0),
                 FrameworkPropertyMetadataOptions.AffectsRender
@@ -70,16 +70,21 @@ namespace Intervallo.UI
         public static readonly DependencyProperty TimeTextBrushProperty = DependencyProperty.Register(
             nameof(TimeTextBrush),
             typeof(Brush),
-            typeof(MeasureView),
+            typeof(TimeMeasureView),
             new FrameworkPropertyMetadata(
                 new SolidColorBrush(Colors.Black),
                 FrameworkPropertyMetadataOptions.AffectsRender
             )
         );
 
-        static MeasureView()
+        static TimeMeasureView()
         {
             PenConverter.Register();
+        }
+
+        public TimeMeasureView()
+        {
+            RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
         }
 
         public int SampleRate

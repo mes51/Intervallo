@@ -10,11 +10,11 @@ namespace Intervallo.Util
     /// <summary>
     /// Exclude End
     /// </summary>
-    public class Range : IEnumerable<int>, IEquatable<Range>
+    public class IntRange : IEnumerable<int>, IEquatable<IntRange>
     {
-        public Range() : this(0, 0) { }
+        public IntRange() : this(0, 0) { }
 
-        public Range(int begin, int end)
+        public IntRange(int begin, int end)
         {
             if (begin > end)
             {
@@ -31,38 +31,38 @@ namespace Intervallo.Util
 
         public int Length => End - Begin;
 
-        public Range Move(int pos)
+        public IntRange Move(int pos)
         {
-            return new Range(Begin + pos, End + pos);
+            return new IntRange(Begin + pos, End + pos);
         }
 
-        public Range MoveTo(int begin)
+        public IntRange MoveTo(int begin)
         {
-            return new Range(begin, begin + Length);
+            return new IntRange(begin, begin + Length);
         }
 
-        public Range Adjust(Range bounds)
+        public IntRange Adjust(IntRange bounds)
         {
             var begin = Math.Max(Math.Min(End, bounds.End) - Length, bounds.Begin);
-            return new Range(begin, begin + Math.Min(Length, bounds.Length));
+            return new IntRange(begin, begin + Math.Min(Length, bounds.Length));
         }
 
-        public Range Stretch(int v)
+        public IntRange Stretch(int v)
         {
-            return new Range(Begin, Math.Max(End + v, Begin));
+            return new IntRange(Begin, Math.Max(End + v, Begin));
         }
 
-        public Range Intersect(Range range)
+        public IntRange Intersect(IntRange range)
         {
-            return new Range(
+            return new IntRange(
                 Math.Max(Math.Min(Begin, range.End), range.Begin),
                 Math.Max(Math.Min(End, range.End), range.Begin)
             );
         }
 
-        public Range Union(Range range)
+        public IntRange Union(IntRange range)
         {
-            return new Range(
+            return new IntRange(
                 Math.Min(Begin, range.Begin),
                 Math.Max(End, range.End)
             );
@@ -91,14 +91,124 @@ namespace Intervallo.Util
             return GetEnumerator();
         }
 
-        public bool Equals(Range other)
+        public bool Equals(IntRange other)
         {
             return Begin == other.Begin && End == other.End;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is Range && Equals((Range)obj);
+            return obj is IntRange && Equals((IntRange)obj);
+        }
+
+        public override string ToString()
+        {
+            return $"{Begin}...{End}";
+        }
+
+        public override int GetHashCode()
+        {
+            return Begin.GetHashCode() ^ End.GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// Exclude End
+    /// </summary>
+    public class DoubleRange : IEnumerable<double>, IEquatable<DoubleRange>
+    {
+        public DoubleRange() : this(0.0, 0.0, 1.0) { }
+
+        public DoubleRange(double begin, double end) : this(begin, end, 1.0) { }
+
+        public DoubleRange(double begin, double end, double enumStep)
+        {
+            if (begin > end)
+            {
+                throw new ArgumentException(nameof(begin));
+            }
+
+            Begin = begin;
+            End = end;
+            EnumStep = enumStep;
+        }
+
+        public double Begin { get; }
+
+        public double End { get; }
+
+        public double EnumStep { get; }
+
+        public double Length => End - Begin;
+
+        public DoubleRange Move(double pos)
+        {
+            return new DoubleRange(Begin + pos, End + pos);
+        }
+
+        public DoubleRange MoveTo(double begin)
+        {
+            return new DoubleRange(begin, begin + Length);
+        }
+
+        public DoubleRange Adjust(DoubleRange bounds)
+        {
+            var begin = Math.Max(Math.Min(End, bounds.End) - Length, bounds.Begin);
+            return new DoubleRange(begin, begin + Math.Min(Length, bounds.Length));
+        }
+
+        public DoubleRange Stretch(double v)
+        {
+            return new DoubleRange(Begin, Math.Max(End + v, Begin));
+        }
+
+        public DoubleRange Intersect(DoubleRange range)
+        {
+            return new DoubleRange(
+                Math.Max(Math.Min(Begin, range.End), range.Begin),
+                Math.Max(Math.Min(End, range.End), range.Begin)
+            );
+        }
+
+        public DoubleRange Union(DoubleRange range)
+        {
+            return new DoubleRange(
+                Math.Min(Begin, range.Begin),
+                Math.Max(End, range.End)
+            );
+        }
+
+        public bool IsInclude(double n)
+        {
+            return n >= Begin && n < End;
+        }
+
+        public double ClipValue(double v)
+        {
+            return Math.Max(Math.Min(v, End), Begin);
+        }
+
+        public IEnumerator<double> GetEnumerator()
+        {
+            for (var i = Begin; i < End; i += EnumStep)
+            {
+                yield return i;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public bool Equals(DoubleRange other)
+        {
+            return Begin == other.Begin && End == other.End;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is DoubleRange && Equals((DoubleRange)obj);
         }
 
         public override string ToString()
@@ -114,14 +224,34 @@ namespace Intervallo.Util
 
     public static class RangeExtention
     {
-        public static Range To(this int begin, int end)
+        public static IntRange To(this int begin, int end)
         {
-            return new Range(begin, end);
+            return new IntRange(begin, end);
         }
 
-        public static Range From(this int end, int begin)
+        public static IntRange From(this int end, int begin)
         {
-            return new Range(begin, end);
+            return new IntRange(begin, end);
+        }
+
+        public static DoubleRange To(this double begin, double end)
+        {
+            return new DoubleRange(begin, end);
+        }
+
+        public static DoubleRange To(this double begin, double end, double enumStep)
+        {
+            return new DoubleRange(begin, end, enumStep);
+        }
+
+        public static DoubleRange From(this double end, double begin)
+        {
+            return new DoubleRange(begin, end);
+        }
+
+        public static DoubleRange From(this double end, double begin, double enumStep)
+        {
+            return new DoubleRange(begin, end, enumStep);
         }
     }
 }

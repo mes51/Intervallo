@@ -13,13 +13,11 @@ namespace Intervallo.Converter
     {
         static readonly BrushConverter BrushConverter = new BrushConverter();
 
+        static bool Registered { get; set; }
+
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
-            if (sourceType == typeof(string))
-            {
-                return true;
-            }
-            return base.CanConvertFrom(context, sourceType);
+            return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
         }
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
@@ -39,7 +37,11 @@ namespace Intervallo.Converter
 
         public static void Register()
         {
-            TypeDescriptor.AddAttributes(typeof(Pen), new Attribute[] { new TypeConverterAttribute(typeof(PenConverter)) });
+            if (!Registered)
+            {
+                TypeDescriptor.AddAttributes(typeof(Pen), new Attribute[] { new TypeConverterAttribute(typeof(PenConverter)) });
+                Registered = true;
+            }
         }
     }
 }

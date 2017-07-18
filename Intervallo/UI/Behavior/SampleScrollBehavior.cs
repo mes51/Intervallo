@@ -87,7 +87,7 @@ namespace Intervallo.UI.Behavior
             {
                 ScrollSample(-e.Delta);
             }
-            else
+            else if (!Keyboard.IsKeyDown(Key.LeftCtrl) && !Keyboard.IsKeyDown(Key.RightCtrl) && !Keyboard.IsKeyDown(Key.LeftAlt) && !Keyboard.IsKeyDown(Key.RightAlt))
             {
                 var sampleRange = AssociatedObject.SampleRange;
                 if (e.Delta < 0)
