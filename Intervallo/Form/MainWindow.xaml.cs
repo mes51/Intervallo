@@ -3,11 +3,17 @@ using Intervallo.Audio.Player;
 using Intervallo.Util;
 using NAudio.Wave;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Intervallo.Plugin;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 
 namespace Intervallo.Form
 {
@@ -32,6 +38,8 @@ namespace Intervallo.Form
                 }
             };
             Timer.Stop();
+
+            LoadPlugin();
         }
 
         DispatcherTimer Timer { get; } = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, 16), IsEnabled = true };
@@ -40,9 +48,28 @@ namespace Intervallo.Form
 
         SeekPlayer SeekPlayer { get; set; }
 
-        WaveData WaveData { get; set; }
+        WaveCache WaveData { get; set; }
 
         bool PlayingBeforeIndicatorMoving { get; set; }
+
+        [ImportMany]
+        List<IAudioOperator> AudioOperatorPlugins { get; set; }
+
+        [ImportMany]
+        List<IScaleLoader> ScaleLoaderPlugins { get; set; }
+
+        void LoadPlugin()
+        {
+            try
+            {
+                using (var catalog = new DirectoryCatalog("Plugins"))
+                using (var container = new CompositionContainer(catalog))
+                {
+                    container.ComposeParts(this);
+                }
+            }
+            catch(Exception e) { }
+        }
 
         void PlayAudio()
         {
@@ -79,7 +106,7 @@ namespace Intervallo.Form
                 var fileName = (e.Data.GetData(DataFormats.FileDrop, true) as string[])[0];
                 var wavefile = Wavefile.Read(fileName);
 
-                WaveData = new WaveData(fileName, wavefile.Data, wavefile.Fs);
+                WaveData = new WaveCache(fileName, wavefile.Data, wavefile.Fs);
                 WaveView.Wave = WaveData;
                 WaveScaler.Wave = WaveData;
                 WaveView.SampleRange = 0.To(Math.Min(30000, WaveData.Wave.Length));

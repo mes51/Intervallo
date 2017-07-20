@@ -21,7 +21,37 @@ namespace Intervallo.Util
             }
         }
 
-        public abstract IEnumerator<T> GetEnumerator();
+        public T GetOrElse(T defaultValue)
+        {
+            if (IsDefined)
+            {
+                return Value;
+            }
+            else
+            {
+                return defaultValue;
+            }
+        }
+
+        public Optional<T> OrElse(Func<Optional<T>> func)
+        {
+            if (IsDefined)
+            {
+                return this;
+            }
+            else
+            {
+                return func();
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            if (IsDefined)
+            {
+                yield return Value;
+            }
+        }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -67,11 +97,6 @@ namespace Intervallo.Util
                 return false;
             }
         }
-
-        public override IEnumerator<T> GetEnumerator()
-        {
-            yield return Value;
-        }
     }
 
     public class None<T> : Optional<T>
@@ -82,7 +107,7 @@ namespace Intervallo.Util
         {
             get
             {
-                throw new NotSupportedException();
+                throw new NoElementException();
             }
         }
 
@@ -92,11 +117,6 @@ namespace Intervallo.Util
             {
                 return true;
             }
-        }
-
-        public override IEnumerator<T> GetEnumerator()
-        {
-            return Enumerable.Empty<T>().GetEnumerator();
         }
     }
 }

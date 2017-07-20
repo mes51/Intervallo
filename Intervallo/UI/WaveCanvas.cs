@@ -1,5 +1,4 @@
 ﻿using Intervallo.Audio;
-using Intervallo.Util;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -20,7 +19,7 @@ namespace Intervallo.UI
     {
         public static readonly DependencyProperty WaveProperty = DependencyProperty.Register(
             nameof(Wave),
-            typeof(WaveData),
+            typeof(WaveCache),
             typeof(WaveCanvas),
             new FrameworkPropertyMetadata(
                 null,
@@ -29,9 +28,9 @@ namespace Intervallo.UI
             )
         );
 
-        public WaveData Wave
+        public WaveCache Wave
         {
-            get { return (WaveData)GetValue(WaveProperty); }
+            get { return (WaveCache)GetValue(WaveProperty); }
             set { SetValue(WaveProperty, value); }
         }
 

@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace Intervallo.Audio
 {
     [Serializable]
-    public class WaveData
+    public class WaveCache
     {
-        public WaveData(string fileName, double[] wave, int sampleRate)
+        public WaveCache(string fileName, double[] wave, int sampleRate)
         {
             Wave = wave;
             SampleRate = sampleRate;
@@ -34,7 +34,7 @@ namespace Intervallo.Audio
 
         public override bool Equals(object obj)
         {
-            return Hash == (obj as WaveData)?.Hash;
+            return Hash == (obj as WaveCache)?.Hash;
         }
 
         public override int GetHashCode()

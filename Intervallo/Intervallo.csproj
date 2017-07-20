@@ -41,15 +41,20 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -85,6 +90,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -113,7 +119,7 @@
     <Compile Include="Audio\Player\SampleBufferedWaveProvider.cs" />
     <Compile Include="Audio\Player\SeekPlayer.cs" />
     <Compile Include="Audio\Player\WavePlayer.cs" />
-    <Compile Include="Audio\WaveData.cs" />
+    <Compile Include="Audio\WaveCache.cs" />
     <Compile Include="Audio\Wavefile.cs" />
     <Compile Include="Converter\PenConverter.cs" />
     <Compile Include="UI\Behavior\SampleScrollBehavior.cs" />
@@ -123,6 +129,8 @@
     <Compile Include="UI\Partial\WaveCanvas.cs" />
     <Compile Include="UI\SampleRangeChangeableControl.cs" />
     <Compile Include="UI\ScaleMeasureView.cs" />
+    <Compile Include="Util\EnumerableExtention.cs" />
+    <Compile Include="Util\NoElementException.cs" />
     <Compile Include="Util\Optional.cs" />
     <Compile Include="Util\Range.cs" />
     <Compile Include="Util\RangeDictionary.cs" />
@@ -137,6 +145,7 @@
     <Compile Include="UI\WaveView.xaml.cs">
       <DependentUpon>WaveView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Util\Try.cs" />
     <Page Include="Form\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -201,6 +210,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Intervallo.Plugin\Intervallo.Plugin.csproj">
+      <Project>{75855f2a-e8d7-4359-96d0-229ff3185001}</Project>
+      <Name>Intervallo.Plugin</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

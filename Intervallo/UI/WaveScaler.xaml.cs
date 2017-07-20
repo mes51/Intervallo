@@ -39,9 +39,9 @@ namespace Intervallo.UI
             InitializeComponent();
         }
 
-        public WaveData Wave
+        public WaveCache Wave
         {
-            get { return (WaveData)GetValue(WaveProperty); }
+            get { return (WaveCache)GetValue(WaveProperty); }
             set { SetValue(WaveProperty, value); }
         }
 
