@@ -63,7 +63,7 @@ namespace Intervallo.UI.Behavior
             var pos = Mouse.GetPosition(AssociatedObject);
             if (msg == WM_MOUSEHWHEEL && pos.X >= 0.0 && pos.X < AssociatedObject.ActualWidth && pos.Y >= 0.0 && pos.Y < AssociatedObject.ActualHeight)
             {
-                var delta = wParam.ToInt32() >> 16;
+                var delta = unchecked((int)wParam.ToInt64()) >> 16;
                 ScrollSample(delta);
             }
 

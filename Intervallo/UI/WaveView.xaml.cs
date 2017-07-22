@@ -215,7 +215,7 @@ namespace Intervallo.UI
                 {
                     stretch = Math.Max(scaleRange.Length * 0.9, ScaleMeasureView.ScaleGap) - scaleRange.Length;
                 }
-                ScaleMeasureView.ScaleRange = scaleRange.Stretch(stretch);
+                ScaleMeasureView.ScaleRange = scaleRange.Stretch(stretch).Move(stretch * -0.5);
                 ScaleScrollBar.SmallChange = ScaleMeasureView.ScaleRange.Length * 0.05;
                 ScaleScrollBar.LargeChange = ScaleMeasureView.ScaleRange.Length * 0.5;
                 ScaleScrollBar.Maximum = ScaleMeasureView.MaxOctave - ScaleMeasureView.ScaleRange.Length;

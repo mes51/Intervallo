@@ -39,7 +39,7 @@ namespace Intervallo.Audio.Player
 
         public double[] Wave { get; }
 
-        public LoopRange LoopRange { get; set; }
+        public IntRange LoopRange { get; set; }
 
         public bool EnableLoop { get; set; }
 
@@ -76,10 +76,10 @@ namespace Intervallo.Audio.Player
             var beginPosition = SamplePosition;
             var beginTotalReadSamples = TotalReadSamples;
 
-            var loopRange = LoopRange ?? new LoopRange(0, Wave.Length);
-            if (SamplePosition < loopRange.BeginSample * BytePerSample)
+            var loopRange = LoopRange ?? new IntRange(0, Wave.Length);
+            if (SamplePosition < loopRange.Begin * BytePerSample)
             {
-                SamplePosition = loopRange.BeginSample * BytePerSample;
+                SamplePosition = loopRange.Begin * BytePerSample;
             }
 
             var totalSamples = 0;
@@ -89,14 +89,14 @@ namespace Intervallo.Audio.Player
                 ms.Seek(offset, SeekOrigin.Begin);
                 while (totalSamples < maxSamples)
                 {
-                    var canRead = (int)Math.Min(maxSamples - totalSamples, loopRange.EndSample - SamplePosition);
+                    var canRead = (int)Math.Min(maxSamples - totalSamples, loopRange.End - SamplePosition);
                     if (canRead <= 0)
                     {
                         if (EnableLoop)
                         {
                             History.Add(new ReadHistory(beginPosition, beginTotalReadSamples, totalSamples - (beginTotalReadSamples - TotalReadSamples)));
-                            SamplePosition = loopRange.BeginSample;
-                            beginPosition = loopRange.BeginSample;
+                            SamplePosition = loopRange.Begin;
+                            beginPosition = loopRange.Begin;
                             beginTotalReadSamples = TotalReadSamples + totalSamples;
                         }
                         else

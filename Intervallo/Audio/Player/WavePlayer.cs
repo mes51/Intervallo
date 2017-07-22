@@ -1,4 +1,5 @@
-﻿using NAudio.CoreAudioApi;
+﻿using Intervallo.Util;
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace Intervallo.Audio.Player
 
         public int SampleRate { get; }
 
-        public LoopRange LoopRange
+        public IntRange LoopRange
         {
             get
             {
