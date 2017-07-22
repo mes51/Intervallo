@@ -33,6 +33,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,6 +50,18 @@
     <Compile Include="VsqxLoader.cs" />
     <Compile Include="WorldOperator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WORLD\CheapTrick.cs" />
+    <Compile Include="WORLD\Common.cs" />
+    <Compile Include="WORLD\D4C.cs" />
+    <Compile Include="ExtentionMethods.cs" />
+    <Compile Include="WORLD\FFT.cs" />
+    <Compile Include="WORLD\Harvest.cs" />
+    <Compile Include="WORLD\MatlabFunctions.cs" />
+    <Compile Include="Parallel.cs" />
+    <Compile Include="WORLD\SubSequence.cs" />
+    <Compile Include="WORLD\Synthesis.cs" />
+    <Compile Include="Util.cs" />
+    <Compile Include="WORLD\XorShift.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Intervallo.Plugin\Intervallo.Plugin.csproj">
