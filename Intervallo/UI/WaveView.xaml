@@ -16,6 +16,7 @@
                                     MouseUp="WaveView_MouseUp"
                                     MouseWheel="WaveView_MouseWheel">
     <Grid>
+        <Border BorderBrush="LightGray" BorderThickness="1"/>
         <ScrollBar x:Name="TimeScrollBar" Height="17" VerticalAlignment="Bottom" Orientation="Horizontal" ValueChanged="TimeScrollBar_ValueChanged" Margin="0,0,17,0"/>
         <ScrollBar x:Name="ScaleScrollBar" Width="17" Orientation="Vertical" ValueChanged="ScaleScrollBar_ValueChanged" Margin="0,0,0,17" HorizontalAlignment="Right" Maximum="11" SmallChange="0.5" Value="4.5" RenderTransformOrigin="0.5,0.5">
             <ScrollBar.RenderTransform>
@@ -31,13 +32,13 @@
         <Grid Margin="0,0,17,17">
             <local:TimeMeasureView
                 MeasurePen="{Binding Source=LightGray}"
-                SampleRange="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:WaveView}}, Path=SampleRange}"
+                SampleRange="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:WaveView}}, Path=SampleRange, Mode=OneWay}"
                 SampleRate="{Binding ElementName=Root, Path=Wave.SampleRate}" Margin="35,0,0,0"/>
             <local:WaveCanvas
                 x:Name="WaveCanvas"
                 Margin="35,25,0,0"
                 Wave="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:WaveView}}, Path=Wave}"
-                SampleRange="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:WaveView}}, Path=SampleRange}"/>
+                SampleRange="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:WaveView}}, Path=SampleRange, Mode=OneWay}"/>
             <local:ScaleMeasureView
                 x:Name="ScaleMeasureView"
                 Margin="0,25,0,0"

@@ -14,6 +14,7 @@ using System.Windows.Threading;
 using Intervallo.Plugin;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using Intervallo.Cache;
 
 namespace Intervallo.Form
 {
@@ -23,6 +24,7 @@ namespace Intervallo.Form
     public partial class MainWindow : Window
     {
         const int DoubleSize = sizeof(double);
+        const string PluginDirectory = "Plugins";
 
         public MainWindow()
         {
@@ -30,16 +32,17 @@ namespace Intervallo.Form
 
             Timer.Tick += (sender, e) =>
             {
-                var nowIndicatorIsVisible = WaveView.IndicatorIsVisible;
-                WaveView.IndicatorPosition = Player.GetCurrentSample();
-                if (nowIndicatorIsVisible && nowIndicatorIsVisible != WaveView.IndicatorIsVisible)
+                var nowIndicatorIsVisible = MainView.IndicatorIsVisible;
+                MainView.IndicatorPosition = Player.GetCurrentSample();
+                if (nowIndicatorIsVisible && nowIndicatorIsVisible != MainView.IndicatorIsVisible)
                 {
-                    WaveView.ScrollToIndicatorIfOutOfScreen();
+                    MainView.ScrollToIndicatorIfOutOfScreen();
                 }
             };
             Timer.Stop();
 
             LoadPlugin();
+            CacheFile.CreateCacheDirectory();
         }
 
         DispatcherTimer Timer { get; } = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, 16), IsEnabled = true };
@@ -48,7 +51,7 @@ namespace Intervallo.Form
 
         SeekPlayer SeekPlayer { get; set; }
 
-        WaveCache WaveData { get; set; }
+        Wavefile WaveData { get; set; }
 
         bool PlayingBeforeIndicatorMoving { get; set; }
 
@@ -62,7 +65,7 @@ namespace Intervallo.Form
         {
             try
             {
-                using (var catalog = new DirectoryCatalog("Plugins"))
+                using (var catalog = new DirectoryCatalog(PluginDirectory))
                 using (var container = new CompositionContainer(catalog))
                 {
                     container.ComposeParts(this);
@@ -81,12 +84,47 @@ namespace Intervallo.Form
         {
             Player.Pause();
             Timer.Stop();
-            WaveView.IndicatorPosition = Player.GetCurrentSample();
+            MainView.IndicatorPosition = Player.GetCurrentSample();
         }
 
-        void WaveCanvas_PreviewDragOver(object sender, DragEventArgs e)
+        async void LoadWave(string filePath)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop, true) && (e.Data.GetData(DataFormats.FileDrop, true) as string[])?.Length == 1)
+            try
+            {
+                WaveData = Wavefile.Read(filePath);
+
+                var waveLineCache = WaveLineCache.CreateCache(WaveData.Data, WaveData.Fs, WaveData.Hash);
+
+                Dispatcher.Invoke(() =>
+                {
+                    MainView.Wave = waveLineCache;
+                    MainView.SampleRange = 0.To(30000);
+
+                    SeekPlayer = new SeekPlayer(WaveData.Fs);
+
+                    Player = new WavePlayer(WaveData.Data, WaveData.Fs);
+                    Player.EnableLoop = true;
+                    Player.PlaybackStopped += (s, ea) =>
+                    {
+                        Player.SeekToStart();
+                        MainView.IndicatorPosition = Player.GetCurrentSample();
+                    };
+                });
+            }
+            catch (InvalidDataException ex)
+            {
+
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        void Window_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            var filePaths = e.Data.GetData(DataFormats.FileDrop, true) as string[];
+            if (e.Data.GetDataPresent(DataFormats.FileDrop, true) && Path.GetExtension(filePaths?[0] ?? "") == ".wav")
             {
                 e.Effects = DragDropEffects.Copy;
             }
@@ -96,35 +134,12 @@ namespace Intervallo.Form
             }
         }
 
-        void WaveCanvas_Drop(object sender, DragEventArgs e)
+        void Window_Drop(object sender, DragEventArgs e)
         {
-            try
-            {
-                Player?.Stop();
-                Player?.Dispose();
+            Player?.Stop();
+            Player?.Dispose();
 
-                var fileName = (e.Data.GetData(DataFormats.FileDrop, true) as string[])[0];
-                var wavefile = Wavefile.Read(fileName);
-
-                WaveData = new WaveCache(fileName, wavefile.Data, wavefile.Fs);
-                WaveView.Wave = WaveData;
-                WaveScaler.Wave = WaveData;
-                WaveView.SampleRange = 0.To(Math.Min(30000, WaveData.Wave.Length));
-
-                SeekPlayer = new SeekPlayer(WaveData.SampleRate);
-
-                Player = new WavePlayer(WaveData.Wave, WaveData.SampleRate);
-                Player.EnableLoop = true;
-                Player.PlaybackStopped += (s, ea) =>
-                {
-                    Player.SeekToStart();
-                    WaveView.IndicatorPosition = Player.GetCurrentSample();
-                };
-            }
-            catch (InvalidDataException ex)
-            {
-
-            }
+            LoadWave((e.Data.GetData(DataFormats.FileDrop, true) as string[])[0]);
         }
 
         void Window_KeyDown(object sender, KeyEventArgs e)
@@ -151,15 +166,15 @@ namespace Intervallo.Form
             SeekPlayer?.Dispose();
         }
 
-        void WaveView_IndicatorMoved(object sender, EventArgs e)
+        void MainView_IndicatorMoved(object sender, EventArgs e)
         {
-            Player.SamplePosition = WaveView.IndicatorPosition;
-            var samples = new double[(int)(WaveData.SampleRate * 0.05)];
-            Buffer.BlockCopy(WaveData.Wave, WaveView.IndicatorPosition * DoubleSize, samples, 0, Math.Min(samples.Length, WaveData.Wave.Length - WaveView.IndicatorPosition) * DoubleSize);
+            Player.SamplePosition = MainView.IndicatorPosition;
+            var samples = new double[(int)(WaveData.Fs * 0.05)];
+            Buffer.BlockCopy(WaveData.Data, MainView.IndicatorPosition * DoubleSize, samples, 0, Math.Min(samples.Length, WaveData.Data.Length - MainView.IndicatorPosition) * DoubleSize);
             SeekPlayer.AddSample(samples);
         }
 
-        void WaveView_IndicatorMoveFinish(object sender, EventArgs e)
+        void MainView_IndicatorMoveFinish(object sender, EventArgs e)
         {
             if (WaveData == null)
             {
@@ -173,7 +188,7 @@ namespace Intervallo.Form
             }
         }
 
-        void WaveView_IndicatorMoveStart(object sender, EventArgs e)
+        void MainView_IndicatorMoveStart(object sender, EventArgs e)
         {
             if (WaveData == null)
             {

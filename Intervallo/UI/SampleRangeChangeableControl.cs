@@ -20,7 +20,7 @@ namespace Intervallo.UI
             typeof(SampleRangeChangeableControl),
             new FrameworkPropertyMetadata(
                 new IntRange(),
-                FrameworkPropertyMetadataOptions.AffectsRender,
+                FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsArrange,
                 SampleRangeChanged
             )
         );

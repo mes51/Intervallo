@@ -1,4 +1,4 @@
-﻿using Intervallo.Audio;
+﻿using Intervallo.Cache;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -19,18 +19,17 @@ namespace Intervallo.UI
     {
         public static readonly DependencyProperty WaveProperty = DependencyProperty.Register(
             nameof(Wave),
-            typeof(WaveCache),
+            typeof(WaveLineCache),
             typeof(WaveCanvas),
             new FrameworkPropertyMetadata(
                 null,
-                FrameworkPropertyMetadataOptions.AffectsRender,
-                WaveChanged
+                FrameworkPropertyMetadataOptions.AffectsRender
             )
         );
 
-        public WaveCache Wave
+        public WaveLineCache Wave
         {
-            get { return (WaveCache)GetValue(WaveProperty); }
+            get { return (WaveLineCache)GetValue(WaveProperty); }
             set { SetValue(WaveProperty, value); }
         }
 
@@ -38,7 +37,7 @@ namespace Intervallo.UI
         {
             get
             {
-                return Wave?.Wave.Length ?? 0;
+                return Wave?.SampleCount ?? 0;
             }
         }
 
@@ -46,11 +45,9 @@ namespace Intervallo.UI
         {
             get
             {
-                return WaveLineMap.DefaultPathHeight;
+                return WaveLineCache.DefaultPathHeight;
             }
         }
-
-        WaveLineMap LineMap { get; set; }
 
         public WaveCanvas()
         {
@@ -67,7 +64,7 @@ namespace Intervallo.UI
             }
 
             var samplesPerLine = SampleRange.Length / ActualWidth;
-            var kvp = LineMap.WaveLines.GetPair(samplesPerLine);
+            var kvp = Wave.WaveLines.GetPair(samplesPerLine);
 
             switch(kvp.Value.Type)
             {
@@ -89,14 +86,6 @@ namespace Intervallo.UI
                     }
                     break;
             }
-        }
-
-        static void WaveChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
-        {
-            var waveCanvas = dependencyObject as WaveCanvas;
-            waveCanvas.LineMap = new WaveLineMap(waveCanvas.Wave.Wave);
-            waveCanvas.RefreshPath();
-            waveCanvas.RedrawBitmap();
         }
     }
 }

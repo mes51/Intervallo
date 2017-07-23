@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -66,11 +67,14 @@ namespace Intervallo.Audio
 
         public double[] Data { get; }
 
-        public Wavefile(int fs, int bit, double[] data)
+        public string Hash { get; }
+
+        public Wavefile(int fs, int bit, double[] data, string hash)
         {
             Fs = fs;
             Bit = bit;
             Data = data;
+            Hash = hash;
         }
 
         /// <summary>
@@ -117,7 +121,14 @@ namespace Intervallo.Audio
                         break;
                 }
 
-                return new Wavefile((int)header.Format.nSamplesPerSec, header.Format.wBitsPerSample, waveData);
+                var hash = "";
+                fs.Seek(0, SeekOrigin.Begin);
+                using (var algorithm = SHA256.Create())
+                {
+                    hash = string.Join("", algorithm.ComputeHash(fs).Select((x) => x.ToString("X2")));
+                }
+
+                return new Wavefile((int)header.Format.nSamplesPerSec, header.Format.wBitsPerSample, waveData, hash);
             }
         }
 

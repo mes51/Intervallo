@@ -33,7 +33,19 @@ namespace Intervallo.Util
             }
         }
 
-        public Optional<T> OrElse(Func<Optional<T>> func)
+        public T GetOrElse(Func<T> defaultValue)
+        {
+            if (IsDefined)
+            {
+                return Value;
+            }
+            else
+            {
+                return defaultValue();
+            }
+        }
+
+        public Optional<T> OrElse(Optional<T> defaultValue)
         {
             if (IsDefined)
             {
@@ -41,7 +53,19 @@ namespace Intervallo.Util
             }
             else
             {
-                return func();
+                return defaultValue;
+            }
+        }
+
+        public Optional<T> OrElse(Func<Optional<T>> defaultValue)
+        {
+            if (IsDefined)
+            {
+                return this;
+            }
+            else
+            {
+                return defaultValue();
             }
         }
 

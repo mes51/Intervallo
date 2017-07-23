@@ -10,27 +10,18 @@
         mc:Ignorable="d"
         AllowDrop="True"
         Title="MainWindow" Height="610" Width="945"
-        Drop="WaveCanvas_Drop"
-        PreviewDragOver="WaveCanvas_PreviewDragOver"
+        Drop="Window_Drop"
+        PreviewDragOver="Window_PreviewDragOver"
         KeyDown="Window_KeyDown"
         Closing="Window_Closing">
     <Grid>
         <Button x:Name="Save" Content="Save" Margin="0,0,10,34" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom"/>
         <Menu x:Name="menu" Height="24" VerticalAlignment="Top"/>
         <StatusBar Height="24" VerticalAlignment="Bottom"/>
-        <Grid Name="WaveCanvas" Margin="10,104,10,59">
-            <Border BorderBrush="LightGray" BorderThickness="1"/>
-            <UI:WaveView
-                x:Name="WaveView"
-                IndicatorMoved="WaveView_IndicatorMoved"
-                IndicatorMoveFinish="WaveView_IndicatorMoveFinish"
-                IndicatorMoveStart="WaveView_IndicatorMoveStart"/>
-        </Grid>
-        <UI:WaveScaler
-            Margin="10,29,10,0"
-            VerticalAlignment="Top"
-            x:Name="WaveScaler"
-            Height="70"
-            SampleRange="{Binding ElementName=WaveView, Path=SampleRange, Mode=TwoWay}"/>
+        <UI:MainView Margin="10,29,10,59"
+                     x:Name="MainView"
+                     IndicatorMoved="MainView_IndicatorMoved"
+                     IndicatorMoveFinish="MainView_IndicatorMoveFinish"
+                     IndicatorMoveStart="MainView_IndicatorMoveStart"/>
     </Grid>
 </Window>

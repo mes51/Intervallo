@@ -62,7 +62,7 @@ namespace Intervallo.Util
             return GetEnumerator();
         }
 
-        public static Try<T> F<T>(Func<T> func)
+        public static Try<T> F(Func<T> func)
         {
             try
             {

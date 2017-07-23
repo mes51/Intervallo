@@ -118,14 +118,17 @@
     <Compile Include="Audio\Player\SampleBufferedWaveProvider.cs" />
     <Compile Include="Audio\Player\SeekPlayer.cs" />
     <Compile Include="Audio\Player\WavePlayer.cs" />
-    <Compile Include="Audio\WaveCache.cs" />
     <Compile Include="Audio\Wavefile.cs" />
+    <Compile Include="Cache\CacheFile.cs" />
+    <Compile Include="Cache\WaveLineCache.cs" />
     <Compile Include="Converter\PenConverter.cs" />
     <Compile Include="UI\Behavior\SampleScrollBehavior.cs" />
     <Compile Include="UI\GDIControl.cs" />
     <Compile Include="UI\GDILineDrawableControl.cs" />
+    <Compile Include="UI\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\TimeMeasureView.cs" />
-    <Compile Include="UI\Partial\WaveCanvas.cs" />
     <Compile Include="UI\SampleRangeChangeableControl.cs" />
     <Compile Include="UI\ScaleMeasureView.cs" />
     <Compile Include="Util\EnumerableExtention.cs" />
@@ -158,6 +161,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UI\IndicatorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

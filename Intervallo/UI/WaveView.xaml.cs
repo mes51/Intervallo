@@ -1,4 +1,4 @@
-﻿using Intervallo.Audio;
+﻿using Intervallo.Cache;
 using Intervallo.Util;
 using System;
 using System.Windows;
@@ -17,7 +17,7 @@ namespace Intervallo.UI
             typeof(WaveView),
             new FrameworkPropertyMetadata(
                 null,
-                FrameworkPropertyMetadataOptions.AffectsRender,
+                FrameworkPropertyMetadataOptions.AffectsArrange,
                 ViewDependOnPropertyChanged
             )
         );
@@ -28,7 +28,7 @@ namespace Intervallo.UI
             typeof(WaveView),
             new FrameworkPropertyMetadata(
                 0,
-                FrameworkPropertyMetadataOptions.AffectsRender,
+                FrameworkPropertyMetadataOptions.AffectsArrange,
                 IndicatorPositionChanged
             )
         );
@@ -40,9 +40,9 @@ namespace Intervallo.UI
             InitializeComponent();
         }
 
-        public WaveCache Wave
+        public WaveLineCache Wave
         {
-            get { return (WaveCache)GetValue(WaveProperty); }
+            get { return (WaveLineCache)GetValue(WaveProperty); }
             set { SetValue(WaveProperty, value); }
         }
 
@@ -56,7 +56,7 @@ namespace Intervallo.UI
         {
             get
             {
-                return Wave?.Wave.Length ?? 0;
+                return Wave?.SampleCount ?? 0;
             }
         }
 

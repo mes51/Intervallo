@@ -16,6 +16,7 @@ namespace Intervallo.Util
         CloseInterval
     }
 
+    [Serializable]
     public class RangeDictionary<TKey, TValue> : IDictionary<TKey, TValue> where TKey : IComparable<TKey>
     {
         public RangeDictionary(IntervalMode mode)

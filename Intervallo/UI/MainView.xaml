@@ -1,0 +1,28 @@
+﻿<local:SampleRangeChangeableControl x:Class="Intervallo.UI.MainView"
+                                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                                    xmlns:local="clr-namespace:Intervallo.UI"
+                                    xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
+                                    mc:Ignorable="d"
+                                    x:Name="Root"
+                                    d:DesignHeight="610" d:DesignWidth="945">
+    <Grid>
+        <local:WaveView
+                x:Name="WaveView"
+                Margin="0,75,0,0"
+                IndicatorPosition="{Binding ElementName=Root, Path=IndicatorPosition, Mode=TwoWay}"
+                SampleRange="{Binding ElementName=Root, Path=SampleRange, Mode=TwoWay}"
+                Wave="{Binding ElementName=Root, Path=Wave}"
+                IndicatorMoved="WaveView_IndicatorMoved"
+                IndicatorMoveFinish="WaveView_IndicatorMoveFinish"
+                IndicatorMoveStart="WaveView_IndicatorMoveStart"/>
+        <local:WaveScaler
+            VerticalAlignment="Top"
+            x:Name="WaveScaler"
+            Height="70"
+            SampleRange="{Binding ElementName=Root, Path=SampleRange, Mode=TwoWay}"
+            Wave="{Binding ElementName=Root, Path=Wave}"/>
+    </Grid>
+</local:SampleRangeChangeableControl>
