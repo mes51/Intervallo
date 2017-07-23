@@ -118,13 +118,20 @@ namespace Intervallo.Form
                         MainView.MessageText = TextResources.ProgressMessageAnalyzingWave;
                     });
 
-                    var aa = AudioOperatorPlugins[0].Analyze(new Plugin.WaveData(WaveData.Data, WaveData.Fs), 5.0, (p) =>
-                    {
-                        Dispatcher.Invoke(() =>
+                    var aaCache = CacheFile.FindCache<AnalyzedAudioCache>(WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName)
+                        .GetOrElse(() =>
                         {
-                            MainView.Progress = p * 0.75 + 25.0;
+                            var aa = AudioOperatorPlugins[0].Analyze(new Plugin.WaveData(WaveData.Data, WaveData.Fs), 5.0, (p) =>
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    MainView.Progress = p * 0.75 + 25.0;
+                                });
+                            });
+                            var result = new AnalyzedAudioCache(AudioOperatorPlugins[0].GetType(), aa, WaveData.Hash);
+                            CacheFile.SaveCache(result, WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName);
+                            return result;
                         });
-                    });
 
                     Dispatcher.Invoke(() =>
                     {

@@ -119,6 +119,7 @@
     <Compile Include="Audio\Player\SeekPlayer.cs" />
     <Compile Include="Audio\Player\WavePlayer.cs" />
     <Compile Include="Audio\Wavefile.cs" />
+    <Compile Include="Cache\AnalyzedAudioCache.cs" />
     <Compile Include="Cache\CacheFile.cs" />
     <Compile Include="Cache\WaveLineCache.cs" />
     <Compile Include="Converter\PenConverter.cs" />

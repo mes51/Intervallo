@@ -53,6 +53,7 @@ namespace Intervallo.Cache
                 using (FileStream fs = new FileStream(filePath, FileMode.Open))
                 {
                     var formatter = new BinaryFormatter();
+                    formatter.AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full;
                     return Optional<T>.FromNull((T)formatter.Deserialize(fs));
                 }
             }
