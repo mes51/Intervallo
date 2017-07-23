@@ -20,7 +20,7 @@ namespace Intervallo.Plugin
         /// <param name="framePeriod">音声の切り出し単位(ms)</param>
         /// <param name="notifyProgress">進捗の通知を行うメソッド(%)</param>
         /// <returns>解析された音声データ</returns>
-        Task<AnalyzedAudio> Analyze(WaveData wave, double framePeriod, Action<double> notifyProgress);
+        AnalyzedAudio Analyze(WaveData wave, double framePeriod, Action<double> notifyProgress);
 
         /// <summary>
         /// 音声の合成を行います
@@ -28,6 +28,6 @@ namespace Intervallo.Plugin
         /// <param name="analyzedAudio">操作済みの解析された音声データ</param>
         /// <param name="notifyProgress">進捗の通知を行うメソッド(%)</param>
         /// <returns>合成された音声データ</returns>
-        Task<WaveData> Synthesize(AnalyzedAudio analyzedAudio, Action<double> notifyProgress);
+        WaveData Synthesize(AnalyzedAudio analyzedAudio, Action<double> notifyProgress);
     }
 }

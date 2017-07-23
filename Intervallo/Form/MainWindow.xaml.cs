@@ -15,6 +15,8 @@ using Intervallo.Plugin;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using Intervallo.Cache;
+using System.Threading.Tasks;
+using Intervallo.Properties;
 
 namespace Intervallo.Form
 {
@@ -89,36 +91,55 @@ namespace Intervallo.Form
 
         async void LoadWave(string filePath)
         {
-            try
+            await Task.Run(() =>
             {
-                WaveData = Wavefile.Read(filePath);
-
-                var waveLineCache = WaveLineCache.CreateCache(WaveData.Data, WaveData.Fs, WaveData.Hash);
-
-                Dispatcher.Invoke(() =>
+                try
                 {
-                    MainView.Wave = waveLineCache;
-                    MainView.SampleRange = 0.To(30000);
+                    WaveData = Wavefile.Read(filePath);
 
-                    SeekPlayer = new SeekPlayer(WaveData.Fs);
+                    var waveLineCache = WaveLineCache.CreateCache(WaveData.Data, WaveData.Fs, WaveData.Hash);
 
-                    Player = new WavePlayer(WaveData.Data, WaveData.Fs);
-                    Player.EnableLoop = true;
-                    Player.PlaybackStopped += (s, ea) =>
+                    Dispatcher.Invoke(() =>
                     {
-                        Player.SeekToStart();
-                        MainView.IndicatorPosition = Player.GetCurrentSample();
-                    };
-                });
-            }
-            catch (InvalidDataException ex)
-            {
+                        MainView.Wave = waveLineCache;
+                        MainView.SampleRange = 0.To(30000);
 
-            }
-            catch (Exception e)
-            {
+                        SeekPlayer = new SeekPlayer(WaveData.Fs);
 
-            }
+                        Player = new WavePlayer(WaveData.Data, WaveData.Fs);
+                        Player.EnableLoop = true;
+                        Player.PlaybackStopped += (s, ea) =>
+                        {
+                            Player.SeekToStart();
+                            MainView.IndicatorPosition = Player.GetCurrentSample();
+                        };
+
+                        MainView.Progress = 25.0;
+                        MainView.MessageText = TextResources.ProgressMessageAnalyzingWave;
+                    });
+
+                    var aa = AudioOperatorPlugins[0].Analyze(new Plugin.WaveData(WaveData.Data, WaveData.Fs), 5.0, (p) =>
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            MainView.Progress = p * 0.75 + 25.0;
+                        });
+                    });
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        MainView.Lock = false;
+                    });
+                }
+                catch (InvalidDataException ex)
+                {
+
+                }
+                catch (Exception e)
+                {
+
+                }
+            });
         }
 
         void Window_PreviewDragOver(object sender, DragEventArgs e)
@@ -139,6 +160,9 @@ namespace Intervallo.Form
             Player?.Stop();
             Player?.Dispose();
 
+            MainView.MessageText = TextResources.ProgressMessageLoadWave;
+            MainView.Progress = 0.0;
+            MainView.Lock = true;
             LoadWave((e.Data.GetData(DataFormats.FileDrop, true) as string[])[0]);
         }
 

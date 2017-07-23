@@ -1,4 +1,5 @@
 ﻿using Intervallo.Cache;
+using Intervallo.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +42,28 @@ namespace Intervallo.UI
             typeof(MainView),
             new FrameworkPropertyMetadata(
                 false,
-                FrameworkPropertyMetadataOptions.AffectsRender
+                FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsArrange,
+                LockChanged
+            )
+        );
+
+        public static readonly DependencyProperty ProgressProperty = DependencyProperty.Register(
+            nameof(Progress),
+            typeof(double),
+            typeof(MainView),
+            new FrameworkPropertyMetadata(
+                0.0,
+                FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsArrange
+            )
+        );
+
+        public static readonly DependencyProperty MessageTextProperty = DependencyProperty.Register(
+            nameof(MessageText),
+            typeof(string),
+            typeof(MainView),
+            new FrameworkPropertyMetadata(
+                "Message...",
+                FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange
             )
         );
 
@@ -80,6 +102,18 @@ namespace Intervallo.UI
         {
             get { return (bool)GetValue(LockProperty); }
             set { SetValue(LockProperty, value); }
+        }
+
+        public double Progress
+        {
+            get { return (double)GetValue(ProgressProperty); }
+            set { SetValue(ProgressProperty, Math.Min(100.0, Math.Max(0, value))); }
+        }
+
+        public string MessageText
+        {
+            get { return (string)GetValue(MessageTextProperty); }
+            set { SetValue(MessageTextProperty, value ?? ""); }
         }
 
         public bool IndicatorIsVisible
@@ -123,6 +157,11 @@ namespace Intervallo.UI
         void WaveView_IndicatorMoveFinish(object sender, EventArgs e)
         {
             OnIndicatorMoveFinish();
+        }
+
+        static void LockChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+
         }
     }
 }

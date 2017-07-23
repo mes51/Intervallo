@@ -4,10 +4,26 @@
                                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                                     xmlns:local="clr-namespace:Intervallo.UI"
+                                    xmlns:s="clr-namespace:Intervallo.UI.Shape"
                                     xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
                                     mc:Ignorable="d"
                                     x:Name="Root"
                                     d:DesignHeight="610" d:DesignWidth="945">
+    <local:SampleRangeChangeableControl.Resources>
+        <Style x:Key="EllipseStyle" TargetType="ProgressBar">
+            <Setter Property="Margin" Value="0,0,0,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid>
+                            <Ellipse Name="Back" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding BorderThickness}" Fill="{TemplateBinding Background}" />
+                            <s:Arc x:Name="Progress" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding BorderThickness}" Fill="{TemplateBinding Foreground}" FinishAngle="{c:Binding Value*3.6, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </local:SampleRangeChangeableControl.Resources>
     <Grid>
         <local:WaveView
                 x:Name="WaveView"
@@ -24,5 +40,13 @@
             Height="70"
             SampleRange="{Binding ElementName=Root, Path=SampleRange, Mode=TwoWay}"
             Wave="{Binding ElementName=Root, Path=Wave}"/>
+        <Grid Margin="{Binding ElementName=WaveView, Path=Margin, Mode=OneWay}" Visibility="{c:Binding ElementName=Root, Path=Lock, FalseToVisibility=Hidden}">
+            <Rectangle Fill="#3F9C9C9C"/>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" Background="#FF9C9C9C" Visibility="{c:Binding ElementName=Root, Path='MessageText.Length!=0', FalseToVisibility=Hidden}">
+                <TextBlock x:Name="Message" TextWrapping="Wrap" VerticalAlignment="Center" Margin="4" Text="{Binding ElementName=Root, Path=MessageText, Mode=OneWay}"/>
+                <ProgressBar Height="20" Width="20" Style="{StaticResource EllipseStyle}" Value="{Binding ElementName=Root, Path=Progress, Mode=OneWay}" BorderThickness="0.5" Margin="4"/>
+            </StackPanel>
+        </Grid>
+        <Rectangle Height="{Binding ElementName=WaveScaler, Path=Height}" Fill="#3F9C9C9C" VerticalAlignment="Top" Visibility="{c:Binding ElementName=Root, Path=Lock, FalseToVisibility=Hidden}"/>
     </Grid>
 </local:SampleRangeChangeableControl>

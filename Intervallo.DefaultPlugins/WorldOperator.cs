@@ -22,7 +22,7 @@ namespace Intervallo.DefaultPlugins
 
         public Version Version => new Version(((AssemblyVersionAttribute)typeof(WorldOperator).Assembly.GetCustomAttribute(typeof(AssemblyVersionAttribute))).Version);
 
-        public async Task<AnalyzedAudio> Analyze(WaveData wave, double framePeriod, Action<double> notifyProgress)
+        public AnalyzedAudio Analyze(WaveData wave, double framePeriod, Action<double> notifyProgress)
         {
             // F0 estimate
 
@@ -70,7 +70,7 @@ namespace Intervallo.DefaultPlugins
             );
         }
 
-        public async Task<WaveData> Synthesize(AnalyzedAudio analyzedAudio, Action<double> notifyProgress)
+        public WaveData Synthesize(AnalyzedAudio analyzedAudio, Action<double> notifyProgress)
         {
             var waa = analyzedAudio as WorldAnalyzedAudio;
 
