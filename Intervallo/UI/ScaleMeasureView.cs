@@ -102,7 +102,7 @@ namespace Intervallo.UI
         public DoubleRange ScaleRange
         {
             get { return (DoubleRange)GetValue(ScaleRangeProperty); }
-            set { SetValue(ScaleRangeProperty, value); }
+            set { SetValue(ScaleRangeProperty, value.Adjust(MaxRange)); }
         }
 
         public OctaveType OctaveType

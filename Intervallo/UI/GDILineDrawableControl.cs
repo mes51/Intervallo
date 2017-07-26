@@ -18,7 +18,18 @@ namespace Intervallo.UI
             new FrameworkPropertyMetadata(
                 Color.Black,
                 FrameworkPropertyMetadataOptions.AffectsRender,
-                PenColorChanged
+                PenChanged
+            )
+        );
+
+        public static readonly DependencyProperty PenWidthProperty = DependencyProperty.Register(
+            nameof(PenWidth),
+            typeof(double),
+            typeof(GDILineDrawableControl),
+            new FrameworkPropertyMetadata(
+                1.0,
+                FrameworkPropertyMetadataOptions.AffectsRender,
+                PenChanged
             )
         );
 
@@ -28,7 +39,15 @@ namespace Intervallo.UI
             set { SetValue(PenColorProperty, value); }
         }
 
+        public double PenWidth
+        {
+            get { return (double)GetValue(PenWidthProperty); }
+            set { SetValue(PenWidthProperty, value); }
+        }
+
         protected virtual double PathHeight { get; }
+
+        protected virtual double BaseY { get; }
 
         GraphicsPath Path { get; set; } = new GraphicsPath();
 
@@ -61,6 +80,7 @@ namespace Intervallo.UI
                 {
                     var progress = (float)GetSampleProgress();
                     m.Scale(progress, (float)(ActualHeight / PathHeight));
+                    m.Translate(0.0F, (float)BaseY);
                     g.Transform = m.Clone();
                     m.Invert();
                     Pen.Transform = m;
@@ -75,7 +95,7 @@ namespace Intervallo.UI
             UpdatePath(Path);
         }
 
-        double GetSampleProgress()
+        protected virtual double GetSampleProgress()
         {
             return ActualWidth / Math.Max(1, SampleRange.Length);
         }
@@ -91,10 +111,11 @@ namespace Intervallo.UI
             base.Dispose();
         }
 
-        static void PenColorChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        static void PenChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             var control = dependencyObject as GDILineDrawableControl;
             control.Pen.Color = control.PenColor;
+            control.Pen.Width = (float)control.PenWidth;
         }
     }
 }

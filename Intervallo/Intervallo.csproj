@@ -123,12 +123,14 @@
     <Compile Include="Cache\CacheFile.cs" />
     <Compile Include="Cache\WaveLineCache.cs" />
     <Compile Include="Converter\PenConverter.cs" />
+    <Compile Include="Model\AudioScaleModel.cs" />
     <Compile Include="UI\Behavior\SampleScrollBehavior.cs" />
     <Compile Include="UI\GDIControl.cs" />
     <Compile Include="UI\GDILineDrawableControl.cs" />
     <Compile Include="UI\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\ScaleCanvas.cs" />
     <Compile Include="UI\Shape\Arc.cs" />
     <Compile Include="UI\TimeMeasureView.cs" />
     <Compile Include="UI\SampleRangeChangeableControl.cs" />

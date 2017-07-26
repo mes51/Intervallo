@@ -1,4 +1,5 @@
 ﻿using Intervallo.Cache;
+using Intervallo.Model;
 using Intervallo.Util;
 using System;
 using System.Windows;
@@ -33,6 +34,20 @@ namespace Intervallo.UI
             )
         );
 
+        public static readonly DependencyProperty AudioScaleProperty = DependencyProperty.Register(
+            nameof(AudioScale),
+            typeof(AudioScaleModel),
+            typeof(WaveView),
+            new PropertyMetadata(null)
+        );
+
+        public static readonly DependencyProperty EditableAudioScaleProperty = DependencyProperty.Register(
+            nameof(EditableAudioScale),
+            typeof(AudioScaleModel),
+            typeof(WaveView),
+            new PropertyMetadata(null)
+        );
+
         readonly Pen Pen = new Pen(new SolidColorBrush(Color.FromRgb(43, 137, 201)), 1.0);
 
         public WaveView()
@@ -44,6 +59,18 @@ namespace Intervallo.UI
         {
             get { return (WaveLineCache)GetValue(WaveProperty); }
             set { SetValue(WaveProperty, value); }
+        }
+
+        public AudioScaleModel AudioScale
+        {
+            get { return (AudioScaleModel)GetValue(AudioScaleProperty); }
+            set { SetValue(AudioScaleProperty, value); }
+        }
+
+        public AudioScaleModel EditableAudioScale
+        {
+            get { return (AudioScaleModel)GetValue(EditableAudioScaleProperty); }
+            set { SetValue(EditableAudioScaleProperty, value); }
         }
 
         public int IndicatorPosition

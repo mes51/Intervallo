@@ -26,14 +26,16 @@
     </local:SampleRangeChangeableControl.Resources>
     <Grid>
         <local:WaveView
-                x:Name="WaveView"
-                Margin="0,75,0,0"
-                IndicatorPosition="{Binding ElementName=Root, Path=IndicatorPosition, Mode=TwoWay}"
-                SampleRange="{Binding ElementName=Root, Path=SampleRange, Mode=TwoWay}"
-                Wave="{Binding ElementName=Root, Path=Wave}"
-                IndicatorMoved="WaveView_IndicatorMoved"
-                IndicatorMoveFinish="WaveView_IndicatorMoveFinish"
-                IndicatorMoveStart="WaveView_IndicatorMoveStart"/>
+            x:Name="WaveView"
+            Margin="0,75,0,0"
+            IndicatorPosition="{Binding ElementName=Root, Path=IndicatorPosition, Mode=TwoWay}"
+            SampleRange="{Binding ElementName=Root, Path=SampleRange, Mode=TwoWay}"
+            AudioScale="{Binding ElementName=Root, Path=AudioScale, Mode=OneWay}"
+            EditableAudioScale="{Binding ElementName=Root, Path=EditableAudioScale, Mode=OneWay}"
+            Wave="{Binding ElementName=Root, Path=Wave}"
+            IndicatorMoved="WaveView_IndicatorMoved"
+            IndicatorMoveFinish="WaveView_IndicatorMoveFinish"
+            IndicatorMoveStart="WaveView_IndicatorMoveStart"/>
         <local:WaveScaler
             VerticalAlignment="Top"
             x:Name="WaveScaler"

@@ -17,6 +17,7 @@ using System.ComponentModel.Composition.Hosting;
 using Intervallo.Cache;
 using System.Threading.Tasks;
 using Intervallo.Properties;
+using Intervallo.Model;
 
 namespace Intervallo.Form
 {
@@ -54,6 +55,8 @@ namespace Intervallo.Form
         SeekPlayer SeekPlayer { get; set; }
 
         Wavefile WaveData { get; set; }
+
+        AnalyzedAudioCache AnalyzedAudio { get; set; }
 
         bool PlayingBeforeIndicatorMoving { get; set; }
 
@@ -118,7 +121,7 @@ namespace Intervallo.Form
                         MainView.MessageText = TextResources.ProgressMessageAnalyzingWave;
                     });
 
-                    var aaCache = CacheFile.FindCache<AnalyzedAudioCache>(WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName)
+                    AnalyzedAudio = CacheFile.FindCache<AnalyzedAudioCache>(WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName)
                         .GetOrElse(() =>
                         {
                             var aa = AudioOperatorPlugins[0].Analyze(new Plugin.WaveData(WaveData.Data, WaveData.Fs), 5.0, (p) =>
@@ -128,13 +131,15 @@ namespace Intervallo.Form
                                     MainView.Progress = p * 0.75 + 25.0;
                                 });
                             });
-                            var result = new AnalyzedAudioCache(AudioOperatorPlugins[0].GetType(), aa, WaveData.Hash);
+                            var result = new AnalyzedAudioCache(AudioOperatorPlugins[0].GetType(), aa, WaveData.Data.Length, WaveData.Fs, WaveData.Hash);
                             CacheFile.SaveCache(result, WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName);
                             return result;
                         });
 
                     Dispatcher.Invoke(() =>
                     {
+                        MainView.AudioScale = new AudioScaleModel(AnalyzedAudio.AnalyzedAudio.F0, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.SampleCount, AnalyzedAudio.SampleRate);
+                        MainView.EditableAudioScale = new AudioScaleModel(AnalyzedAudio.AnalyzedAudio.F0, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.SampleCount, AnalyzedAudio.SampleRate);
                         MainView.Lock = false;
                     });
                 }
@@ -167,6 +172,8 @@ namespace Intervallo.Form
             Player?.Stop();
             Player?.Dispose();
 
+            MainView.Wave = null;
+            MainView.AudioScale = null;
             MainView.MessageText = TextResources.ProgressMessageLoadWave;
             MainView.Progress = 0.0;
             MainView.Lock = true;
