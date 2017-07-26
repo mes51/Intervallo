@@ -146,6 +146,16 @@ namespace Intervallo.UI
             ReleaseMouseCapture();
         }
 
+        void WaveScaler_SizeChanged(object sender, EventArgs e)
+        {
+            UpdateScaler();
+        }
+
+        void SampleRangeChangeableControl_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateScaler();
+        }
+
         static void ViewDependOnPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             (dependencyObject as WaveScaler).UpdateScaler();

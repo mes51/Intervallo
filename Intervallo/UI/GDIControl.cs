@@ -55,7 +55,10 @@ namespace Intervallo.UI
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
+
+            drawingContext.PushClip(new RectangleGeometry(new Rect(0.0, 0.0, ActualWidth, ActualHeight)));
             drawingContext.DrawImage(Bitmap, new Rect(0.0, 0.0, Bitmap.Width, Bitmap.Height));
+            drawingContext.Pop();
         }
 
         protected virtual void OnBitmapSizeChanged() { }

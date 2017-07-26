@@ -125,6 +125,7 @@
     <Compile Include="Converter\PenConverter.cs" />
     <Compile Include="Model\AudioScaleModel.cs" />
     <Compile Include="UI\Behavior\SampleScrollBehavior.cs" />
+    <Compile Include="UI\Behavior\SizeChangeBehavior.cs" />
     <Compile Include="UI\GDIControl.cs" />
     <Compile Include="UI\GDILineDrawableControl.cs" />
     <Compile Include="UI\MainView.xaml.cs">

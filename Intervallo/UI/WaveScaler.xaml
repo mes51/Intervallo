@@ -40,5 +40,6 @@
     </Grid>
     <i:Interaction.Behaviors>
         <b:SampleScrollBehavior />
+        <b:SizeChangeBehavior SizeChanged="WaveScaler_SizeChanged" />
     </i:Interaction.Behaviors>
 </local:SampleRangeChangeableControl>
