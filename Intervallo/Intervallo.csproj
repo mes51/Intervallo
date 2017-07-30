@@ -152,6 +152,7 @@
     <Compile Include="UI\WaveView.xaml.cs">
       <DependentUpon>WaveView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Util\StreamExtension.cs" />
     <Compile Include="Util\Try.cs" />
     <Page Include="Form\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

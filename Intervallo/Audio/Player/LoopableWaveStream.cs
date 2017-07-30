@@ -33,7 +33,7 @@ namespace Intervallo.Audio.Player
         public LoopableWaveStream(double[] wave, int fs)
         {
             Wave = wave;
-            WaveFormat = new WaveFormat(fs, BytePerSample * 8, 1);
+            WaveFormat = new WaveFormat(fs, BytePerSample * 8, 2);
             History = new RingBuffer<ReadHistory>(fs);
         }
 
@@ -47,11 +47,11 @@ namespace Intervallo.Audio.Player
         {
             get
             {
-                return (int)(Position / BytePerSample);
+                return (int)(Position / WaveFormat.BlockAlign);
             }
             set
             {
-                Position = value * BytePerSample;
+                Position = value * WaveFormat.BlockAlign;
             }
         }
 
@@ -61,7 +61,7 @@ namespace Intervallo.Audio.Player
         {
             get
             {
-                return Wave.Length * BytePerSample;
+                return Wave.Length * WaveFormat.BlockAlign;
             }
         }
 
@@ -77,13 +77,13 @@ namespace Intervallo.Audio.Player
             var beginTotalReadSamples = TotalReadSamples;
 
             var loopRange = LoopRange ?? new IntRange(0, Wave.Length);
-            if (SamplePosition < loopRange.Begin * BytePerSample)
+            if (SamplePosition < loopRange.Begin)
             {
-                SamplePosition = loopRange.Begin * BytePerSample;
+                SamplePosition = loopRange.Begin;
             }
 
             var totalSamples = 0;
-            var maxSamples = count / BytePerSample;
+            var maxSamples = count / WaveFormat.BlockAlign;
             using (var ms = new MemoryStream(buffer))
             {
                 ms.Seek(offset, SeekOrigin.Begin);
@@ -108,11 +108,9 @@ namespace Intervallo.Audio.Player
                     {
                         for (int s = SamplePosition, c = 0; c < canRead && ms.Position < buffer.Length; s++, c++)
                         {
-                            var sampleData = (int)(Wave[s] * MaxLevel);
-                            for (var d = 0; d < BytePerSample; d++, sampleData >>= 8)
-                            {
-                                ms.WriteByte((byte)(sampleData & 0xff));
-                            }
+                            var sampleData = (short)(Wave[s] * MaxLevel);
+                            ms.WriteShort(sampleData);
+                            ms.WriteShort(sampleData);
                         }
                         totalSamples += canRead;
                         SamplePosition += canRead;
@@ -123,7 +121,7 @@ namespace Intervallo.Audio.Player
             TotalReadSamples += totalSamples;
             History.Add(new ReadHistory(beginTotalReadSamples, beginPosition, TotalReadSamples - beginTotalReadSamples));
 
-            return totalSamples * BytePerSample;
+            return totalSamples * WaveFormat.BlockAlign;
         }
 
         internal ReadHistory GetHistory(long totalReadCount)

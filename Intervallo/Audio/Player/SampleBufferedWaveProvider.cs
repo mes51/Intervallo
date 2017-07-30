@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using Intervallo.Util;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,7 @@ namespace Intervallo.Audio.Player
 
         public SampleBufferedWaveProvider(int fs)
         {
-            WaveFormat = new WaveFormat(fs, BytePerSample * 8, 1);
+            WaveFormat = new WaveFormat(fs, BytePerSample * 8, 2);
         }
 
         public WaveFormat WaveFormat { get; }
@@ -61,7 +62,7 @@ namespace Intervallo.Audio.Player
                 if (RemainSample.Length > 0)
                 {
                     lastWriteSampleCount = WriteSample(ms, RemainSample);
-                    writeCount += lastWriteSampleCount * BytePerSample;
+                    writeCount += lastWriteSampleCount * BytePerSample * 2;
                     lastSamples = RemainSample;
                 }
                 else
@@ -79,7 +80,7 @@ namespace Intervallo.Audio.Player
                             SampleQueue.RemoveFirst();
 
                             lastWriteSampleCount = WriteSample(ms, samples);
-                            writeCount += lastWriteSampleCount * BytePerSample;
+                            writeCount += lastWriteSampleCount * BytePerSample * 2;
                             lastSamples = samples;
                         }
                     }
@@ -108,11 +109,9 @@ namespace Intervallo.Audio.Player
         {
             for (var i = 0; i < samples.Length; i++)
             {
-                var sampleData = (int)(samples[i] * MaxLevel);
-                for (var d = 0; d < BytePerSample; d++, sampleData >>= 8)
-                {
-                    ms.WriteByte((byte)(sampleData & 0xff));
-                }
+                var sampleData = (short)(samples[i] * MaxLevel);
+                ms.WriteShort(sampleData);
+                ms.WriteShort(sampleData);
 
                 if (ms.Position >= ms.Length)
                 {
