@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Intervallo.DefaultPlugins.Properties {
+namespace Intervallo.Plugin.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Intervallo.DefaultPlugins.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Intervallo.DefaultPlugins.Properties.LangResource", typeof(LangResource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Intervallo.Plugin.Properties.LangResource", typeof(LangResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,29 +61,11 @@ namespace Intervallo.DefaultPlugins.Properties {
         }
         
         /// <summary>
-        ///   VSQXファイルの読み込みに失敗しました。ファイル形式が古いか、壊れている可能性があります に類似しているローカライズされた文字列を検索します。
+        ///   音階データの読み込みに失敗しました に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string VsqLoader_FailLoadFile {
+        internal static string ScaleLoadException_DefaultMessage {
             get {
-                return ResourceManager.GetString("VsqLoader_FailLoadFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   VSQXファイルから音階データを読み込みます に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string VsqxLoader_Description {
-            get {
-                return ResourceManager.GetString("VsqxLoader_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   WORLDを利用して音声の解析・生成を行います に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string WorldOperator_Description {
-            get {
-                return ResourceManager.GetString("WorldOperator_Description", resourceCulture);
+                return ResourceManager.GetString("ScaleLoadException_DefaultMessage", resourceCulture);
             }
         }
     }

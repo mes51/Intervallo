@@ -117,13 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="VsqLoader_FailLoadFile" xml:space="preserve">
-    <value>VSQXファイルの読み込みに失敗しました。ファイル形式が古いか、壊れている可能性があります</value>
-  </data>
-  <data name="VsqxLoader_Description" xml:space="preserve">
-    <value>VSQXファイルから音階データを読み込みます</value>
-  </data>
-  <data name="WorldOperator_Description" xml:space="preserve">
-    <value>WORLDを利用して音声の解析・生成を行います</value>
+  <data name="ScaleLoadException_DefaultMessage" xml:space="preserve">
+    <value>音階データの読み込みに失敗しました</value>
   </data>
 </root>

@@ -136,11 +136,7 @@
     <Compile Include="UI\TimeMeasureView.cs" />
     <Compile Include="UI\SampleRangeChangeableControl.cs" />
     <Compile Include="UI\ScaleMeasureView.cs" />
-    <Compile Include="Util\EnumerableExtention.cs" />
-    <Compile Include="Util\NoElementException.cs" />
-    <Compile Include="Util\Optional.cs" />
     <Compile Include="Util\Range.cs" />
-    <Compile Include="Util\RangeDictionary.cs" />
     <Compile Include="Util\RingBuffer.cs" />
     <Compile Include="UI\IndicatorView.xaml.cs">
       <DependentUpon>IndicatorView.xaml</DependentUpon>

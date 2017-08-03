@@ -125,6 +125,13 @@ namespace Intervallo.UI
             RefreshIndicator();
         }
 
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            Focus();
+
+            base.OnMouseLeftButtonDown(e);
+        }
+
         void RefreshTimeScrollBar()
         {
             var scrollable = ScrollableSampleCount;

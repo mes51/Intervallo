@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Intervallo.Util
+namespace Intervallo.Plugin.Util
 {
     public abstract class Optional<T> : IEnumerable<T>
     {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Intervallo.Plugin.Properties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,11 +15,27 @@ namespace Intervallo.Plugin
     public interface IScaleLoader : IPluginInfo
     {
         /// <summary>
+        /// 読み込みに対応している拡張子
+        /// </summary>
+        string[] SupportedFileExtensions { get; }
+
+        /// <summary>
         /// 音階データを読み込みます。
         /// </summary>
-        /// <param name="fileName">読み込む音階データが含まれるファイルのパス。</param>
+        /// <param name="filePath">読み込む音階データが含まれるファイルのパス。</param>
         /// <param name="framePeriod">音階の切り出し単位(ms)</param>
+        /// <param name="maxFrameLength">読み込む最大のフレーム数</param>
         /// <returns>読み込まれた音階データ</returns>
-        double[] Load(string filePath, double framePeriod);
+        /// <exception cref="ScaleLoadException">読み込みに対応していないファイル、または破損していて読み込みに失敗した</exception>
+        double[] Load(string filePath, double framePeriod, int maxFrameLength);
+    }
+
+    public class ScaleLoadException : Exception
+    {
+        public ScaleLoadException() : base(LangResource.ScaleLoadException_DefaultMessage) { }
+
+        public ScaleLoadException(string message) : base(message) { }
+
+        public ScaleLoadException(string message, Exception inner) : base(message, inner) { }
     }
 }

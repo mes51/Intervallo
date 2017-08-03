@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Intervallo.Util
+namespace Intervallo.Plugin.Util
 {
     public class NoElementException : Exception
     {

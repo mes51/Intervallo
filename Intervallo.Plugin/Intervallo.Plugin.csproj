@@ -43,9 +43,24 @@
     <Compile Include="AnalyzedAudio.cs" />
     <Compile Include="IAudioOperator.cs" />
     <Compile Include="IPluginInfo.cs" />
+    <Compile Include="Properties\LangResource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LangResource.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IScaleLoader.cs" />
+    <Compile Include="Util\EnumerableExtention.cs" />
+    <Compile Include="Util\NoElementException.cs" />
+    <Compile Include="Util\Optional.cs" />
+    <Compile Include="Util\RangeDictionary.cs" />
     <Compile Include="WaveData.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\LangResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LangResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

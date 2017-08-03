@@ -18,6 +18,7 @@ using Intervallo.Cache;
 using System.Threading.Tasks;
 using Intervallo.Properties;
 using Intervallo.Model;
+using Microsoft.Win32;
 
 namespace Intervallo.Form
 {
@@ -236,6 +237,21 @@ namespace Intervallo.Form
             PlayingBeforeIndicatorMoving = WaveData != null && Player.PlaybackState == PlaybackState.Playing;
             PauseAudio();
             SeekPlayer.Play();
+        }
+
+        void Save_Click(object sender, RoutedEventArgs e)
+        {
+            var open = new OpenFileDialog();
+            open.Filter = $"Supported Files({string.Join(",", ScaleLoaderPlugins[0].SupportedFileExtensions)}) |{string.Join(";", ScaleLoaderPlugins[0].SupportedFileExtensions)}";
+            if (open.ShowDialog() == true)
+            {
+                var frames = ScaleLoaderPlugins[0].Load(open.FileName, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.AnalyzedAudio.FrameLength);
+                if (frames.Length < AnalyzedAudio.AnalyzedAudio.FrameLength)
+                {
+                    frames = frames.Concat(Enumerable.Repeat(0.0, AnalyzedAudio.AnalyzedAudio.FrameLength - frames.Length)).ToArray();
+                }
+                MainView.EditableAudioScale = new AudioScaleModel(frames, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.SampleCount, AnalyzedAudio.SampleRate);
+            }
         }
     }
 }

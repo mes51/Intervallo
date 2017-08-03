@@ -16,7 +16,7 @@ namespace Intervallo.DefaultPlugins
     {
         public string Copyright => ((AssemblyCopyrightAttribute)typeof(WorldOperator).Assembly.GetCustomAttribute(typeof(AssemblyCopyrightAttribute))).Copyright;
 
-        public string Description => LangResource.WorldOperatorDescription;
+        public string Description => LangResource.WorldOperator_Description;
 
         public string PluginName => typeof(WorldOperator).Name;
 

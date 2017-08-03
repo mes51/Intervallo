@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Intervallo.Plugin.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -27,22 +28,64 @@ namespace Intervallo.DefaultPlugins
             }
         }
 
-        public static void ForEach<T>(this IEnumerable<T> source, Action<T> body)
+        public static RangeDictionary<TKey, TSource> ToRangeDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IntervalMode intervalMode) where TKey : IComparable<TKey>
         {
-            foreach(var e in source)
+            return source.ToRangeDictionary(keySelector, (v) => v, intervalMode);
+        }
+
+        public static RangeDictionary<TKey, TValue> ToRangeDictionary<TSource, TKey, TValue>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TValue> valueSelector, IntervalMode intervalMode) where TKey : IComparable<TKey>
+        {
+            var result = new RangeDictionary<TKey, TValue>(intervalMode);
+            foreach (var v in source)
             {
-                body(e);
+                var key = keySelector(v);
+                if (!result.ContainsKey(key))
+                {
+                    result.Add(keySelector(v), valueSelector(v));
+                }
+                else
+                {
+                    result[key] = valueSelector(v);
+                }
+            }
+            return result;
+        }
+
+        public static IEnumerable<TResult> SelectReferencePrev<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, Optional<TResult>, TResult> selector)
+        {
+            return source.SelectReferencePrev<TSource, TResult>((v, i) => selector(v, Optional<TResult>.None()), (v, i, p) => selector(v, Optional<TResult>.Some(p)));
+        }
+
+        public static IEnumerable<TResult> SelectReferencePrev<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, int, Optional<TResult>, TResult> selector)
+        {
+            return source.SelectReferencePrev<TSource, TResult>((v, i) => selector(v, i, Optional<TResult>.None()), (v, i, p) => selector(v, i, Optional<TResult>.Some(p)));
+        }
+
+        public static IEnumerable<TResult> SelectReferencePrev<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> firstSelector, Func<TSource, TResult, TResult> selector)
+        {
+            return source.SelectReferencePrev((v, i) => firstSelector(v), (v, i, p) => selector(v, p));
+        }
+
+        public static IEnumerable<TResult> SelectReferencePrev<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, int, TResult> firstSelector, Func<TSource, int, TResult, TResult> selector)
+        {
+            var prev = default(TResult);
+            foreach (var v in source.Take(1))
+            {
+                prev = firstSelector(v, 0);
+                yield return prev;
+            }
+            var i = 1;
+            foreach (var v in source.Skip(1))
+            {
+                prev = selector(v, i, prev);
+                i++;
+                yield return prev;
             }
         }
 
-        public static void ForEach<T>(this IEnumerable<T> source, Action<T, int> body)
+        public static IEnumerable<T> PushTo<T>(this T value, IEnumerable<T> target)
         {
-            int c = 0;
-            foreach (var e in source)
-            {
-                body(e, c);
-                c++;
-            }
+            return new T[] { value }.Concat(target);
         }
     }
 

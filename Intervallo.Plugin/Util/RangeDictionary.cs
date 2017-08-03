@@ -1,12 +1,11 @@
-﻿using Intervallo.Util;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Intervallo.Util
+namespace Intervallo.Plugin.Util
 {
     public enum IntervalMode
     {
@@ -121,7 +120,7 @@ namespace Intervallo.Util
 
         public bool ContainsKey(TKey key)
         {
-            return SelectKey(key).IsDefined;
+            return Dictionary.ContainsKey(key);
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -166,8 +165,12 @@ namespace Intervallo.Util
 
         public Optional<TKey> SelectKey(TKey key)
         {
-            var keys = Keys.ToArray();
+            if (Count < 1)
+            {
+                return Optional<TKey>.None();
+            }
 
+            var keys = Keys.ToArray();
             if (key.CompareTo(keys[0]) < 0)
             {
                 switch (Mode)
@@ -188,7 +191,7 @@ namespace Intervallo.Util
                 }
             }
 
-            switch(Mode)
+            switch (Mode)
             {
                 case IntervalMode.CloseInterval:
                 case IntervalMode.LeftSemiOpenInterval:
@@ -196,6 +199,47 @@ namespace Intervallo.Util
                 default:
                     return Optional<TKey>.Some(keys.Last());
             }
+        }
+
+        public TKey[] SelectKeyByRange(TKey begin, TKey end)
+        {
+            if (Count < 1)
+            {
+                return new TKey[0];
+            }
+            
+            var keys = Keys.ToList();
+            if (begin.CompareTo(keys.Last()) > 0)
+            {
+                switch(Mode)
+                {
+                    case IntervalMode.CloseInterval:
+                    case IntervalMode.LeftSemiOpenInterval:
+                        return new TKey[0];
+                    default:
+                        return new TKey[] { keys.Last() };
+                }
+            }
+            else if (end.CompareTo(keys.First()) < 0)
+            {
+                switch (Mode)
+                {
+                    case IntervalMode.CloseInterval:
+                    case IntervalMode.RightSemiOpenInterval:
+                        return new TKey[0];
+                    default:
+                        return new TKey[] { keys.First() };
+                }
+            }
+
+            var beginIndex = Math.Max(keys.FindIndex((k) => begin.CompareTo(k) >= 0), 0);
+            var endIndex = keys.FindLastIndex((k) => end.CompareTo(k) >= 0);
+            if (endIndex < 0)
+            {
+                endIndex = Count - 1;
+            }
+
+            return keys.Skip(beginIndex).Take(endIndex - beginIndex + 1).ToArray();
         }
 
         public KeyValuePair<TKey, TValue> GetPair(TKey key)

@@ -8,14 +8,16 @@
         xmlns:UI="clr-namespace:Intervallo.UI"
         x:Class="Intervallo.Form.MainWindow"
         mc:Ignorable="d"
+        Name="Window"
         AllowDrop="True"
         Title="MainWindow" Height="610" Width="945"
+        FocusManager.IsFocusScope="{Binding ElementName=Window}"
         Drop="Window_Drop"
         PreviewDragOver="Window_PreviewDragOver"
         KeyDown="Window_KeyDown"
         Closing="Window_Closing">
     <Grid>
-        <Button x:Name="Save" Content="Save" Margin="0,0,10,34" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom"/>
+        <Button x:Name="Save" Content="Save" Margin="0,0,10,34" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom" Click="Save_Click"/>
         <Menu x:Name="menu" Height="24" VerticalAlignment="Top"/>
         <StatusBar Height="24" VerticalAlignment="Bottom"/>
         <UI:MainView Margin="10,29,10,59"
