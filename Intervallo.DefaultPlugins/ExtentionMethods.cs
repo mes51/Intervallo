@@ -87,6 +87,77 @@ namespace Intervallo.DefaultPlugins
         {
             return new T[] { value }.Concat(target);
         }
+
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> source, T value)
+        {
+            return source.Concat(new T[] { value });
+        }
+
+        public static IEnumerable<TResult> SplitByIndexes<TSource, TResult>(this IEnumerable<TSource> source, IEnumerable<int> indexes, Func<IEnumerable<TSource>, int, TResult> selector)
+        {
+            return source.SplitByIndexes(indexes, (e, i, _) => selector(e, i));
+        }
+
+        public static IEnumerable<TResult> SplitByIndexes<TSource, TResult>(this IEnumerable<TSource> source, IEnumerable<int> indexes, Func<IEnumerable<TSource>, int, int, TResult> selector)
+        {
+            var traversal = source;
+            var prevIndex = indexes.First();
+            var i = 0;
+            foreach (var index in indexes.Skip(1))
+            {
+                yield return selector(traversal.Take(index - prevIndex), prevIndex, i);
+                traversal = traversal.Skip(index - prevIndex);
+                prevIndex = index;
+                i++;
+            }
+            yield return selector(traversal, prevIndex, i);
+        }
+
+        public static IEnumerable<TResult> SplitByIndexes<TSource, TResult>(this TSource[] source, IEnumerable<int> indexes, Func<IEnumerable<TSource>, int, TResult> selector)
+        {
+            return source.SplitByIndexes(indexes, (e, i, _) => selector(e, i));
+        }
+
+        public static IEnumerable<TResult> SplitByIndexes<TSource, TResult>(this TSource[] source, IEnumerable<int> indexes, Func<IEnumerable<TSource>, int, int, TResult> selector)
+        {
+            var prevIndex = indexes.First();
+            var i = 0;
+            foreach (var index in indexes.Skip(1))
+            {
+                var e = new TSource[index - prevIndex];
+                Array.Copy(source, prevIndex, e, 0, e.Length);
+                yield return selector(e, prevIndex, i);
+                prevIndex = index;
+                i++;
+            }
+
+            var eLast = new TSource[source.Length - prevIndex];
+            Array.Copy(source, prevIndex, eLast, 0, eLast.Length);
+            yield return selector(eLast, prevIndex, i);
+        }
+
+        public static IEnumerable<TResult> Zip3<TFirst, TSecond, TThird, TResult>(this IEnumerable<TFirst> first, IEnumerable<TSecond> second, IEnumerable<TThird> third, Func<TFirst, TSecond, TThird, TResult> resultSelector)
+        {
+            using (var f = first.GetEnumerator())
+            using (var s = second.GetEnumerator())
+            using (var t = third.GetEnumerator())
+            {
+                while (f.MoveNext() && s.MoveNext() && t.MoveNext())
+                {
+                    yield return resultSelector(f.Current, s.Current, t.Current);
+                }
+            }
+        }
+
+        public static IEnumerable<IEnumerable<T>> Grouped<T>(this IEnumerable<T> source, int count)
+        {
+            var traversal = source;
+            while (traversal.Any())
+            {
+                yield return traversal.Take(count);
+                traversal = traversal.Skip(count);
+            }
+        }
     }
 
     public static class PrimitiveArrayExtentionMethods
@@ -94,6 +165,11 @@ namespace Intervallo.DefaultPlugins
         public static void BlockCopy(this int[] src, int[] dst)
         {
             src.BlockCopy(0, dst, 0, Math.Min(src.Length, dst.Length));
+        }
+
+        public static void BlockCopy(this int[] src, int[] dst, int dstOffset)
+        {
+            src.BlockCopy(0, dst, dstOffset, Math.Min(src.Length, dst.Length - dstOffset));
         }
 
         public static void BlockCopy(this int[] src, int srcOffset, int[] dst, int dstOffset, int count)
@@ -132,6 +208,11 @@ namespace Intervallo.DefaultPlugins
         public static void BlockCopy(this double[] src, double[] dst)
         {
             src.BlockCopy(0, dst, 0, Math.Min(src.Length, dst.Length));
+        }
+
+        public static void BlockCopy(this double[] src, double[] dst, int dstOffset)
+        {
+            src.BlockCopy(0, dst, dstOffset, Math.Min(src.Length, dst.Length - dstOffset));
         }
 
         public static void BlockCopy(this double[] src, int srcOffset, double[] dst, int dstOffset, int count)

@@ -349,13 +349,13 @@ namespace Intervallo.DefaultPlugins.WORLD
         //-----------------------------------------------------------------------------
         void RefineF0Candidates(SubSequence<double> x, double fs, double[] temporalPositions, int f0Length, int maxCandidates, double[][] refinedF0Candidates, double[][] f0Scores)
         {
-            Parallel.For(0, f0Length, (i) =>
+            for (var i = 0; i < f0Length; i++)
             {
                 for (var j = 0; j < maxCandidates; j++)
                 {
                     GetRefinedF0(x, fs, temporalPositions[i], refinedF0Candidates[i][j], ref refinedF0Candidates[i][j], ref f0Scores[i][j]);
                 }
-            });
+            }
         }
 
         void RemoveUnreliableCandidatesSub(int i, int j, double[][] tmpF0Candidates, int numberOfCandidates, double[][] f0Candidates, double[][] f0Scores)
@@ -446,10 +446,10 @@ namespace Intervallo.DefaultPlugins.WORLD
         //-----------------------------------------------------------------------------
         void GetRawF0Candidates(double[] boundaryF0List, int numberOfBands, double actualFs, int yLength, double[] temporalPositions, int f0Length, Complex[] ySpectrum, int fftSize, double[][] rawF0Candidates)
         {
-            Parallel.For(0, numberOfBands, (i) =>
+            for (var i = 0; i < numberOfBands; i++)
             {
                 GetF0CandidateFromRawEvent(boundaryF0List[i], actualFs, yLength, ySpectrum, fftSize, temporalPositions, f0Length, rawF0Candidates[i]);
-            });
+            }
         }
 
         //-----------------------------------------------------------------------------

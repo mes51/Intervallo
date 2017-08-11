@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Intervallo.DefaultPlugins
 {
-    static class Parallel
+    static class ParallelF
     {
         static int processorCount = Environment.ProcessorCount - 1;
 

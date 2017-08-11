@@ -85,11 +85,35 @@ namespace Intervallo.InternalUtil
         {
             if (Equals(value, null))
             {
-                return new None<T>();
+                return None();
             }
             else
             {
-                return new Some<T>(value);
+                return Some(value);
+            }
+        }
+
+        public static Optional<T> Iif(T value, bool a)
+        {
+            if (a)
+            {
+                return Some(value);
+            }
+            else
+            {
+                return None();
+            }
+        }
+
+        public static Optional<T> Iif(Func<T> func, bool a)
+        {
+            if (a)
+            {
+                return Some(func());
+            }
+            else
+            {
+                return None();
             }
         }
 
