@@ -122,6 +122,12 @@
     <Compile Include="Cache\AnalyzedAudioCache.cs" />
     <Compile Include="Cache\CacheFile.cs" />
     <Compile Include="Cache\WaveLineCache.cs" />
+    <Compile Include="Command\CommandBase.cs" />
+    <Compile Include="Command\ExitCommand.cs" />
+    <Compile Include="Command\ExportCommand.cs" />
+    <Compile Include="Command\LoadScaleCommand.cs" />
+    <Compile Include="Command\OpenCommand.cs" />
+    <Compile Include="Command\PreviewCommand.cs" />
     <Compile Include="Converter\PenConverter.cs" />
     <Compile Include="Model\AudioScaleModel.cs" />
     <Compile Include="UI\Behavior\SampleScrollBehavior.cs" />
@@ -183,19 +189,19 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Properties\TextResources.Designer.cs">
+    <Compile Include="Properties\LangResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>TextResources.resx</DependentUpon>
+      <DependentUpon>LangResources.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Properties\TextResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>TextResources.Designer.cs</LastGenOutput>
+    <EmbeddedResource Include="Properties\LangResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>LangResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

@@ -19,6 +19,9 @@ using System.Threading.Tasks;
 using Intervallo.Properties;
 using Intervallo.Model;
 using Microsoft.Win32;
+using Intervallo.Command;
+using System.Windows.Controls;
+using System.Text.RegularExpressions;
 
 namespace Intervallo.Form
 {
@@ -29,9 +32,24 @@ namespace Intervallo.Form
     {
         const int DoubleSize = sizeof(double);
         const string PluginDirectory = "Plugins";
+        static readonly Regex LoaderExtentionRegex = new Regex(@"^\*?\.?", RegexOptions.Compiled);
+
+        public CommandBase OpenCommand { get; }
+        public CommandBase ExportCommand { get; }
+        public CommandBase ExitCommand { get; }
+        public CommandBase PreviewCommand { get; }
+        public CommandBase LoadScaleCommand { get; }
+        public CommandBase LoadScaleFromWaveCommand { get; }
 
         public MainWindow()
         {
+            OpenCommand = new OpenCommand(this);
+            ExportCommand = new ExportCommand(this);
+            ExitCommand = new ExitCommand(this);
+            PreviewCommand = new PreviewCommand(this);
+            LoadScaleCommand = new LoadScaleCommand(this, true);
+            LoadScaleFromWaveCommand = new LoadScaleCommand(this, false);
+
             InitializeComponent();
 
             Timer.Tick += (sender, e) =>
@@ -55,12 +73,6 @@ namespace Intervallo.Form
 
         SeekPlayer SeekPlayer { get; set; }
 
-        Wavefile WaveData { get; set; }
-
-        AnalyzedAudioCache AnalyzedAudio { get; set; }
-
-        bool PlayingBeforeIndicatorMoving { get; set; }
-
         [ImportMany]
         List<IAudioOperator> AudioOperatorPlugins { get; set; }
 
@@ -76,9 +88,50 @@ namespace Intervallo.Form
                 {
                     container.ComposeParts(this);
                 }
+
+                ScaleLoaderPlugins.Sort((a, b) => b.PluginName.CompareTo(a.PluginName));
+                foreach (var loader in ScaleLoaderPlugins)
+                {
+                    var item = new MenuItem();
+                    item.Header = loader.PluginName + "...";
+                    item.Command = LoadScaleCommand;
+                    item.CommandParameter = loader;
+                    item.CommandTarget = this;
+                    LoadScaleMenu.Items.Insert(0, item);
+                }
+                ScaleLoaderPlugins.Reverse();
             }
-            catch(Exception e) { }
+            catch (Exception e) { }
         }
+
+        #region TODO: Move to ModelView
+
+        public bool Lock
+        {
+            get
+            {
+                return MainView.Lock;
+            }
+            private set
+            {
+                if (MainView.Lock != value)
+                {
+                    MainView.Lock = value;
+                    OpenCommand.OnCanExecuteChanged();
+                    ExportCommand.OnCanExecuteChanged();
+                    ExitCommand.OnCanExecuteChanged();
+                    PreviewCommand.OnCanExecuteChanged();
+                    LoadScaleCommand.OnCanExecuteChanged();
+                    LoadScaleFromWaveCommand.OnCanExecuteChanged();
+                }
+            }
+        }
+
+        Wavefile WaveData { get; set; }
+
+        AnalyzedAudioCache AnalyzedAudio { get; set; }
+
+        bool PlayingBeforeIndicatorMoving { get; set; }
 
         void PlayAudio()
         {
@@ -119,7 +172,7 @@ namespace Intervallo.Form
                         };
 
                         MainView.Progress = 25.0;
-                        MainView.MessageText = TextResources.ProgressMessageAnalyzingWave;
+                        MainView.MessageText = LangResources.ProgressMessage_AnalyzingWave;
                     });
 
                     AnalyzedAudio = CacheFile.FindCache<AnalyzedAudioCache>(WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName)
@@ -141,19 +194,185 @@ namespace Intervallo.Form
                     {
                         MainView.AudioScale = new AudioScaleModel(AnalyzedAudio.AnalyzedAudio.F0, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.SampleCount, AnalyzedAudio.SampleRate);
                         MainView.EditableAudioScale = new AudioScaleModel(AnalyzedAudio.AnalyzedAudio.F0, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.SampleCount, AnalyzedAudio.SampleRate);
-                        MainView.Lock = false;
+                        Lock = false;
                     });
                 }
                 catch (InvalidDataException ex)
                 {
-
+                    Lock = false;
                 }
                 catch (Exception e)
                 {
-
+                    Lock = false;
                 }
             });
         }
+
+        async void ExportWave(string filePath, double[] newF0)
+        {
+            await Task.Run(() =>
+            {
+                var edited = AnalyzedAudio.AnalyzedAudio.ReplaceF0(newF0);
+                var synthesizedAudio = AudioOperatorPlugins[0].Synthesize(edited, (p) =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        MainView.Progress = p;
+                    });
+                });
+
+                var waveFile = new Wavefile(synthesizedAudio.SampleRate, WaveData.Bit, synthesizedAudio.Wave, "");
+                waveFile.Write(filePath);
+
+                Dispatcher.Invoke(() =>
+                {
+                    Lock = false;
+                });
+            });
+        }
+
+        void OpenFile(string filePath)
+        {
+            Player?.Stop();
+            Player?.Dispose();
+
+            MainView.Wave = null;
+            MainView.AudioScale = null;
+            MainView.MessageText = LangResources.ProgressMessage_LoadWave;
+            MainView.Progress = 0.0;
+            Lock = true;
+            LoadWave(filePath);
+        }
+
+        void ApplyScale(double[] newScale)
+        {
+            var newF0 = new double[AnalyzedAudio.AnalyzedAudio.FrameLength];
+            Buffer.BlockCopy(AnalyzedAudio.AnalyzedAudio.F0, 0, newF0, 0, newF0.Length * sizeof(double));
+
+            for (var i = Math.Min(newScale.Length, newF0.Length) - 1; i > -1; i--)
+            {
+                if (newF0[i] <= 0.0 || newScale[i] <= 0.0)
+                {
+                    continue;
+                }
+                newF0[i] = newScale[i];
+            }
+            MainView.EditableAudioScale = new AudioScaleModel(newF0, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.SampleCount, AnalyzedAudio.SampleRate);
+        }
+
+        async void LoadScale(IScaleLoader loader, string filePath)
+        {
+            MainView.Progress = 0.0;
+            Lock = true;
+            MainView.MessageText = LangResources.ProgressMessage_LoadScale;
+
+            await Task.Run(() =>
+            {
+                var loadedScale = loader.Load(filePath, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.AnalyzedAudio.FrameLength);
+
+                Dispatcher.Invoke(() =>
+                {
+                    MainView.Progress = 1000.0;
+                    ApplyScale(loadedScale);
+                    Lock = false;
+                });
+            });
+        }
+
+        async void LoadScaleFromWave(string filePath)
+        {
+            MainView.Progress = 0.0;
+            Lock = true;
+            MainView.MessageText = LangResources.ProgressMessage_LoadScale;
+
+            await Task.Run(() =>
+            {
+                var wave = Wavefile.Read(filePath);
+                var aac = CacheFile.FindCache<AnalyzedAudioCache>(wave.Hash + AudioOperatorPlugins[0].GetType().FullName)
+                    .GetOrElse(() =>
+                    {
+                        var aa = AudioOperatorPlugins[0].Analyze(new Plugin.WaveData(wave.Data, wave.Fs), 5.0, (p) =>
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                MainView.Progress = p * 0.75 + 25.0;
+                            });
+                        });
+                        var result = new AnalyzedAudioCache(AudioOperatorPlugins[0].GetType(), aa, wave.Data.Length, wave.Fs, wave.Hash);
+                        CacheFile.SaveCache(result, wave.Hash + AudioOperatorPlugins[0].GetType().FullName);
+                        return result;
+                    });
+
+                Dispatcher.Invoke(() =>
+                {
+                    MainView.Progress = 1000.0;
+                    ApplyScale(aac.AnalyzedAudio.F0);
+                    Lock = false;
+                });
+            });
+        }
+
+        #endregion
+
+        #region Command
+
+        public void ExecOpen()
+        {
+            var open = new OpenFileDialog();
+            open.Filter = "Wave PCM(*.wav)|*.wav";
+            if (open.ShowDialog() ?? false)
+            {
+                OpenFile(open.FileName);
+            }
+        }
+
+        public void ExecExportWave()
+        {
+            var save = new SaveFileDialog();
+            save.Filter = "Wave PCM(*.wav)|*.wav";
+            if (save.ShowDialog() ?? false)
+            {
+                MainView.Progress = 0.0;
+                Lock = true;
+                MainView.MessageText = LangResources.ProgressMessage_ExportWave;
+                ExportWave(save.FileName, MainView.EditableAudioScale.F0);
+            }
+        }
+
+        public void ExecPlayOrStop()
+        {
+            if (Player.PlaybackState == PlaybackState.Playing)
+            {
+                PauseAudio();
+            }
+            else
+            {
+                PlayAudio();
+            }
+        }
+
+        public void ExecLoadScale(IScaleLoader loader)
+        {
+            var fileTypes = loader.SupportedFileExtensions.Select((s) => "*." + LoaderExtentionRegex.Replace(s, "")).ToArray();
+            var open = new OpenFileDialog();
+            open.Filter = $"Supported File({string.Join(",", fileTypes)})|{string.Join(";", fileTypes)}";
+            if (open.ShowDialog() ?? false)
+            {
+                LoadScale(loader, open.FileName);
+            }
+        }
+
+        public void ExecLoadScaleFromWave()
+        {
+            var open = new OpenFileDialog();
+            open.Filter = "Wave PCM(*.wav)|*.wav";
+            if (open.ShowDialog() ?? false)
+            {
+                LoadScaleFromWave(open.FileName);
+            }
+        }
+
+        #endregion
 
         void Window_PreviewDragOver(object sender, DragEventArgs e)
         {
@@ -170,31 +389,34 @@ namespace Intervallo.Form
 
         void Window_Drop(object sender, DragEventArgs e)
         {
-            Player?.Stop();
-            Player?.Dispose();
-
-            MainView.Wave = null;
-            MainView.AudioScale = null;
-            MainView.MessageText = TextResources.ProgressMessageLoadWave;
-            MainView.Progress = 0.0;
-            MainView.Lock = true;
-            LoadWave((e.Data.GetData(DataFormats.FileDrop, true) as string[])[0]);
-        }
-
-        void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (Player == null || e.Key != Key.Space)
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop, true))
             {
                 return;
             }
 
-            if (Player.PlaybackState == PlaybackState.Playing)
+            var filePaths = (e.Data.GetData(DataFormats.FileDrop, true) as string[]) ?? new string[] { "" };
+            var extension = Path.GetExtension(filePaths[0]);
+            if (extension == ".wav")
             {
-                PauseAudio();
+                OpenFile(filePaths[0]);
             }
-            else
+            else if (AnalyzedAudio != null)
             {
-                PlayAudio();
+                foreach (var loader in ScaleLoaderPlugins)
+                {
+                    if (loader.SupportedFileExtensions.Select((s) => "." + LoaderExtentionRegex.Replace(s, "")).Contains(extension))
+                    {
+                        LoadScale(loader, filePaths[0]);
+                    }
+                }
+            }
+        }
+
+        void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (Player == null || Lock || e.Key != Key.Space)
+            {
+                return;
             }
         }
 
@@ -237,21 +459,6 @@ namespace Intervallo.Form
             PlayingBeforeIndicatorMoving = WaveData != null && Player.PlaybackState == PlaybackState.Playing;
             PauseAudio();
             SeekPlayer.Play();
-        }
-
-        void Save_Click(object sender, RoutedEventArgs e)
-        {
-            var open = new OpenFileDialog();
-            open.Filter = $"Supported Files({string.Join(",", ScaleLoaderPlugins[0].SupportedFileExtensions)}) |{string.Join(";", ScaleLoaderPlugins[0].SupportedFileExtensions)}";
-            if (open.ShowDialog() == true)
-            {
-                var frames = ScaleLoaderPlugins[0].Load(open.FileName, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.AnalyzedAudio.FrameLength);
-                if (frames.Length < AnalyzedAudio.AnalyzedAudio.FrameLength)
-                {
-                    frames = frames.Concat(Enumerable.Repeat(0.0, AnalyzedAudio.AnalyzedAudio.FrameLength - frames.Length)).ToArray();
-                }
-                MainView.EditableAudioScale = new AudioScaleModel(frames, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.SampleCount, AnalyzedAudio.SampleRate);
-            }
         }
     }
 }

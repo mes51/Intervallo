@@ -3,9 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:p="clr-namespace:Intervallo.Properties"
         xmlns:local="clr-namespace:Intervallo"
         xmlns:Form="clr-namespace:Intervallo.Form"
         xmlns:UI="clr-namespace:Intervallo.UI"
+        xmlns:Command="clr-namespace:Intervallo.Command"
         x:Class="Intervallo.Form.MainWindow"
         mc:Ignorable="d"
         Name="Window"
@@ -16,11 +18,37 @@
         PreviewDragOver="Window_PreviewDragOver"
         KeyDown="Window_KeyDown"
         Closing="Window_Closing">
+    <Window.Resources>
+        <p:LangResources x:Key="LangResources" />
+    </Window.Resources>
+    <Window.InputBindings>
+        <!-- File Emnu -->
+        <KeyBinding Gesture="Ctrl+O" Command="{Binding ElementName=Window, Path=OpenCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+Alt+S" Command="{Binding ElementName=Window, Path=ExportCommand}" />
+        <KeyBinding Gesture="Alt+F4" Command="{Binding ElementName=Window, Path=ExitCommand}" />
+        <!-- Manipulation Menu -->
+        <KeyBinding Gesture="Space" Command="{Binding ElementName=Window, Path=PreviewCommand}" />
+    </Window.InputBindings>
     <Grid>
-        <Button x:Name="Save" Content="Save" Margin="0,0,10,34" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom" Click="Save_Click"/>
-        <Menu x:Name="menu" Height="24" VerticalAlignment="Top"/>
+        <Menu x:Name="menu" Height="24" VerticalAlignment="Top">
+            <MenuItem Header="{Binding MainMenu_FileMenu, Source={StaticResource LangResources}}">
+                <MenuItem Header="{Binding MainMenu_OpenFile, Source={StaticResource LangResources}}" Command="{Binding ElementName=Window, Path=OpenCommand}" InputGestureText="Ctrl+O" />
+                <MenuItem Header="{Binding MainMenu_Export, Source={StaticResource LangResources}}" Command="{Binding ElementName=Window, Path=ExportCommand}" InputGestureText="Ctrl+Shift+Alt+S" />
+                <Separator />
+                <MenuItem Header="{Binding MainMenu_Exit, Source={StaticResource LangResources}}" Command="{Binding ElementName=Window, Path=ExitCommand}" InputGestureText="Alt+F4" />
+            </MenuItem>
+            <MenuItem Header="{Binding MainMenu_EditMenu, Source={StaticResource LangResources}}">
+                <MenuItem Name="LoadScaleMenu" Header="{Binding MainMenu_LoadScale, Source={StaticResource LangResources}}">
+                    <Separator />
+                    <MenuItem Command="{Binding ElementName=Window, Path=LoadScaleFromWaveCommand}" Header="{Binding MainMenu_LoadScaleFromWave, Source={StaticResource LangResources}}" />
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="{Binding MainMenu_ManipulationMenu, Source={StaticResource LangResources}}" Visibility="Hidden">
+                <MenuItem Header="{Binding MainMenu_Preview, Source={StaticResource LangResources}}" Command="{Binding ElementName=Window, Path=PreviewCommand}" InputGestureText="Space"/>
+            </MenuItem>
+        </Menu>
         <StatusBar Height="24" VerticalAlignment="Bottom"/>
-        <UI:MainView Margin="10,29,10,59"
+        <UI:MainView Margin="10,29"
                      x:Name="MainView"
                      IndicatorMoved="MainView_IndicatorMoved"
                      IndicatorMoveFinish="MainView_IndicatorMoveFinish"

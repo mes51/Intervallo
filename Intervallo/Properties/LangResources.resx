@@ -117,10 +117,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ProgressMessageAnalyzingWave" xml:space="preserve">
+  <data name="MainMenu_EditMenu" xml:space="preserve">
+    <value>編集(_E)</value>
+  </data>
+  <data name="MainMenu_Exit" xml:space="preserve">
+    <value>終了(_X)</value>
+  </data>
+  <data name="MainMenu_Export" xml:space="preserve">
+    <value>書き出し(_W)...</value>
+  </data>
+  <data name="MainMenu_FileMenu" xml:space="preserve">
+    <value>ファイル(_F)</value>
+  </data>
+  <data name="MainMenu_LoadScale" xml:space="preserve">
+    <value>音階データの読み込み(_L)</value>
+  </data>
+  <data name="MainMenu_LoadScaleFromWave" xml:space="preserve">
+    <value>wavファイルから読み込む(_W)...</value>
+  </data>
+  <data name="MainMenu_ManipulationMenu" xml:space="preserve">
+    <value>操作(_M)</value>
+  </data>
+  <data name="MainMenu_OpenFile" xml:space="preserve">
+    <value>開く(_O)...</value>
+  </data>
+  <data name="MainMenu_Preview" xml:space="preserve">
+    <value>再生(_P)</value>
+  </data>
+  <data name="ProgressMessage_AnalyzingWave" xml:space="preserve">
     <value>音声解析中...</value>
   </data>
-  <data name="ProgressMessageLoadWave" xml:space="preserve">
+  <data name="ProgressMessage_ExportWave" xml:space="preserve">
+    <value>wavファイル出力中...</value>
+  </data>
+  <data name="ProgressMessage_LoadScale" xml:space="preserve">
+    <value>音階データ読み込み中...</value>
+  </data>
+  <data name="ProgressMessage_LoadWave" xml:space="preserve">
     <value>wavファイル読み込み中...</value>
   </data>
 </root>

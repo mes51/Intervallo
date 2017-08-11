@@ -110,7 +110,7 @@ namespace Intervallo.DefaultPlugins
         public static int[] BlockClone(this int[] src, int offset, int count)
         {
             var result = new int[count];
-            result.BlockCopy(offset, result, 0, count);
+            src.BlockCopy(offset, result, 0, count);
             return result;
         }
 
@@ -148,7 +148,7 @@ namespace Intervallo.DefaultPlugins
         public static double[] BlockClone(this double[] src, int offset, int count)
         {
             var result = new double[count];
-            result.BlockCopy(offset, result, 0, count);
+            src.BlockCopy(offset, result, 0, count);
             return result;
         }
 
