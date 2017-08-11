@@ -142,7 +142,7 @@
     <value>開く(_O)...</value>
   </data>
   <data name="MainMenu_Preview" xml:space="preserve">
-    <value>再生(_P)</value>
+    <value>再生・停止(_P)</value>
   </data>
   <data name="ProgressMessage_AnalyzingWave" xml:space="preserve">
     <value>音声解析中...</value>

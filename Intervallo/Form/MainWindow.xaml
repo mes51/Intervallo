@@ -43,7 +43,7 @@
                     <MenuItem Command="{Binding ElementName=Window, Path=LoadScaleFromWaveCommand}" Header="{Binding MainMenu_LoadScaleFromWave, Source={StaticResource LangResources}}" />
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="{Binding MainMenu_ManipulationMenu, Source={StaticResource LangResources}}" Visibility="Hidden">
+            <MenuItem Header="{Binding MainMenu_ManipulationMenu, Source={StaticResource LangResources}}">
                 <MenuItem Header="{Binding MainMenu_Preview, Source={StaticResource LangResources}}" Command="{Binding ElementName=Window, Path=PreviewCommand}" InputGestureText="Space"/>
             </MenuItem>
         </Menu>

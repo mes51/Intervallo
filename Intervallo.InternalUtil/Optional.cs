@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Intervallo.Plugin.Util
+namespace Intervallo.InternalUtil
 {
     public abstract class Optional<T> : IEnumerable<T>
     {

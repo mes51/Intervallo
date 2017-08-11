@@ -253,6 +253,7 @@ namespace Intervallo.UI
                 ScaleScrollBar.SmallChange = ScaleMeasureView.ScaleRange.Length * 0.05;
                 ScaleScrollBar.LargeChange = ScaleMeasureView.ScaleRange.Length * 0.5;
                 ScaleScrollBar.Maximum = ScaleMeasureView.MaxOctave - ScaleMeasureView.ScaleRange.Length;
+                ScaleScrollBar.Value = ScaleMeasureView.ScaleRange.Begin;
                 ScaleScrollBar.IsEnabled = ScaleMeasureView.ScaleRange.Length < ScaleMeasureView.MaxOctave;
                 ScaleScrollBar.ViewportSize = ScaleScrollBar.IsEnabled ? 1.0 / (ScaleScrollBar.Maximum - ScaleScrollBar.Minimum) : 0;
             }

@@ -2,7 +2,7 @@
 using Intervallo.DefaultPlugins.Properties;
 using Intervallo.DefaultPlugins.Vsqx;
 using Intervallo.Plugin;
-using Intervallo.Plugin.Util;
+using Intervallo.InternalUtil;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;

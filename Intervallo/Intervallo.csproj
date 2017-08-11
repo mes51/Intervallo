@@ -226,6 +226,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Intervallo.InternalUtil\Intervallo.InternalUtil.csproj">
+      <Project>{7fe2e5e0-4024-4ccd-9dcc-84223488d346}</Project>
+      <Name>Intervallo.InternalUtil</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Intervallo.Plugin\Intervallo.Plugin.csproj">
       <Project>{75855f2a-e8d7-4359-96d0-229ff3185001}</Project>
       <Name>Intervallo.Plugin</Name>

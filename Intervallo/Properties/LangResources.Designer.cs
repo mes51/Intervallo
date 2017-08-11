@@ -133,7 +133,7 @@ namespace Intervallo.Properties {
         }
         
         /// <summary>
-        ///   再生(_P) に類似しているローカライズされた文字列を検索します。
+        ///   再生・停止(_P) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string MainMenu_Preview {
             get {

@@ -178,7 +178,7 @@ namespace Intervallo.Form
                     AnalyzedAudio = CacheFile.FindCache<AnalyzedAudioCache>(WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName)
                         .GetOrElse(() =>
                         {
-                            var aa = AudioOperatorPlugins[0].Analyze(new Plugin.WaveData(WaveData.Data, WaveData.Fs), 5.0, (p) =>
+                            var aa = AudioOperatorPlugins[0].Analyze(new WaveData(WaveData.Data, WaveData.Fs), 5.0, (p) =>
                             {
                                 Dispatcher.Invoke(() =>
                                 {
@@ -272,7 +272,7 @@ namespace Intervallo.Form
 
                 Dispatcher.Invoke(() =>
                 {
-                    MainView.Progress = 1000.0;
+                    MainView.Progress = 100.0;
                     ApplyScale(loadedScale);
                     Lock = false;
                 });

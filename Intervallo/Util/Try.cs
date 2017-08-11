@@ -1,4 +1,4 @@
-﻿using Intervallo.Plugin.Util;
+﻿using Intervallo.InternalUtil;
 using System;
 using System.Collections;
 using System.Collections.Generic;
