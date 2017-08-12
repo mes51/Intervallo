@@ -112,7 +112,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Audio\Filter\FIRFilter.cs" />
     <Compile Include="Audio\Player\LoopableWaveStream.cs" />
     <Compile Include="Audio\Player\SampleBufferedWaveProvider.cs" />
     <Compile Include="Audio\Player\SeekPlayer.cs" />

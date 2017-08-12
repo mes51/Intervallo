@@ -18,9 +18,6 @@
         ShowInTaskbar="False"
         Activated="Window_Activated"
         Closed="Window_Closed">
-    <Window.Resources>
-        <p:LangResources x:Key="LangResources" />
-    </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Close" Executed="CommandBinding_Executed" />
     </Window.CommandBindings>
@@ -33,15 +30,15 @@
                 </Label.Content>
             </Label>
         </StackPanel>
-        <Expander Name="ExceptionInfomation" Header="{Binding MessageBoxWindow_ExceptionInfoHeader, Source={StaticResource LangResources}}" Margin="8, 0, 8, 8" Visibility="Collapsed">
+        <Expander Name="ExceptionInfomation" Header="{x:Static p:LangResources.MessageBoxWindow_ExceptionInfoHeader}" Margin="8, 0, 8, 8" Visibility="Collapsed">
             <TextBox Name="ExceptionInformationText" Text="Exception information" Margin="8" IsReadOnly="True" Height="200" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" />
         </Expander>
         <Grid Height="50" VerticalAlignment="Bottom" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Name="YesButton" Content="{Binding MessageBoxWindow_Yes, Source={StaticResource LangResources}}" Height="20" Width="75" Margin="4" Visibility="Collapsed" TabIndex="0" CommandParameter="{x:Static MessageBoxResult.Yes}" Command="ApplicationCommands.Close" IsDefault="True" />
-                <Button Name="NoButton" Content="{Binding MessageBoxWindow_No, Source={StaticResource LangResources}}" Height="20" Width="75" Margin="4" Visibility="Collapsed" TabIndex="1" CommandParameter="{x:Static MessageBoxResult.No}" Command="ApplicationCommands.Close" />
-                <Button Name="OKButton" Content="{Binding MessageBoxWindow_OK, Source={StaticResource LangResources}}" Height="20" Width="75" Margin="4" Visibility="Collapsed" TabIndex="2" CommandParameter="{x:Static MessageBoxResult.OK}" Command="ApplicationCommands.Close" IsDefault="True" />
-                <Button Name="CancelButton" Content="{Binding MessageBoxWindow_Cancel, Source={StaticResource LangResources}}" Height="20" Width="75" Margin="4" Visibility="Collapsed" TabIndex="3" CommandParameter="{x:Static MessageBoxResult.Cancel}" Command="ApplicationCommands.Close" IsCancel="True" />
+                <Button Name="YesButton" Content="{x:Static p:LangResources.MessageBoxWindow_Yes}" Height="20" Width="75" Margin="4" Visibility="Collapsed" TabIndex="0" CommandParameter="{x:Static MessageBoxResult.Yes}" Command="ApplicationCommands.Close" IsDefault="True" />
+                <Button Name="NoButton" Content="{x:Static p:LangResources.MessageBoxWindow_No}" Height="20" Width="75" Margin="4" Visibility="Collapsed" TabIndex="1" CommandParameter="{x:Static MessageBoxResult.No}" Command="ApplicationCommands.Close" />
+                <Button Name="OKButton" Content="{x:Static p:LangResources.MessageBoxWindow_OK}" Height="20" Width="75" Margin="4" Visibility="Collapsed" TabIndex="2" CommandParameter="{x:Static MessageBoxResult.OK}" Command="ApplicationCommands.Close" IsDefault="True" />
+                <Button Name="CancelButton" Content="{x:Static p:LangResources.MessageBoxWindow_Cancel}" Height="20" Width="75" Margin="4" Visibility="Collapsed" TabIndex="3" CommandParameter="{x:Static MessageBoxResult.Cancel}" Command="ApplicationCommands.Close" IsCancel="True" />
                 <Rectangle Margin="10, 0, 0, 0" Width="0" Visibility="Hidden" />
             </StackPanel>
         </Grid>

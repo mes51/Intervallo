@@ -18,9 +18,6 @@
         PreviewDragOver="Window_PreviewDragOver"
         KeyDown="Window_KeyDown"
         Closing="Window_Closing">
-    <Window.Resources>
-        <p:LangResources x:Key="LangResources" />
-    </Window.Resources>
     <Window.InputBindings>
         <!-- File Emnu -->
         <KeyBinding Gesture="Ctrl+O" Command="{Binding ElementName=Window, Path=OpenCommand}" />
@@ -31,20 +28,20 @@
     </Window.InputBindings>
     <Grid>
         <Menu x:Name="menu" Height="24" VerticalAlignment="Top">
-            <MenuItem Header="{Binding MainMenu_FileMenu, Source={StaticResource LangResources}}">
-                <MenuItem Header="{Binding MainMenu_OpenFile, Source={StaticResource LangResources}}" Command="{Binding ElementName=Window, Path=OpenCommand}" InputGestureText="Ctrl+O" />
-                <MenuItem Header="{Binding MainMenu_Export, Source={StaticResource LangResources}}" Command="{Binding ElementName=Window, Path=ExportCommand}" InputGestureText="Ctrl+Shift+Alt+S" />
+            <MenuItem Header="{x:Static p:LangResources.MainMenu_FileMenu}">
+                <MenuItem Header="{x:Static p:LangResources.MainMenu_OpenFile}" Command="{Binding ElementName=Window, Path=OpenCommand}" InputGestureText="Ctrl+O" />
+                <MenuItem Header="{x:Static p:LangResources.MainMenu_Export}" Command="{Binding ElementName=Window, Path=ExportCommand}" InputGestureText="Ctrl+Shift+Alt+S" />
                 <Separator />
-                <MenuItem Header="{Binding MainMenu_Exit, Source={StaticResource LangResources}}" Command="{Binding ElementName=Window, Path=ExitCommand}" InputGestureText="Alt+F4" />
+                <MenuItem Header="{x:Static p:LangResources.MainMenu_Exit}" Command="{Binding ElementName=Window, Path=ExitCommand}" InputGestureText="Alt+F4" />
             </MenuItem>
-            <MenuItem Header="{Binding MainMenu_EditMenu, Source={StaticResource LangResources}}">
-                <MenuItem Name="LoadScaleMenu" Header="{Binding MainMenu_LoadScale, Source={StaticResource LangResources}}">
+            <MenuItem Header="{x:Static p:LangResources.MainMenu_EditMenu}">
+                <MenuItem Name="LoadScaleMenu" Header="{x:Static p:LangResources.MainMenu_LoadScale}">
                     <Separator />
-                    <MenuItem Command="{Binding ElementName=Window, Path=LoadScaleFromWaveCommand}" Header="{Binding MainMenu_LoadScaleFromWave, Source={StaticResource LangResources}}" />
+                    <MenuItem Command="{Binding ElementName=Window, Path=LoadScaleFromWaveCommand}" Header="{x:Static p:LangResources.MainMenu_LoadScaleFromWave}" />
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="{Binding MainMenu_ManipulationMenu, Source={StaticResource LangResources}}">
-                <MenuItem Header="{Binding MainMenu_Preview, Source={StaticResource LangResources}}" Command="{Binding ElementName=Window, Path=PreviewCommand}" InputGestureText="Space"/>
+            <MenuItem Header="{x:Static p:LangResources.MainMenu_ManipulationMenu}">
+                <MenuItem Header="{x:Static p:LangResources.MainMenu_Preview}" Command="{Binding ElementName=Window, Path=PreviewCommand}" InputGestureText="Space"/>
             </MenuItem>
         </Menu>
         <StatusBar Height="24" VerticalAlignment="Bottom"/>

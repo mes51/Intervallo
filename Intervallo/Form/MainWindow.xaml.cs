@@ -458,6 +458,13 @@ namespace Intervallo.Form
                 return;
             }
 
+            // bring window to front
+            // see: https://stackoverflow.com/a/4831839
+            Activate();
+            Topmost = true;
+            Topmost = false;
+            Focus();
+
             var filePaths = (e.Data.GetData(DataFormats.FileDrop, true) as string[]) ?? new string[] { "" };
             var extension = Path.GetExtension(filePaths[0]);
             if (extension == ".wav")
