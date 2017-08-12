@@ -101,7 +101,20 @@ namespace Intervallo.Form
                 }
                 ScaleLoaderPlugins.Reverse();
             }
-            catch (Exception e) { }
+            catch (Exception e)
+            {
+                MessageBox.ShowWarning(LangResources.Error_RaisePluginLoadError, exception: e);
+            }
+
+            if (AudioOperatorPlugins.Count < 1)
+            {
+                MessageBox.ShowError(LangResources.Fatal_CannotLoadAudioOperator, LangResources.MessageBoxTitle_CannotLoadAudioOperator);
+                Close();
+            }
+            else if (ScaleLoaderPlugins.Count < 1)
+            {
+                MessageBox.ShowWarning(LangResources.Error_CannotLoadScaleLoader, LangResources.MessageBoxTitle_CannotLoadScaleLoader);
+            }
         }
 
         #region TODO: Move to ModelView
@@ -197,13 +210,31 @@ namespace Intervallo.Form
                         Lock = false;
                     });
                 }
-                catch (InvalidDataException ex)
+                catch (InvalidDataException)
                 {
-                    Lock = false;
+                    MessageBox.ShowWarning(LangResources.Error_UnsupportedWaveFile, LangResources.MessageBoxTitle_CannotLoadWaveFile);
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        Player?.Stop();
+                        Player?.Dispose();
+                        MainView.Wave = null;
+                        MainView.AudioScale = null;
+                        Lock = false;
+                    });
                 }
                 catch (Exception e)
                 {
-                    Lock = false;
+                    MessageBox.ShowWarning(LangResources.Error_CannodLoadWaveFile, exception: e);
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        Player?.Stop();
+                        Player?.Dispose();
+                        MainView.Wave = null;
+                        MainView.AudioScale = null;
+                        Lock = false;
+                    });
                 }
             });
         }
@@ -268,14 +299,26 @@ namespace Intervallo.Form
 
             await Task.Run(() =>
             {
-                var loadedScale = loader.Load(filePath, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.AnalyzedAudio.FrameLength);
-
-                Dispatcher.Invoke(() =>
+                try
                 {
-                    MainView.Progress = 100.0;
-                    ApplyScale(loadedScale);
-                    Lock = false;
-                });
+                    var loadedScale = loader.Load(filePath, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.AnalyzedAudio.FrameLength);
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        MainView.Progress = 100.0;
+                        ApplyScale(loadedScale);
+                        Lock = false;
+                    });
+                }
+                catch (Exception e)
+                {
+                    MessageBox.ShowWarning(LangResources.Error_RaiseLoadScaleError + e.Message, exception: e);
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        Lock = false;
+                    });
+                }
             });
         }
 
@@ -287,28 +330,49 @@ namespace Intervallo.Form
 
             await Task.Run(() =>
             {
-                var wave = Wavefile.Read(filePath);
-                var aac = CacheFile.FindCache<AnalyzedAudioCache>(wave.Hash + AudioOperatorPlugins[0].GetType().FullName)
-                    .GetOrElse(() =>
-                    {
-                        var aa = AudioOperatorPlugins[0].Analyze(new Plugin.WaveData(wave.Data, wave.Fs), 5.0, (p) =>
-                        {
-                            Dispatcher.Invoke(() =>
-                            {
-                                MainView.Progress = p * 0.75 + 25.0;
-                            });
-                        });
-                        var result = new AnalyzedAudioCache(AudioOperatorPlugins[0].GetType(), aa, wave.Data.Length, wave.Fs, wave.Hash);
-                        CacheFile.SaveCache(result, wave.Hash + AudioOperatorPlugins[0].GetType().FullName);
-                        return result;
-                    });
-
-                Dispatcher.Invoke(() =>
+                try
                 {
-                    MainView.Progress = 1000.0;
-                    ApplyScale(aac.AnalyzedAudio.F0);
-                    Lock = false;
-                });
+                    var wave = Wavefile.Read(filePath);
+                    var aac = CacheFile.FindCache<AnalyzedAudioCache>(wave.Hash + AudioOperatorPlugins[0].GetType().FullName)
+                        .GetOrElse(() =>
+                        {
+                            var aa = AudioOperatorPlugins[0].Analyze(new Plugin.WaveData(wave.Data, wave.Fs), 5.0, (p) =>
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    MainView.Progress = p * 0.75 + 25.0;
+                                });
+                            });
+                            var result = new AnalyzedAudioCache(AudioOperatorPlugins[0].GetType(), aa, wave.Data.Length, wave.Fs, wave.Hash);
+                            CacheFile.SaveCache(result, wave.Hash + AudioOperatorPlugins[0].GetType().FullName);
+                            return result;
+                        });
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        MainView.Progress = 1000.0;
+                        ApplyScale(aac.AnalyzedAudio.F0);
+                        Lock = false;
+                    });
+                }
+                catch (InvalidDataException)
+                {
+                    MessageBox.ShowWarning(LangResources.Error_UnsupportedWaveFile, LangResources.MessageBoxTitle_CannotLoadWaveFile);
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        Lock = false;
+                    });
+                }
+                catch (Exception e)
+                {
+                    MessageBox.ShowWarning(LangResources.Error_CannodLoadWaveFile, exception: e);
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        Lock = false;
+                    });
+                }
             });
         }
 

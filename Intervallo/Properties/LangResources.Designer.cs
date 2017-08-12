@@ -61,6 +61,65 @@ namespace Intervallo.Properties {
         }
         
         /// <summary>
+        ///   wavファイルの読み込みに失敗しました。
+        ///読み込もうとしているwavファイルを別のプログラムで開いている等、何らかの理由でwavファイルが読み込めなくなっている可能性があります に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Error_CannodLoadWaveFile {
+            get {
+                return ResourceManager.GetString("Error_CannodLoadWaveFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   音階データ読み込みプラグインの読み込みに失敗しました。音声からの音階読み込みのみ利用可能です に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Error_CannotLoadScaleLoader {
+            get {
+                return ResourceManager.GetString("Error_CannotLoadScaleLoader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   音階データ読み込み中にエラーが発生しました
+        ///
+        /// に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Error_RaiseLoadScaleError {
+            get {
+                return ResourceManager.GetString("Error_RaiseLoadScaleError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   プラグインの読み込み中にエラーが発生しました に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Error_RaisePluginLoadError {
+            get {
+                return ResourceManager.GetString("Error_RaisePluginLoadError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   サポートされていない形式のwavファイルです。
+        ///このアプリケーションではモノラルのPCMのみサポートしています に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Error_UnsupportedWaveFile {
+            get {
+                return ResourceManager.GetString("Error_UnsupportedWaveFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   音声解析プラグインの読み込みに失敗しました。Pluginsフォルダに壊れたファイルがないか確認の上、アプリケーションを再起動してください
+        ///(再度アプリケーションをダウンロードの上、DefaultPlugins以外が存在しない状態での起動を推奨します) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Fatal_CannotLoadAudioOperator {
+            get {
+                return ResourceManager.GetString("Fatal_CannotLoadAudioOperator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   編集(_E) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string MainMenu_EditMenu {
@@ -138,6 +197,114 @@ namespace Intervallo.Properties {
         public static string MainMenu_Preview {
             get {
                 return ResourceManager.GetString("MainMenu_Preview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   音声解析プラグインの読み込み失敗 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MessageBoxTitle_CannotLoadAudioOperator {
+            get {
+                return ResourceManager.GetString("MessageBoxTitle_CannotLoadAudioOperator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   音階データ読み込みプラグインの読み込み失敗 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MessageBoxTitle_CannotLoadScaleLoader {
+            get {
+                return ResourceManager.GetString("MessageBoxTitle_CannotLoadScaleLoader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   waveファイルの読み込み失敗 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MessageBoxTitle_CannotLoadWaveFile {
+            get {
+                return ResourceManager.GetString("MessageBoxTitle_CannotLoadWaveFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   キャンセル に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MessageBoxWindow_Cancel {
+            get {
+                return ResourceManager.GetString("MessageBoxWindow_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   例外情報 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MessageBoxWindow_ExceptionInfoHeader {
+            get {
+                return ResourceManager.GetString("MessageBoxWindow_ExceptionInfoHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   いいえ(_N) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MessageBoxWindow_No {
+            get {
+                return ResourceManager.GetString("MessageBoxWindow_No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OK に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MessageBoxWindow_OK {
+            get {
+                return ResourceManager.GetString("MessageBoxWindow_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   エラー に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MessageBoxWindow_TitleError {
+            get {
+                return ResourceManager.GetString("MessageBoxWindow_TitleError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   情報 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MessageBoxWindow_TitleInformation {
+            get {
+                return ResourceManager.GetString("MessageBoxWindow_TitleInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///    に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MessageBoxWindow_TitleQuestion {
+            get {
+                return ResourceManager.GetString("MessageBoxWindow_TitleQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   警告 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MessageBoxWindow_TitleWarning {
+            get {
+                return ResourceManager.GetString("MessageBoxWindow_TitleWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   はい(_Y) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MessageBoxWindow_Yes {
+            get {
+                return ResourceManager.GetString("MessageBoxWindow_Yes", resourceCulture);
             }
         }
         

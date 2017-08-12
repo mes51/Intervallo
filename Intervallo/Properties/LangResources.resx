@@ -117,6 +117,29 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Error_CannodLoadWaveFile" xml:space="preserve">
+    <value>wavファイルの読み込みに失敗しました。
+読み込もうとしているwavファイルを別のプログラムで開いている等、何らかの理由でwavファイルが読み込めなくなっている可能性があります</value>
+  </data>
+  <data name="Error_CannotLoadScaleLoader" xml:space="preserve">
+    <value>音階データ読み込みプラグインの読み込みに失敗しました。音声からの音階読み込みのみ利用可能です</value>
+  </data>
+  <data name="Error_RaiseLoadScaleError" xml:space="preserve">
+    <value>音階データ読み込み中にエラーが発生しました
+
+</value>
+  </data>
+  <data name="Error_RaisePluginLoadError" xml:space="preserve">
+    <value>プラグインの読み込み中にエラーが発生しました</value>
+  </data>
+  <data name="Error_UnsupportedWaveFile" xml:space="preserve">
+    <value>サポートされていない形式のwavファイルです。
+このアプリケーションではモノラルのPCMのみサポートしています</value>
+  </data>
+  <data name="Fatal_CannotLoadAudioOperator" xml:space="preserve">
+    <value>音声解析プラグインの読み込みに失敗しました。Pluginsフォルダに壊れたファイルがないか確認の上、アプリケーションを再起動してください
+(再度アプリケーションをダウンロードの上、DefaultPlugins以外が存在しない状態での起動を推奨します)</value>
+  </data>
   <data name="MainMenu_EditMenu" xml:space="preserve">
     <value>編集(_E)</value>
   </data>
@@ -143,6 +166,42 @@
   </data>
   <data name="MainMenu_Preview" xml:space="preserve">
     <value>再生・停止(_P)</value>
+  </data>
+  <data name="MessageBoxTitle_CannotLoadAudioOperator" xml:space="preserve">
+    <value>音声解析プラグインの読み込み失敗</value>
+  </data>
+  <data name="MessageBoxTitle_CannotLoadScaleLoader" xml:space="preserve">
+    <value>音階データ読み込みプラグインの読み込み失敗</value>
+  </data>
+  <data name="MessageBoxTitle_CannotLoadWaveFile" xml:space="preserve">
+    <value>waveファイルの読み込み失敗</value>
+  </data>
+  <data name="MessageBoxWindow_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="MessageBoxWindow_ExceptionInfoHeader" xml:space="preserve">
+    <value>例外情報</value>
+  </data>
+  <data name="MessageBoxWindow_No" xml:space="preserve">
+    <value>いいえ(_N)</value>
+  </data>
+  <data name="MessageBoxWindow_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="MessageBoxWindow_TitleError" xml:space="preserve">
+    <value>エラー</value>
+  </data>
+  <data name="MessageBoxWindow_TitleInformation" xml:space="preserve">
+    <value>情報</value>
+  </data>
+  <data name="MessageBoxWindow_TitleQuestion" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MessageBoxWindow_TitleWarning" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="MessageBoxWindow_Yes" xml:space="preserve">
+    <value>はい(_Y)</value>
   </data>
   <data name="ProgressMessage_AnalyzingWave" xml:space="preserve">
     <value>音声解析中...</value>

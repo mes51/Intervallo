@@ -129,6 +129,9 @@
     <Compile Include="Command\OpenCommand.cs" />
     <Compile Include="Command\PreviewCommand.cs" />
     <Compile Include="Converter\PenConverter.cs" />
+    <Compile Include="Form\MessageBoxWindow.xaml.cs">
+      <DependentUpon>MessageBoxWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\AudioScaleModel.cs" />
     <Compile Include="UI\Behavior\SampleScrollBehavior.cs" />
     <Compile Include="UI\Behavior\SizeChangeBehavior.cs" />
@@ -168,6 +171,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Form\MessageBoxWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\IndicatorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
