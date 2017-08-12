@@ -22,6 +22,7 @@ using Microsoft.Win32;
 using Intervallo.Command;
 using System.Windows.Controls;
 using System.Text.RegularExpressions;
+using Intervallo.Config;
 
 namespace Intervallo.Form
 {
@@ -51,6 +52,11 @@ namespace Intervallo.Form
             LoadScaleFromWaveCommand = new LoadScaleCommand(this, false);
 
             InitializeComponent();
+            Top = ApplicationSettings.Setting.Position.Y;
+            Left = ApplicationSettings.Setting.Position.X;
+            Width = ApplicationSettings.Setting.Size.Width;
+            Height = ApplicationSettings.Setting.Size.Height;
+            WindowState = ApplicationSettings.Setting.State;
 
             Timer.Tick += (sender, e) =>
             {
@@ -496,6 +502,18 @@ namespace Intervallo.Form
             Player?.Stop();
             Player?.Dispose();
             SeekPlayer?.Dispose();
+
+            ApplicationSettings.Setting.Position = new Point(Left, Top);
+            ApplicationSettings.Setting.Size = new Size(Width, Height);
+            if (WindowState == WindowState.Minimized)
+            {
+                ApplicationSettings.Setting.State = WindowState.Normal;
+            }
+            else
+            {
+                ApplicationSettings.Setting.State = WindowState;
+            }
+            ApplicationSettings.Setting.Save();
         }
 
         void MainView_IndicatorMoved(object sender, EventArgs e)
