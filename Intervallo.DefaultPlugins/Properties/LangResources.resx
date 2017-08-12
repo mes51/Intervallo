@@ -117,11 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="VsqLoader_CancelLoad" xml:space="preserve">
+    <value>VSQXファイルの読み込みを中断しました</value>
+  </data>
   <data name="VsqLoader_FailLoadFile" xml:space="preserve">
     <value>VSQXファイルの読み込みに失敗しました。ファイル形式が古いか、壊れている可能性があります</value>
   </data>
   <data name="VsqxLoader_Description" xml:space="preserve">
     <value>VSQXファイルから音階データを読み込みます</value>
+  </data>
+  <data name="VsqxTrackSelectWindow_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="VsqxTrackSelectWindow_Description" xml:space="preserve">
+    <value>トラックが複数検出されました。読み込むトラックを選択してください:</value>
+  </data>
+  <data name="VsqxTrackSelectWindow_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="VsqxTrackSelectWindow_Title" xml:space="preserve">
+    <value>VsqxLoader トラックの選択</value>
   </data>
   <data name="WorldOperator_Description" xml:space="preserve">
     <value>WORLDを利用して音声の解析・生成を行います</value>

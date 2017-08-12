@@ -22,24 +22,24 @@ namespace Intervallo.DefaultPlugins.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class LangResource {
+    public class LangResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal LangResource() {
+        internal LangResources() {
         }
         
         /// <summary>
         ///   このクラスで使用されているキャッシュされた ResourceManager インスタンスを返します。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Intervallo.DefaultPlugins.Properties.LangResource", typeof(LangResource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Intervallo.DefaultPlugins.Properties.LangResources", typeof(LangResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace Intervallo.DefaultPlugins.Properties {
         ///   現在のスレッドの CurrentUICulture プロパティをオーバーライドします。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,9 +61,18 @@ namespace Intervallo.DefaultPlugins.Properties {
         }
         
         /// <summary>
+        ///   VSQXファイルの読み込みを中断しました に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string VsqLoader_CancelLoad {
+            get {
+                return ResourceManager.GetString("VsqLoader_CancelLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   VSQXファイルの読み込みに失敗しました。ファイル形式が古いか、壊れている可能性があります に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string VsqLoader_FailLoadFile {
+        public static string VsqLoader_FailLoadFile {
             get {
                 return ResourceManager.GetString("VsqLoader_FailLoadFile", resourceCulture);
             }
@@ -72,16 +81,52 @@ namespace Intervallo.DefaultPlugins.Properties {
         /// <summary>
         ///   VSQXファイルから音階データを読み込みます に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string VsqxLoader_Description {
+        public static string VsqxLoader_Description {
             get {
                 return ResourceManager.GetString("VsqxLoader_Description", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   キャンセル に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string VsqxTrackSelectWindow_Cancel {
+            get {
+                return ResourceManager.GetString("VsqxTrackSelectWindow_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   トラックが複数検出されました。読み込むトラックを選択してください: に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string VsqxTrackSelectWindow_Description {
+            get {
+                return ResourceManager.GetString("VsqxTrackSelectWindow_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OK に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string VsqxTrackSelectWindow_OK {
+            get {
+                return ResourceManager.GetString("VsqxTrackSelectWindow_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   VsqxLoader トラックの選択 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string VsqxTrackSelectWindow_Title {
+            get {
+                return ResourceManager.GetString("VsqxTrackSelectWindow_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   WORLDを利用して音声の解析・生成を行います に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string WorldOperator_Description {
+        public static string WorldOperator_Description {
             get {
                 return ResourceManager.GetString("WorldOperator_Description", resourceCulture);
             }

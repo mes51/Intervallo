@@ -11,6 +11,7 @@
     <AssemblyName>Intervallo.DefaultPlugins</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,24 +31,32 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\LangResource.Designer.cs">
+    <Compile Include="Form\VsqxTrackSelectWindow.xaml.cs">
+      <DependentUpon>VsqxTrackSelectWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\LangResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>LangResource.resx</DependentUpon>
+      <DependentUpon>LangResources.resx</DependentUpon>
     </Compile>
     <Compile Include="VsqxLoader.cs" />
+    <Compile Include="Vsqx\ParsedVsqxClasses.cs" />
     <Compile Include="Vsqx\vsq4.cs" />
     <Compile Include="WorldOperator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,10 +84,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\LangResource.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>LangResource.Designer.cs</LastGenOutput>
+    <EmbeddedResource Include="Properties\LangResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>LangResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Page Include="Form\VsqxTrackSelectWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

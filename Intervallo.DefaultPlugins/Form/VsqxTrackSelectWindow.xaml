@@ -1,0 +1,30 @@
+﻿<Window x:Class="Intervallo.DefaultPlugins.Form.VsqxTrackSelectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:p="clr-namespace:Intervallo.DefaultPlugins.Properties"
+        xmlns:v="clr-namespace:Intervallo.DefaultPlugins.Vsqx"
+        xmlns:local="clr-namespace:Intervallo.DefaultPlugins.Form"
+        mc:Ignorable="d"
+        Name="Root"
+        Height="300"
+        Width="500"
+        MinWidth="340"
+        WindowStartupLocation="CenterScreen"
+        Topmost="True"
+        ShowInTaskbar="False"
+        Title="{x:Static p:LangResources.VsqxTrackSelectWindow_Title}"
+        WindowStyle="ToolWindow">
+    <Window.Resources>
+        <DataTemplate x:Key="TrackTemplate" DataType="{x:Type v:Track}">
+            <TextBlock Text="{Binding Name}" />
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="{x:Static p:LangResources.VsqxTrackSelectWindow_Description}" VerticalAlignment="Top"/>
+        <ListBox x:Name="TrackListBox" Margin="10,35,10,43" ScrollViewer.VerticalScrollBarVisibility="Visible" ItemsSource="{Binding ElementName=Root, Path=Tracks}" ItemTemplate="{StaticResource TrackTemplate}" MouseDoubleClick="TrackListBox_MouseDoubleClick" />
+        <Button Content="{x:Static p:LangResources.VsqxTrackSelectWindow_Cancel}" Margin="0,0,10,10" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom" IsCancel="True"/>
+        <Button Content="{x:Static p:LangResources.VsqxTrackSelectWindow_OK}" Margin="0,0,96,10" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom" IsDefault="True" Click="OKButton_Click"/>
+    </Grid>
+</Window>
