@@ -13,12 +13,15 @@ namespace Intervallo.DefaultPlugins.Vsqx
         {
             Name = name;
             Tempo = tempo;
+            InvertTempo = tempo.Values.ToRangeDictionary((t) => t.Tick, IntervalMode.OpenInterval);
             Parts = parts;
         }
 
         public string Name { get; }
 
         public RangeDictionary<double, Tempo> Tempo { get; }
+
+        public RangeDictionary<int, Tempo> InvertTempo { get; }
 
         public RangeDictionary<int, Part> Parts { get; }
 
@@ -50,20 +53,78 @@ namespace Intervallo.DefaultPlugins.Vsqx
                 return 0.0;
             }
 
+            if (note.VibratoResult == null)
+            {
+                note.VibratoResult = CreateVibrato(note);
+            }
+
+            /*
             var prev = part.GetPrevNote(tick);
             var next = part.GetNextNote(tick);
 
             var portamento = new PortamentoInfo(part.Portamento[note.Position]);
             var nextPortamento = new PortamentoInfo(part.Portamento[next.Position]);
-
-
-
-
-
-
-            var blended = note.NoteNumber;
+            */
+            var blended = note.NoteNumber + note.VibratoResult[tick - note.Position];
 
             return GetFrequency(blended + part.PitchBend[tick]);
+        }
+
+        RangeDictionary<int, double> CreateVibrato(Note note)
+        {
+            if (note.VibratoType == 0 || note.VibratoLength < 1)
+            {
+                return new RangeDictionary<int, double>(IntervalMode.OpenInterval, new Dictionary<int, double>()
+                {
+                    [0] = 0.0
+                });
+            }
+
+            var tickRate = (1 << 16) / (double)note.Length;
+            var startTick = (int)(note.Length * (100 - note.VibratoLength) * 0.01);
+            var endTime = InvertTempo[note.Position + note.Length].TickToTime(note.Position + note.Length);
+            var waveStartTime = InvertTempo[note.Position + startTick].TickToTime(note.Position + startTick);
+
+            var result = new RangeDictionary<int, double>(IntervalMode.OpenInterval);
+            var phase = Math.PI;
+            for (var i = startTick; i < note.Length; i++)
+            {
+                var pos = note.Position + i;
+                var time = InvertTempo[pos].TickToTime(pos);
+
+                var depth = note.VibratoDepth[(int)(tickRate * i)];
+                var rate = note.VibratoRate[(int)(tickRate * i)];
+                if (depth < 1 || rate < 1)
+                {
+                    result.Add(i, 0.0);
+                    phase = Math.PI;
+                    waveStartTime = time;
+                }
+                else
+                {
+                    result.Add(i, Math.Sin(phase) * depth * 0.01 * TanhWindowedValue(time, waveStartTime, endTime, Note.VibratoEdgeTime));
+                    var nextTime = InvertTempo[pos + 1].TickToTime(pos + 1);
+                    phase += Math.PI * (9.77952755905512 + (25.0 / 127.0) * rate) * 0.5 * (time - nextTime);
+                }
+            }
+
+            return result;
+        }
+
+        double TanhWindowedValue(double t, double begin, double end, double edge)
+        {
+            if (t - begin < edge)
+            {
+                return (1.0 + Math.Tanh(Math.PI * 2.0 * ((t - begin) / edge) - Math.PI)) * 0.5;
+            }
+            else if (end - t < edge)
+            {
+                return (1.0 + Math.Tanh(Math.PI * 2.0 * ((end - t) / edge) - Math.PI)) * 0.5;
+            }
+            else
+            {
+                return 1.0;
+            }
         }
 
         double GetFrequency(double noteNumber)
@@ -149,15 +210,26 @@ namespace Intervallo.DefaultPlugins.Vsqx
         {
             return Tick + (int)((time - TotalTime) * TickPerTime);
         }
+
+        public double TickToTime(int tick)
+        {
+            return TotalTime + (tick - Tick) / TickPerTime;
+        }
     }
 
     public class Note
     {
-        public Note(int position, int length, int noteNumber)
+        public const double VibratoEdgeTime = 0.4;
+
+        public Note(int position, int length, int noteNumber, double vibratoLength, int vibratoType, RangeDictionary<int, int> vibratoDepth, RangeDictionary<int, int> vibratoRate)
         {
             Position = position;
             Length = length;
             NoteNumber = noteNumber;
+            VibratoLength = vibratoLength;
+            VibratoType = vibratoType;
+            VibratoDepth = vibratoDepth;
+            VibratoRate = vibratoRate;
         }
 
         public int Position { get; }
@@ -165,6 +237,16 @@ namespace Intervallo.DefaultPlugins.Vsqx
         public int Length { get; }
 
         public int NoteNumber { get; }
+
+        public double VibratoLength { get; }
+
+        public int VibratoType { get; }
+
+        public RangeDictionary<int, int> VibratoDepth { get; }
+
+        public RangeDictionary<int, int> VibratoRate { get; }
+
+        public RangeDictionary<int, double> VibratoResult { get; set; }
     }
 
     public class PortamentoInfo

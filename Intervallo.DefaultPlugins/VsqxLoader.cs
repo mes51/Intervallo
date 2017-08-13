@@ -104,7 +104,21 @@ namespace Intervallo.DefaultPlugins
                     .Select((p) =>
                     {
                         var notes = p.note
-                            .Select((n) => new Note(n.t, n.dur, n.n))
+                            .Select((n) =>
+                            {
+                                var vibDepth = n.nStyle.seq?
+                                    .FirstOrDefault((s) => s.id == "vibDep")?.cc
+                                    .ToRangeDictionary((c) => c.p, (c) => c.v, IntervalMode.OpenInterval)
+                                    ?? new RangeDictionary<int, int>(IntervalMode.OpenInterval, new Dictionary<int, int>() { [0] = 0 });
+                                var vibRate = n.nStyle.seq?
+                                    .FirstOrDefault((s) => s.id == "vibRate")?.cc
+                                    .ToRangeDictionary((c) => c.p, (c) => c.v, IntervalMode.OpenInterval)
+                                    ?? new RangeDictionary<int, int>(IntervalMode.OpenInterval, new Dictionary<int, int>() { [0] = 0 });
+                                var vibLength = n.nStyle.v.FirstOrDefault((st) => st.id == "vibLen")?.Value ?? 0;
+                                var vibType = n.nStyle.v.FirstOrDefault((st) => st.id == "vibType")?.Value ?? 0;
+
+                                return new Note(n.t, n.dur, n.n, vibLength, vibType, vibDepth, vibRate);
+                            })
                             .ToRangeDictionary((n) => n.Position, IntervalMode.OpenInterval);
 
                         var controls = (p.cc ?? new cc[0]).TakeWhile((c) => c.t < p.playTime).ToArray();
