@@ -17,7 +17,7 @@
         Drop="Window_Drop"
         PreviewDragOver="Window_PreviewDragOver"
         KeyDown="Window_KeyDown"
-        Closing="Window_Closing">
+        Closing="Window_Closing" Icon="/Intervallo;component/icon.ico">
     <Window.InputBindings>
         <!-- File Emnu -->
         <KeyBinding Gesture="Ctrl+O" Command="{Binding ElementName=Window, Path=OpenCommand}" />
