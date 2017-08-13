@@ -34,6 +34,9 @@ namespace Intervallo.Config
         [DataMember(Name = "state")]
         public WindowState State { get; set; } = WindowState.Normal;
 
+        [DataMember(Name = "showExceptionInMessageBox")]
+        public bool ShowExceptionInMessageBox { get; set; } = false;
+
         public void Save()
         {
             try

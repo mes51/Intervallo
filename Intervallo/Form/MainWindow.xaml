@@ -12,7 +12,7 @@
         mc:Ignorable="d"
         Name="Window"
         AllowDrop="True"
-        Title="MainWindow" Height="610" Width="945"
+        Title="Intervallo" Height="610" Width="945"
         FocusManager.IsFocusScope="{Binding ElementName=Window}"
         Drop="Window_Drop"
         PreviewDragOver="Window_PreviewDragOver"

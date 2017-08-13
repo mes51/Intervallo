@@ -165,7 +165,7 @@
     <value>開く(_O)...</value>
   </data>
   <data name="MainMenu_Preview" xml:space="preserve">
-    <value>再生・停止(_P)</value>
+    <value>原音の再生・停止(_P)</value>
   </data>
   <data name="MessageBoxTitle_CannotLoadAudioOperator" xml:space="preserve">
     <value>音声解析プラグインの読み込み失敗</value>

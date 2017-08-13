@@ -1,4 +1,5 @@
-﻿using Intervallo.Properties;
+﻿using Intervallo.Config;
+using Intervallo.Properties;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -56,7 +57,7 @@ namespace Intervallo.Form
 
         void ShowExceptionExpander(Exception exception)
         {
-            if (!ForceVisibleException)
+            if (!ForceVisibleException && !ApplicationSettings.Setting.ShowExceptionInMessageBox)
             {
                 return;
             }
