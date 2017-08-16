@@ -43,6 +43,9 @@
             <MenuItem Header="{x:Static p:LangResources.MainMenu_ManipulationMenu}">
                 <MenuItem Header="{x:Static p:LangResources.MainMenu_Preview}" Command="{Binding ElementName=Window, Path=PreviewCommand}" InputGestureText="Space"/>
             </MenuItem>
+            <MenuItem Header="{x:Static p:LangResources.MainMenu_HelpMenu}">
+                <MenuItem Header="{x:Static p:LangResources.MainMenu_About}" Command="{Binding ElementName=Window, Path=AboutCommand}"/>
+            </MenuItem>
         </Menu>
         <StatusBar Height="24" VerticalAlignment="Bottom"/>
         <UI:MainView Margin="10,29"

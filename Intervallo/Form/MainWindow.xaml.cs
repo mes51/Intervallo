@@ -41,6 +41,7 @@ namespace Intervallo.Form
         public CommandBase PreviewCommand { get; }
         public CommandBase LoadScaleCommand { get; }
         public CommandBase LoadScaleFromWaveCommand { get; }
+        public CommandBase AboutCommand { get; }
 
         public MainWindow()
         {
@@ -50,6 +51,7 @@ namespace Intervallo.Form
             PreviewCommand = new PreviewCommand(this);
             LoadScaleCommand = new LoadScaleCommand(this, true);
             LoadScaleFromWaveCommand = new LoadScaleCommand(this, false);
+            AboutCommand = new ActionCommand(this, () => new AboutWindow().ShowDialog());
 
             InitializeComponent();
             Top = ApplicationSettings.Setting.Position.Y;

@@ -61,6 +61,42 @@ namespace Intervallo.Properties {
         }
         
         /// <summary>
+        ///   Library License に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AboutWindow_LibraryLicense {
+            get {
+                return ResourceManager.GetString("AboutWindow_LibraryLicense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   License に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AboutWindow_License {
+            get {
+                return ResourceManager.GetString("AboutWindow_License", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OK に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AboutWindow_OK {
+            get {
+                return ResourceManager.GetString("AboutWindow_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   バージョン情報 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string AboutWindow_Title {
+            get {
+                return ResourceManager.GetString("AboutWindow_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   wavファイルの読み込みに失敗しました。
         ///読み込もうとしているwavファイルを別のプログラムで開いている等、何らかの理由でwavファイルが読み込めなくなっている可能性があります に類似しているローカライズされた文字列を検索します。
         /// </summary>
@@ -120,6 +156,24 @@ namespace Intervallo.Properties {
         }
         
         /// <summary>
+        ///   OK に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string LicenseWindow_OK {
+            get {
+                return ResourceManager.GetString("LicenseWindow_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   バージョン情報(_A)... に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MainMenu_About {
+            get {
+                return ResourceManager.GetString("MainMenu_About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   編集(_E) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string MainMenu_EditMenu {
@@ -152,6 +206,15 @@ namespace Intervallo.Properties {
         public static string MainMenu_FileMenu {
             get {
                 return ResourceManager.GetString("MainMenu_FileMenu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ヘルプ(_H) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MainMenu_HelpMenu {
+            get {
+                return ResourceManager.GetString("MainMenu_HelpMenu", resourceCulture);
             }
         }
         

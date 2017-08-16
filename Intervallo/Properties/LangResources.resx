@@ -117,6 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AboutWindow_LibraryLicense" xml:space="preserve">
+    <value>Library License</value>
+  </data>
+  <data name="AboutWindow_License" xml:space="preserve">
+    <value>License</value>
+  </data>
+  <data name="AboutWindow_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="AboutWindow_Title" xml:space="preserve">
+    <value>バージョン情報</value>
+  </data>
   <data name="Error_CannodLoadWaveFile" xml:space="preserve">
     <value>wavファイルの読み込みに失敗しました。
 読み込もうとしているwavファイルを別のプログラムで開いている等、何らかの理由でwavファイルが読み込めなくなっている可能性があります</value>
@@ -140,6 +152,12 @@
     <value>音声解析プラグインの読み込みに失敗しました。Pluginsフォルダに壊れたファイルがないか確認の上、アプリケーションを再起動してください
 (再度アプリケーションをダウンロードの上、DefaultPlugins以外が存在しない状態での起動を推奨します)</value>
   </data>
+  <data name="LicenseWindow_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="MainMenu_About" xml:space="preserve">
+    <value>バージョン情報(_A)...</value>
+  </data>
   <data name="MainMenu_EditMenu" xml:space="preserve">
     <value>編集(_E)</value>
   </data>
@@ -151,6 +169,9 @@
   </data>
   <data name="MainMenu_FileMenu" xml:space="preserve">
     <value>ファイル(_F)</value>
+  </data>
+  <data name="MainMenu_HelpMenu" xml:space="preserve">
+    <value>ヘルプ(_H)</value>
   </data>
   <data name="MainMenu_LoadScale" xml:space="preserve">
     <value>音階データの読み込み(_L)</value>
