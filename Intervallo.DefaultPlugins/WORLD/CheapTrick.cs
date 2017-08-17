@@ -59,6 +59,16 @@ namespace Intervallo.DefaultPlugins.WORLD
             }
         }
 
+        void AddInfinitesimalNoise(double[] inputSpectrum, int fftSize, double[] outputSpectrum)
+        {
+            const double EPS = 0.00000000000000022204460492503131;
+
+            for (int i = 0, limit = fftSize / 2; i <= limit; i++)
+            {
+                outputSpectrum[i] = inputSpectrum[i] + Math.Abs(Rand.Next()) * EPS;
+            }
+        }
+
         //-----------------------------------------------------------------------------
         // CheapTrickGeneralBody() calculates a spectral envelope at a temporal
         // position. This function is only used in CheapTrick().
@@ -80,6 +90,10 @@ namespace Intervallo.DefaultPlugins.WORLD
             // Smoothing of the power (linear axis)
             // forward_real_fft.waveform is the power spectrum.
             Common.LinearSmoothing(forwardRealFFT.Waveform, currentF0 * 2.0 / 3.0, fs, FFTSize, forwardRealFFT.Waveform);
+
+            // Add infinitesimal noise
+            // This is a safeguard to avoid including zero in the spectrum.
+            AddInfinitesimalNoise(forwardRealFFT.Waveform, FFTSize, forwardRealFFT.Waveform);
 
             // Smoothing (log axis) and spectral recovery on the cepstrum domain.
             SmoothingWithRecovery(currentF0, fs, forwardRealFFT, inverseRealFFT, spectralEnvelope);
