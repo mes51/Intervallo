@@ -31,12 +31,16 @@ namespace Intervallo.Form
 
         void LicenseTextBlock_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            new LicenseWindow(LangResources.AboutWindow_License, string.Format(LicenseResources.License_Intervallo, GetCopyright())).ShowDialog();
+            var window = new LicenseWindow(LangResources.AboutWindow_License, string.Format(LicenseResources.License_Intervallo, GetCopyright()));
+            window.Owner = this;
+            window.ShowDialog();
         }
 
         void LibraryLicenseTextBlock_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            new LicenseWindow(LangResources.AboutWindow_LibraryLicense, LicenseResources.License_Libraries).ShowDialog();
+            var window = new LicenseWindow(LangResources.AboutWindow_LibraryLicense, LicenseResources.License_Libraries);
+            window.Owner = this;
+            window.ShowDialog();
         }
 
         void Button_Click(object sender, RoutedEventArgs e)

@@ -13,7 +13,6 @@
         MinHeight="150"
         MaxWidth="550"
         WindowStartupLocation="CenterScreen"
-        Topmost="True"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
         Activated="Window_Activated"

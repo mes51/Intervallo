@@ -6,7 +6,7 @@
         xmlns:p="clr-namespace:Intervallo.Properties"
         xmlns:local="clr-namespace:Intervallo.Form"
         mc:Ignorable="d"
-        Title="LicenseWindow" Height="449" Width="695" WindowStartupLocation="CenterScreen" Topmost="True">
+        Title="LicenseWindow" Height="449" Width="695" WindowStartupLocation="CenterScreen" Icon="/Intervallo;component/icon.ico" ShowInTaskbar="False">
     <Grid>
         <TextBox x:Name="LicenseTextBox" Margin="10,10,10,35" TextWrapping="Wrap" IsReadOnly="True" AcceptsReturn="True" VerticalScrollBarVisibility="Visible"/>
         <Button Content="{x:Static p:LangResources.LicenseWindow_OK}" Margin="0,0,10,10" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="Button_Click"/>
