@@ -6,7 +6,7 @@
         xmlns:p="clr-namespace:Intervallo.Properties"
         xmlns:local="clr-namespace:Intervallo.Form"
         mc:Ignorable="d"
-        Title="{x:Static p:LangResources.AboutWindow_Title}" ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" Height="261">
+        Title="{x:Static p:LangResources.AboutWindow_Title}" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" Height="261" Icon="/Intervallo;component/icon.ico">
     <Window.Resources>
         <Style x:Key="LinkTextBlock" TargetType="{x:Type TextBlock}">
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />

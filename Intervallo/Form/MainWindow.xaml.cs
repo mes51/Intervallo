@@ -38,27 +38,39 @@ namespace Intervallo.Form
         public CommandBase OpenCommand { get; }
         public CommandBase ExportCommand { get; }
         public CommandBase ExitCommand { get; }
-        public CommandBase PreviewCommand { get; }
         public CommandBase LoadScaleCommand { get; }
         public CommandBase LoadScaleFromWaveCommand { get; }
+        public CommandBase PreviewCommand { get; }
+        public CommandBase ClearCacheCommand { get; }
+        public CommandBase OptionCommand { get; }
         public CommandBase AboutCommand { get; }
 
         public MainWindow()
         {
             OpenCommand = new OpenCommand(this);
             ExportCommand = new ExportCommand(this);
-            ExitCommand = new ExitCommand(this);
-            PreviewCommand = new PreviewCommand(this);
+            ExitCommand = new ActionCommand(this, () => Close(), true);
             LoadScaleCommand = new LoadScaleCommand(this, true);
             LoadScaleFromWaveCommand = new LoadScaleCommand(this, false);
-            AboutCommand = new ActionCommand(this, () => new AboutWindow().ShowDialog());
+            PreviewCommand = new PreviewCommand(this);
+            ClearCacheCommand = new ActionCommand(this, () => CacheFile.ClearChaceFile(), true);
+            OptionCommand = new ActionCommand(this, () => {
+                var window = new OptionWindow();
+                window.Owner = this;
+                window.ShowDialog();
+            }, true);
+            AboutCommand = new ActionCommand(this, () => {
+                var window = new AboutWindow();
+                window.Owner = this;
+                window.ShowDialog();
+            });
 
             InitializeComponent();
-            Top = ApplicationSettings.Setting.Position.Y;
-            Left = ApplicationSettings.Setting.Position.X;
-            Width = ApplicationSettings.Setting.Size.Width;
-            Height = ApplicationSettings.Setting.Size.Height;
-            WindowState = ApplicationSettings.Setting.State;
+            Top = ApplicationSettings.Setting.General.Position.Y;
+            Left = ApplicationSettings.Setting.General.Position.X;
+            Width = ApplicationSettings.Setting.General.Size.Width;
+            Height = ApplicationSettings.Setting.General.Size.Height;
+            WindowState = ApplicationSettings.Setting.General.State;
 
             Timer.Tick += (sender, e) =>
             {
@@ -199,7 +211,7 @@ namespace Intervallo.Form
                     AnalyzedAudio = CacheFile.FindCache<AnalyzedAudioCache>(WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName)
                         .GetOrElse(() =>
                         {
-                            var aa = AudioOperatorPlugins[0].Analyze(new WaveData(WaveData.Data, WaveData.Fs), 5.0, (p) =>
+                            var aa = AudioOperatorPlugins[0].Analyze(new WaveData(WaveData.Data, WaveData.Fs), ApplicationSettings.Setting.PitchOperation.FramePeriod, (p) =>
                             {
                                 Dispatcher.Invoke(() =>
                                 {
@@ -344,7 +356,7 @@ namespace Intervallo.Form
                     var aac = CacheFile.FindCache<AnalyzedAudioCache>(wave.Hash + AudioOperatorPlugins[0].GetType().FullName)
                         .GetOrElse(() =>
                         {
-                            var aa = AudioOperatorPlugins[0].Analyze(new Plugin.WaveData(wave.Data, wave.Fs), 5.0, (p) =>
+                            var aa = AudioOperatorPlugins[0].Analyze(new Plugin.WaveData(wave.Data, wave.Fs), ApplicationSettings.Setting.PitchOperation.FramePeriod, (p) =>
                             {
                                 Dispatcher.Invoke(() =>
                                 {
@@ -505,15 +517,15 @@ namespace Intervallo.Form
             Player?.Dispose();
             SeekPlayer?.Dispose();
 
-            ApplicationSettings.Setting.Position = new Point(Left, Top);
-            ApplicationSettings.Setting.Size = new Size(Width, Height);
+            ApplicationSettings.Setting.General.Position = new Point(Left, Top);
+            ApplicationSettings.Setting.General.Size = new Size(Width, Height);
             if (WindowState == WindowState.Minimized)
             {
-                ApplicationSettings.Setting.State = WindowState.Normal;
+                ApplicationSettings.Setting.General.State = WindowState.Normal;
             }
             else
             {
-                ApplicationSettings.Setting.State = WindowState;
+                ApplicationSettings.Setting.General.State = WindowState;
             }
             ApplicationSettings.Setting.Save();
         }

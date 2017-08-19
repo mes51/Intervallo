@@ -43,6 +43,11 @@
             <MenuItem Header="{x:Static p:LangResources.MainMenu_ManipulationMenu}">
                 <MenuItem Header="{x:Static p:LangResources.MainMenu_Preview}" Command="{Binding ElementName=Window, Path=PreviewCommand}" InputGestureText="Space"/>
             </MenuItem>
+            <MenuItem Header="{x:Static p:LangResources.MainMenu_ToolMenu}">
+                <MenuItem Header="{x:Static p:LangResources.MainMenu_ClearCache}" Command="{Binding ElementName=Window, Path=ClearCacheCommand}"/>
+                <Separator />
+                <MenuItem Header="{x:Static p:LangResources.MainMenu_Option}" Command="{Binding ElementName=Window, Path=OptionCommand}"/>
+            </MenuItem>
             <MenuItem Header="{x:Static p:LangResources.MainMenu_HelpMenu}">
                 <MenuItem Header="{x:Static p:LangResources.MainMenu_About}" Command="{Binding ElementName=Window, Path=AboutCommand}"/>
             </MenuItem>

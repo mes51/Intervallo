@@ -1,0 +1,65 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:p="clr-namespace:Intervallo.Properties"
+        xmlns:conf="clr-namespace:Intervallo.Config"
+        xmlns:local="clr-namespace:Intervallo.Form"
+        xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
+        xmlns:conv="clr-namespace:Intervallo.Converter"
+        xmlns:UI="clr-namespace:Intervallo.UI" x:Class="Intervallo.Form.OptionWindow"
+        mc:Ignorable="d"
+        Title="{x:Static p:LangResources.OptionWindow_Title}"
+        Height="507"
+        Width="838"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        Icon="/Intervallo;component/icon.ico">
+    <Window.Resources>
+        <DataTemplate x:Key="OptionItem">
+            <TextBlock Text="{Binding}" />
+        </DataTemplate>
+        <p:LangResources x:Key="LangResources" />
+        <conf:ApplicationSettings x:Key="ApplicationSettings" />
+        <conv:IntValueConverter x:Key="IntValueConverter" />
+    </Window.Resources>
+    <Grid>
+        <ListBox x:Name="SettingGroupListBox" HorizontalAlignment="Left" Width="220" Margin="10,10,0,10" ItemTemplate="{StaticResource OptionItem}" SelectedIndex="0">
+            <ListBoxItem Content="{x:Static p:LangResources.OptionWindow_SettingGroupGeneral}" />
+            <ListBoxItem Content="{x:Static p:LangResources.OptionWindow_SettingGroupAudio}" />
+            <ListBoxItem Content="{x:Static p:LangResources.OptionWindow_SettingGroupPitchOperation}" />
+        </ListBox>
+        <Grid Margin="235,10,10,10">
+            <GroupBox Header="{x:Static p:LangResources.OptionWindow_SettingGroupGeneral}" Visibility="{c:Binding SelectedIndex \=\= 0, ElementName=SettingGroupListBox, FalseToVisibility=Collapsed}">
+                <Grid Margin="10">
+                    <GroupBox Header="{x:Static p:LangResources.OptionWindow_General_DebugGroup}" VerticalAlignment="Top" Height="57">
+                        <CheckBox Content="{x:Static p:LangResources.OptionWindow_General_ShowException}" HorizontalAlignment="Left" Margin="10,10,0,0" IsChecked="{Binding Setting.General.ShowExceptionInMessageBox, Source={StaticResource ApplicationSettings}, Mode=TwoWay}" Height="15" VerticalAlignment="Top"/>
+                    </GroupBox>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="{x:Static p:LangResources.OptionWindow_SettingGroupAudio}" Visibility="{c:Binding SelectedIndex \=\= 1, ElementName=SettingGroupListBox, FalseToVisibility=Collapsed}">
+                <Grid Margin="10">
+                    <StackPanel Height="25" VerticalAlignment="Top" Orientation="Horizontal">
+                        <TextBlock TextWrapping="Wrap" Text="{x:Static p:LangResources.OptionWindow_Audio_PreviewLatency}" VerticalAlignment="Center"/>
+                        <UI:NumericUpDown Width="100" Margin="10,1,0,1" Value="{Binding Setting.Audio.PreviewLatency, Source={StaticResource ApplicationSettings}, Converter={StaticResource IntValueConverter}, Mode=TwoWay}"/>
+                        <TextBlock TextWrapping="Wrap" Text="{x:Static p:LangResources.OptionWindow_Audio_PreviewLatencyUnit}" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{x:Static p:LangResources.OptionWindow_ApplyTimingLoadWave}" Height="16" VerticalAlignment="Bottom"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="{x:Static p:LangResources.OptionWindow_SettingGroupPitchOperation}" Visibility="{c:Binding SelectedIndex \=\= 2, ElementName=SettingGroupListBox, FalseToVisibility=Collapsed}">
+                <Grid Margin="10">
+                    <StackPanel Height="25" VerticalAlignment="Top" Orientation="Horizontal">
+                        <TextBlock TextWrapping="Wrap" Text="{x:Static p:LangResources.OptionWindow_PitchOperation_FramePeriod}" VerticalAlignment="Center"/>
+                        <UI:NumericUpDown Width="100" Margin="10,1,0,1" Value="{Binding Setting.PitchOperation.FramePeriod, Source={StaticResource ApplicationSettings}, Mode=TwoWay}" DecimalDigit="1"/>
+                        <TextBlock TextWrapping="Wrap" Text="{x:Static p:LangResources.OptionWindow_PitchOperation_FramePeriodUnit}" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{x:Static p:LangResources.OptionWindow_ApplyTimingLoadWave}" Height="16" VerticalAlignment="Bottom"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </Grid>
+</Window>

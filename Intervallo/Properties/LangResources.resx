@@ -158,6 +158,9 @@
   <data name="MainMenu_About" xml:space="preserve">
     <value>バージョン情報(_A)...</value>
   </data>
+  <data name="MainMenu_ClearCache" xml:space="preserve">
+    <value>キャッシュのクリア(_C)</value>
+  </data>
   <data name="MainMenu_EditMenu" xml:space="preserve">
     <value>編集(_E)</value>
   </data>
@@ -185,8 +188,14 @@
   <data name="MainMenu_OpenFile" xml:space="preserve">
     <value>開く(_O)...</value>
   </data>
+  <data name="MainMenu_Option" xml:space="preserve">
+    <value>オプション(_O)...</value>
+  </data>
   <data name="MainMenu_Preview" xml:space="preserve">
     <value>原音の再生・停止(_P)</value>
+  </data>
+  <data name="MainMenu_ToolMenu" xml:space="preserve">
+    <value>ツール(_T)</value>
   </data>
   <data name="MessageBoxTitle_CannotLoadAudioOperator" xml:space="preserve">
     <value>音声解析プラグインの読み込み失敗</value>
@@ -223,6 +232,39 @@
   </data>
   <data name="MessageBoxWindow_Yes" xml:space="preserve">
     <value>はい(_Y)</value>
+  </data>
+  <data name="OptionWindow_ApplyTimingLoadWave" xml:space="preserve">
+    <value>※この設定は次回音声読み込み時に反映されます</value>
+  </data>
+  <data name="OptionWindow_Audio_PreviewLatency" xml:space="preserve">
+    <value>プレビューのレイテンシ</value>
+  </data>
+  <data name="OptionWindow_Audio_PreviewLatencyUnit" xml:space="preserve">
+    <value>ms</value>
+  </data>
+  <data name="OptionWindow_General_DebugGroup" xml:space="preserve">
+    <value>デバッグ</value>
+  </data>
+  <data name="OptionWindow_General_ShowException" xml:space="preserve">
+    <value>メッセージボックスに例外情報が含まれる場合表示する</value>
+  </data>
+  <data name="OptionWindow_PitchOperation_FramePeriod" xml:space="preserve">
+    <value>フレームサイズ</value>
+  </data>
+  <data name="OptionWindow_PitchOperation_FramePeriodUnit" xml:space="preserve">
+    <value>ms</value>
+  </data>
+  <data name="OptionWindow_SettingGroupAudio" xml:space="preserve">
+    <value>音声</value>
+  </data>
+  <data name="OptionWindow_SettingGroupGeneral" xml:space="preserve">
+    <value>全般</value>
+  </data>
+  <data name="OptionWindow_SettingGroupPitchOperation" xml:space="preserve">
+    <value>ピッチ調整</value>
+  </data>
+  <data name="OptionWindow_Title" xml:space="preserve">
+    <value>オプション</value>
   </data>
   <data name="ProgressMessage_AnalyzingWave" xml:space="preserve">
     <value>音声解析中...</value>

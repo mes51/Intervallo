@@ -1,4 +1,5 @@
-﻿using Intervallo.Util;
+﻿using Intervallo.Config;
+using Intervallo.Util;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using System;
@@ -18,7 +19,7 @@ namespace Intervallo.Audio.Player
 
             using (var mmDeviceEnumerator = new MMDeviceEnumerator())
             {
-                Player = new WasapiOut(mmDeviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia), AudioClientShareMode.Shared, false, 200);
+                Player = new WasapiOut(mmDeviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia), AudioClientShareMode.Shared, false, ApplicationSettings.Setting.Audio.PreviewLatency);
                 Player.Init(Stream);
             }
         }

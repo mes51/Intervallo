@@ -7,7 +7,6 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace Intervallo.Config
 {
@@ -25,17 +24,14 @@ namespace Intervallo.Config
 
         public ApplicationSettings() { }
 
-        [DataMember(Name = "position")]
-        public Point Position { get; set; } = new Point(300.0, 300.0);
+        [DataMember(Name = "general", IsRequired = true)]
+        public GeneralSettings General { get; set; } = new GeneralSettings();
 
-        [DataMember(Name = "size")]
-        public Size Size { get; set; } = new Size(945.0, 610.0);
+        [DataMember(Name = "audio", IsRequired = true)]
+        public AudioSettings Audio { get; set; } = new AudioSettings();
 
-        [DataMember(Name = "state")]
-        public WindowState State { get; set; } = WindowState.Normal;
-
-        [DataMember(Name = "showExceptionInMessageBox")]
-        public bool ShowExceptionInMessageBox { get; set; } = false;
+        [DataMember(Name = "pitchOperation", IsRequired = true)]
+        public PitchOperationSettings PitchOperation { get; set; } = new PitchOperationSettings();
 
         public void Save()
         {

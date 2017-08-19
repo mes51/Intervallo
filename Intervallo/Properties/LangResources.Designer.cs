@@ -174,6 +174,15 @@ namespace Intervallo.Properties {
         }
         
         /// <summary>
+        ///   キャッシュのクリア(_C) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MainMenu_ClearCache {
+            get {
+                return ResourceManager.GetString("MainMenu_ClearCache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   編集(_E) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string MainMenu_EditMenu {
@@ -255,11 +264,29 @@ namespace Intervallo.Properties {
         }
         
         /// <summary>
+        ///   オプション(_O)... に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MainMenu_Option {
+            get {
+                return ResourceManager.GetString("MainMenu_Option", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   原音の再生・停止(_P) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string MainMenu_Preview {
             get {
                 return ResourceManager.GetString("MainMenu_Preview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ツール(_T) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MainMenu_ToolMenu {
+            get {
+                return ResourceManager.GetString("MainMenu_ToolMenu", resourceCulture);
             }
         }
         
@@ -368,6 +395,105 @@ namespace Intervallo.Properties {
         public static string MessageBoxWindow_Yes {
             get {
                 return ResourceManager.GetString("MessageBoxWindow_Yes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ※この設定は次回音声読み込み時に反映されます に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OptionWindow_ApplyTimingLoadWave {
+            get {
+                return ResourceManager.GetString("OptionWindow_ApplyTimingLoadWave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   プレビューのレイテンシ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OptionWindow_Audio_PreviewLatency {
+            get {
+                return ResourceManager.GetString("OptionWindow_Audio_PreviewLatency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ms に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OptionWindow_Audio_PreviewLatencyUnit {
+            get {
+                return ResourceManager.GetString("OptionWindow_Audio_PreviewLatencyUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   デバッグ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OptionWindow_General_DebugGroup {
+            get {
+                return ResourceManager.GetString("OptionWindow_General_DebugGroup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   メッセージボックスに例外情報が含まれる場合表示する に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OptionWindow_General_ShowException {
+            get {
+                return ResourceManager.GetString("OptionWindow_General_ShowException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   フレームサイズ に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OptionWindow_PitchOperation_FramePeriod {
+            get {
+                return ResourceManager.GetString("OptionWindow_PitchOperation_FramePeriod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ms に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OptionWindow_PitchOperation_FramePeriodUnit {
+            get {
+                return ResourceManager.GetString("OptionWindow_PitchOperation_FramePeriodUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   音声 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OptionWindow_SettingGroupAudio {
+            get {
+                return ResourceManager.GetString("OptionWindow_SettingGroupAudio", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   全般 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OptionWindow_SettingGroupGeneral {
+            get {
+                return ResourceManager.GetString("OptionWindow_SettingGroupGeneral", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ピッチ調整 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OptionWindow_SettingGroupPitchOperation {
+            get {
+                return ResourceManager.GetString("OptionWindow_SettingGroupPitchOperation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   オプション に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string OptionWindow_Title {
+            get {
+                return ResourceManager.GetString("OptionWindow_Title", resourceCulture);
             }
         }
         

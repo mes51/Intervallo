@@ -57,7 +57,7 @@ namespace Intervallo.Form
 
         void ShowExceptionExpander(Exception exception)
         {
-            if (!ForceVisibleException && !ApplicationSettings.Setting.ShowExceptionInMessageBox)
+            if (!ForceVisibleException && !ApplicationSettings.Setting.General.ShowExceptionInMessageBox)
             {
                 return;
             }
