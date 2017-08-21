@@ -195,7 +195,7 @@ namespace Intervallo.DefaultPlugins
         public WaveData Synthesize(AnalyzedAudio analyzedAudio, Action<double> notifyProgress)
         {
             var waa = analyzedAudio as WorldAnalyzedAudio;
-            var samplePosition = (int)Math.Ceiling(waa.Elements[0].FramePosition * waa.FrameSize);
+            var samplePosition = (int)Math.Ceiling(waa.BeginFrame * waa.FrameSize);
             var result = new double[waa.SampleCount + 1];
             var fadeRad = Math.PI * 2.0 / Math.Floor(waa.FrameSize);
             var beginFade = Enumerable.Range(0, (int)waa.FrameSize).Select((i) => (1.0 + Math.Tanh(i * fadeRad - Math.PI)) * 0.5).ToArray();
@@ -205,6 +205,11 @@ namespace Intervallo.DefaultPlugins
             Parallel.For(0, waa.Elements.Length, (i) =>
             {
                 var e = waa.Elements[i];
+                if (e.FramePosition < waa.BeginFrame || e.FramePosition > waa.BeginFrame + waa.FrameLength)
+                {
+                    return;
+                }
+
                 var w = e.Synthesize();
 
                 if (e.SilentStart)
@@ -221,7 +226,9 @@ namespace Intervallo.DefaultPlugins
 
                 lock (LockObject)
                 {
-                    w.BlockCopy(result, e.SamplePosition - samplePosition);
+                    var srcOffset = Math.Max(samplePosition - e.SamplePosition, 0);
+                    var dstOffset = Math.Max(e.SamplePosition - samplePosition, 0);
+                    w.BlockCopy(srcOffset, result, dstOffset, Math.Min(w.Length - srcOffset, result.Length - dstOffset));
                     progress++;
                     notifyProgress(progress / (double)waa.Elements.Length * 100.0);
                 }
