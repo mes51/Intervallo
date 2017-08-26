@@ -113,6 +113,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
 
         double TanhWindowedValue(double t, double begin, double end, double edge)
         {
+            edge = Math.Min(edge, (end - begin) * 0.5);
             if (t - begin < edge)
             {
                 return (1.0 + Math.Tanh(Math.PI * 2.0 * ((t - begin) / edge) - Math.PI)) * 0.5;
