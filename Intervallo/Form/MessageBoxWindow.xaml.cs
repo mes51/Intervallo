@@ -111,7 +111,10 @@ namespace Intervallo.Form
             Application.Current.Dispatcher.Invoke(() =>
             {
                 window = new MessageBoxWindow();
-                window.Owner = Application.Current.MainWindow;
+                if (Application.Current.MainWindow.IsLoaded)
+                {
+                    window.Owner = Application.Current.MainWindow;
+                }
                 window.Title = caption;
                 window.MessageTextBlock.Text = message;
 

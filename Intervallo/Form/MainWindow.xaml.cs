@@ -126,14 +126,15 @@ namespace Intervallo.Form
                 MessageBox.ShowWarning(LangResources.Error_RaisePluginLoadError, exception: e);
             }
 
-            if (AudioOperatorPlugins.Count < 1)
+            if ((AudioOperatorPlugins?.Count ?? 0) < 1)
             {
                 MessageBox.ShowError(LangResources.Fatal_CannotLoadAudioOperator, LangResources.MessageBoxTitle_CannotLoadAudioOperator);
                 Close();
             }
-            else if (ScaleLoaderPlugins.Count < 1)
+            else if ((ScaleLoaderPlugins?.Count ?? 0) < 1)
             {
                 MessageBox.ShowWarning(LangResources.Error_CannotLoadScaleLoader, LangResources.MessageBoxTitle_CannotLoadScaleLoader);
+                ScaleLoaderPlugins = new List<IScaleLoader>();
             }
         }
 
