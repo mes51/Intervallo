@@ -29,7 +29,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/", IsNullable = false)]
-    public partial class vsq4
+    public partial class vsq4 : IVsqx
     {
 
         private string venderField;
@@ -171,6 +171,12 @@ namespace Intervallo.DefaultPlugins.Vsqx
                 this.auxField = value;
             }
         }
+
+        [XmlIgnore]
+        public IVSMasterTrack MasterTrack => masterTrackField;
+
+        [XmlIgnore]
+        public IVSTrack[] VSTrack => vsTrackField;
     }
 
     /// <remarks/>
@@ -439,12 +445,15 @@ namespace Intervallo.DefaultPlugins.Vsqx
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/")]
-    public partial class typeParamAttr
+    public partial class typeParamAttr : IVSTypeParamAttr
     {
 
         private string idField;
 
         private int valueField;
+
+        [XmlIgnore]
+        public string ID => idField;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -1404,7 +1413,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/", IsNullable = false)]
-    public partial class masterTrack
+    public partial class masterTrack : IVSMasterTrack
     {
 
         private string seqNameField;
@@ -1498,6 +1507,18 @@ namespace Intervallo.DefaultPlugins.Vsqx
                 this.tempoField = value;
             }
         }
+
+        [XmlIgnore]
+        public ushort Resolution => resolutionField;
+
+        [XmlIgnore]
+        public byte PreMeasure => preMeasureField;
+
+        [XmlIgnore]
+        public IVSTimeSig[] TimeSig => timeSigField;
+
+        [XmlIgnore]
+        public IVSTempo[] Tempo => tempoField;
     }
 
     /// <remarks/>
@@ -1507,7 +1528,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/", IsNullable = false)]
-    public partial class timeSig
+    public partial class timeSig : IVSTimeSig
     {
 
         private int mField;
@@ -1554,6 +1575,15 @@ namespace Intervallo.DefaultPlugins.Vsqx
                 this.deField = value;
             }
         }
+
+        [XmlIgnore]
+        public int Measure => mField;
+
+        [XmlIgnore]
+        public byte Nume => nuField;
+
+        [XmlIgnore]
+        public byte Denominator => deField;
     }
 
     /// <remarks/>
@@ -1563,12 +1593,15 @@ namespace Intervallo.DefaultPlugins.Vsqx
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/", IsNullable = false)]
-    public partial class tempo
+    public partial class tempo : IVSTempo
     {
 
         private int tField;
 
         private int vField;
+
+        [XmlIgnore]
+        public int BPM => vField;
 
         /// <remarks/>
         public int t
@@ -1580,6 +1613,19 @@ namespace Intervallo.DefaultPlugins.Vsqx
             set
             {
                 this.tField = value;
+            }
+        }
+
+        [XmlIgnore]
+        public int Tick
+        {
+            get
+            {
+                return tField;
+            }
+            set
+            {
+                tField = value;
             }
         }
 
@@ -1604,7 +1650,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/", IsNullable = false)]
-    public partial class vsTrack
+    public partial class vsTrack : IVSTrack
     {
 
         private byte tNoField;
@@ -1667,6 +1713,12 @@ namespace Intervallo.DefaultPlugins.Vsqx
                 this.vsPartField = value;
             }
         }
+
+        [XmlIgnore]
+        public IVSPart[] Part => vsPartField;
+
+        [XmlIgnore]
+        public string Name => nameField;
     }
 
     /// <remarks/>
@@ -1676,7 +1728,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/", IsNullable = false)]
-    public partial class vsPart
+    public partial class vsPart : IVSPart
     {
 
         private int tField;
@@ -1848,6 +1900,18 @@ namespace Intervallo.DefaultPlugins.Vsqx
                 this.planeFieldSpecified = value;
             }
         }
+
+        [XmlIgnore]
+        public int Tick => tField;
+
+        [XmlIgnore]
+        public int PlayTime => playTimeField;
+
+        [XmlIgnore]
+        public IVSControlChange[] CC => ccField;
+
+        [XmlIgnore]
+        public IVSNote[] Note => noteField;
     }
 
     /// <remarks/>
@@ -1969,7 +2033,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/", IsNullable = false)]
-    public partial class cc
+    public partial class cc : IVSControlChange
     {
 
         private int tField;
@@ -1989,6 +2053,9 @@ namespace Intervallo.DefaultPlugins.Vsqx
             }
         }
 
+        [XmlIgnore]
+        public int Tick => tField;
+
         /// <remarks/>
         public typeParamAttr v
         {
@@ -2001,6 +2068,9 @@ namespace Intervallo.DefaultPlugins.Vsqx
                 this.vField = value;
             }
         }
+
+        [XmlIgnore]
+        public IVSTypeParamAttr Attr => vField;
     }
 
     /// <remarks/>
@@ -2010,7 +2080,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/", IsNullable = false)]
-    public partial class note
+    public partial class note : IVSNote
     {
 
         private int tField;
@@ -2117,6 +2187,18 @@ namespace Intervallo.DefaultPlugins.Vsqx
                 this.nStyleField = value;
             }
         }
+
+        [XmlIgnore]
+        public int Tick => tField;
+
+        [XmlIgnore]
+        public int Duration => durField;
+
+        [XmlIgnore]
+        public int NoteNumber => nField;
+
+        [XmlIgnore]
+        public IVSNStyle NStyle => nStyleField;
     }
 
     /// <remarks/>
@@ -2126,7 +2208,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/", IsNullable = false)]
-    public partial class nStyle
+    public partial class nStyle : IVSNStyle
     {
 
         private typeParamAttr[] vField;
@@ -2160,6 +2242,12 @@ namespace Intervallo.DefaultPlugins.Vsqx
                 this.seqField = value;
             }
         }
+
+        [XmlIgnore]
+        public IVSTypeParamAttr[] Attrs => vField;
+
+        [XmlIgnore]
+        public IVSSeq[] Sequence => seqField;
     }
 
     /// <remarks/>
@@ -2169,12 +2257,15 @@ namespace Intervallo.DefaultPlugins.Vsqx
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/", IsNullable = false)]
-    public partial class seq
+    public partial class seq : IVSSeq
     {
 
         private seqCC[] ccField;
 
         private string idField;
+
+        [XmlIgnore]
+        public IVSSeqControlChange[] CC => ccField;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("cc")]
@@ -2189,6 +2280,9 @@ namespace Intervallo.DefaultPlugins.Vsqx
                 this.ccField = value;
             }
         }
+
+        [XmlIgnore]
+        public string ID => idField;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -2211,7 +2305,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.yamaha.co.jp/vocaloid/schema/vsq4/")]
-    public partial class seqCC
+    public partial class seqCC : IVSSeqControlChange
     {
 
         private int pField;
@@ -2231,6 +2325,9 @@ namespace Intervallo.DefaultPlugins.Vsqx
             }
         }
 
+        [XmlIgnore]
+        public int Position => pField;
+
         /// <remarks/>
         public int v
         {
@@ -2243,6 +2340,9 @@ namespace Intervallo.DefaultPlugins.Vsqx
                 this.vField = value;
             }
         }
+
+        [XmlIgnore]
+        public int Value => vField;
     }
 
     /// <remarks/>

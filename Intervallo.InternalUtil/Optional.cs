@@ -68,6 +68,30 @@ namespace Intervallo.InternalUtil
             }
         }
 
+        public Optional<TResult> Select<TResult>(Func<T, TResult> func)
+        {
+            if (IsDefined)
+            {
+                return new Some<TResult>(func(Value));
+            }
+            else
+            {
+                return new None<TResult>();
+            }
+        }
+
+        public Optional<TResult> SelectMany<TResult>(Func<T, Optional<TResult>> func)
+        {
+            if (IsDefined)
+            {
+                return func(Value);
+            }
+            else
+            {
+                return new None<TResult>();
+            }
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             if (IsDefined)

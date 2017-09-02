@@ -32,12 +32,13 @@ namespace Intervallo.DefaultPlugins
 
         public double[] Load(string filePath, double framePeriod, int maxFrameLength)
         {
+            framePeriod *= 0.001;
             Track[] tracks = null;
             try
             {
                 using (var fs = new FileStream(filePath, FileMode.Open))
                 {
-                    tracks = LoadFromVsq4(fs, framePeriod);
+                    tracks = LoadFromVsq4(fs);
                 }
             }
             catch (Exception e)
@@ -56,7 +57,9 @@ namespace Intervallo.DefaultPlugins
 
                     if (selectWindow.Selected)
                     {
-                        f0 = selectWindow.SelectedTrack.ToF0(maxFrameLength, framePeriod);
+                        f0 = selectWindow.SelectedTrack.ToF0(framePeriod)
+                            .Concat(EnumerableUtil.Infinity(0.0))
+                            .Take(maxFrameLength).ToArray();
                     }
                 });
 
@@ -71,84 +74,103 @@ namespace Intervallo.DefaultPlugins
             }
             else
             {
-                return tracks[0].ToF0(maxFrameLength, framePeriod);
+                return tracks[0].ToF0(framePeriod)
+                    .Concat(EnumerableUtil.Infinity(0.0))
+                    .Take(maxFrameLength).ToArray();
             }
         }
 
-        Track[] LoadFromVsq4(FileStream fs, double framePeriod)
+        Track[] LoadFromVsq4(FileStream fs)
         {
             var serializer = new XmlSerializer(typeof(vsq4));
-            var vsq = serializer.Deserialize(fs) as vsq4;
+            return Parse(serializer.Deserialize(fs) as vsq4);
+        }
 
-            var resolution = vsq.masterTrack.resolution;
+        Track[] Parse(IVsqx vsq)
+        {
+            var resolution = vsq.MasterTrack.Resolution;
             var measureTicks = resolution * 4; // for 4/4
-            var preMeasureTicks = Enumerable.Range(0, vsq.masterTrack.preMeasure)
-                .Select((i) => vsq.masterTrack.timeSig.First((sig) => sig.m <= i))
-                .Select((sig) => measureTicks / sig.de * sig.nu)
+            var preMeasureTicks = Enumerable.Range(0, vsq.MasterTrack.PreMeasure)
+                .Select((i) => vsq.MasterTrack.TimeSig.First((sig) => sig.Measure <= i))
+                .Select((sig) => measureTicks / sig.Denominator * sig.Nume)
                 .Sum();
 
-            var firstTempo = vsq.masterTrack.tempo
-                .TakeWhile((t) => t.t <= preMeasureTicks)
+            var firstTempo = vsq.MasterTrack.Tempo
+                .TakeWhile((t) => t.Tick <= preMeasureTicks)
                 .Last();
-            firstTempo.t = preMeasureTicks;
+            firstTempo.Tick = preMeasureTicks;
             var tempo = firstTempo
-                .PushTo(vsq.masterTrack.tempo.SkipWhile((t) => t.t > preMeasureTicks))
-                .SelectReferencePrev<tempo, Tempo>((v, p) =>
-                    new Tempo(v.t - preMeasureTicks, p.Select((pt) => pt.TotalTime + (v.t - preMeasureTicks - pt.Tick) / pt.TickPerTime).FirstOrDefault(), v.v * 0.01, resolution)
+                .PushTo(vsq.MasterTrack.Tempo.SkipWhile((t) => t.Tick > preMeasureTicks))
+                .SelectReferencePrev<IVSTempo, Tempo>((v, p) =>
+                    new Tempo(v.Tick - preMeasureTicks, p.Select((pt) => pt.TotalTime + (v.Tick - preMeasureTicks - pt.Tick) / pt.TickPerTime).FirstOrDefault(), v.BPM * 0.01, resolution)
                 )
-                .ToRangeDictionary((v) => v.TotalTime, IntervalMode.OpenInterval);
+                .ToRangeDictionary((v) => v.Tick, IntervalMode.OpenInterval);
 
-            return vsq.vsTrack.Select((t) =>
+            return vsq.VSTrack.Select((t) =>
             {
-                var parts = t.vsPart
+                var parts = t.Part
                     .Select((p) =>
                     {
-                        var notes = p.note
+                        var partTick = p.Tick - preMeasureTicks;
+                        var partStartTime = tempo[partTick].TickToTime(partTick);
+
+                        var notes = p.Note
                             .Select((n) =>
                             {
-                                var vibDepth = n.nStyle.seq?
-                                    .FirstOrDefault((s) => s.id == "vibDep")?.cc
-                                    .ToRangeDictionary((c) => c.p, (c) => c.v, IntervalMode.OpenInterval)
-                                    ?? new RangeDictionary<int, int>(IntervalMode.OpenInterval, new Dictionary<int, int>() { [0] = 0 });
-                                var vibRate = n.nStyle.seq?
-                                    .FirstOrDefault((s) => s.id == "vibRate")?.cc
-                                    .ToRangeDictionary((c) => c.p, (c) => c.v, IntervalMode.OpenInterval)
-                                    ?? new RangeDictionary<int, int>(IntervalMode.OpenInterval, new Dictionary<int, int>() { [0] = 0 });
-                                var vibLength = n.nStyle.v.FirstOrDefault((st) => st.id == "vibLen")?.Value ?? 0;
-                                var vibType = n.nStyle.v.FirstOrDefault((st) => st.id == "vibType")?.Value ?? 0;
-
-                                return new Note(n.t, n.dur, n.n, vibLength, vibType, vibDepth, vibRate);
+                                var tick = partTick + n.Tick;
+                                var time = tempo[tick].TickToTime(tick);
+                                var length = tempo[tick + n.Duration].TickToTime(tick + n.Duration) - time;
+                                return new Note(time - partStartTime, length, n.NoteNumber, GetVibratoInfo(n, partTick, length, tempo));
                             })
                             .ToRangeDictionary((n) => n.Position, IntervalMode.OpenInterval);
 
-                        var controls = (p.cc ?? new cc[0]).TakeWhile((c) => c.t < p.playTime).ToArray();
+                        var pbs = GetControlChange(p, "S", 2.0, partTick, tempo);
+                        var pitchBend = GetControlChange(p, "P", 0.0, partTick, tempo)
+                            .ToRangeDictionary((e) => e.Key, e => e.Value / 8192.0 * pbs[e.Key], IntervalMode.OpenInterval);
+                        var portamento = GetControlChange(p, "T", 64.0, partTick, tempo);
 
-                        var pbs = controls.Where((c) => c.v.id == "S")
-                            .ToRangeDictionary((c) => c.t, (c) => c.v.Value, IntervalMode.OpenInterval);
-                        if (pbs.Count < 1)
-                        {
-                            pbs.Add(0, 2);
-                        }
-                        var pitchBend = controls.Where((c) => c.v.id == "P")
-                            .ToRangeDictionary((c) => c.t, (c) => c.v.Value / 8192.0 * pbs[c.t], IntervalMode.OpenInterval);
-                        if (pitchBend.Count < 1)
-                        {
-                            pitchBend.Add(0, 0.0);
-                        }
-
-                        var portamento = controls.Where((c) => c.v.id == "T")
-                            .ToRangeDictionary((c) => c.t, (c) => c.v.Value, IntervalMode.OpenInterval);
-                        if (portamento.Count < 1)
-                        {
-                            portamento.Add(0, 64);
-                        }
-
-                        return new Part(p.t - preMeasureTicks, p.playTime, notes, pitchBend, portamento);
+                        return new Part(partStartTime, tempo[partTick + p.PlayTime].TickToTime(partTick + p.PlayTime) - partStartTime, notes, pitchBend, portamento);
                     })
                     .ToRangeDictionary((p) => p.TrackPosition, IntervalMode.OpenInterval);
 
-                return new Track(t.name, tempo, parts);
+                return new Track(t.Name, parts);
             }).ToArray();
+        }
+
+        Vibrato GetVibratoInfo(IVSNote note, int partTick, double noteLength, RangeDictionary<int, Tempo> tempo)
+        {
+            var vibDepth = GetNoteStyle(note, "vibDep", partTick, tempo);
+            var vibRate = GetNoteStyle(note, "vibRate", partTick, tempo);
+            var vibLength = note.NStyle.Attrs.FirstOrDefault((st) => st.ID == "vibLen")?.Value ?? 0;
+            var vibType = note.NStyle.Attrs.FirstOrDefault((st) => st.ID == "vibType")?.Value ?? 0;
+
+            return new Vibrato(vibType, vibLength * 0.01 * noteLength, vibDepth, vibRate);
+        }
+
+        RangeDictionary<double, int> GetNoteStyle(IVSNote note, string styleName, int partTick, RangeDictionary<int, Tempo> tempo)
+        {
+            var partStartTime = tempo[partTick].TickToTime(partTick);
+            var styleTickRate = note.Duration / (double)(1 << 16);
+            return note.NStyle.Sequence?
+                .FirstOrDefault((s) => s.ID == styleName)?.CC
+                .Select((c) => new { Tick = partTick + (int)(c.Position * styleTickRate), Value = c.Value  })
+                .ToRangeDictionary((c) => tempo[c.Tick].TickToTime(c.Tick) - partStartTime, (c) => c.Value, IntervalMode.OpenInterval)
+                ?? new RangeDictionary<double, int>(IntervalMode.OpenInterval, new Dictionary<double, int>() { [0.0] = 0 });
+        }
+
+        RangeDictionary<double, double> GetControlChange(IVSPart part, string id, double defaultValue, int partTick, RangeDictionary<int, Tempo> tempo)
+        {
+            var partStartTime = tempo[partTick].TickToTime(partTick);
+            var result = (part.CC ?? new IVSControlChange[0])
+                .TakeWhile((c) => c.Tick < part.PlayTime)
+                .Where((c) => c.Attr.ID == id)
+                .ToRangeDictionary((c) => tempo[partTick + c.Tick].TickToTime(partTick + c.Tick) - partStartTime, (c) => (double)c.Attr.Value, IntervalMode.OpenInterval);
+            if (result.Count < 1 || !result.ContainsKey(0.0))
+            {
+                result.Add(0.0, defaultValue);
+            }
+
+            return result;
         }
     }
 }

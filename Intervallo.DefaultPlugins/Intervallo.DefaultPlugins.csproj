@@ -57,8 +57,9 @@
       <DependentUpon>LangResources.resx</DependentUpon>
     </Compile>
     <Compile Include="VsqxLoader.cs" />
-    <Compile Include="Vsqx\ParsedVsqxClasses.cs" />
+    <Compile Include="Vsqx\ParsedVsqx.cs" />
     <Compile Include="Vsqx\vsq4.cs" />
+    <Compile Include="Vsqx\VsqxInterfaces.cs" />
     <Compile Include="WorldOperator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WORLD\CheapTrick.cs" />

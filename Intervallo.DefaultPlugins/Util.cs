@@ -22,4 +22,15 @@ namespace Intervallo.DefaultPlugins
             return Enumerable.Range(0, row).Select((x) => new T[col]).ToArray();
         }
     }
+
+    static class EnumerableUtil
+    {
+        public static IEnumerable<T> Infinity<T>(T value)
+        {
+            while (true)
+            {
+                yield return value;
+            }
+        }
+    }
 }
