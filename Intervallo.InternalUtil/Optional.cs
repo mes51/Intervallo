@@ -92,6 +92,18 @@ namespace Intervallo.InternalUtil
             }
         }
 
+        public Optional<T> Where(Predicate<T> predicate)
+        {
+            if (IsDefined && predicate(Value))
+            {
+                return this;
+            }
+            else
+            {
+                return new None<T>();
+            }
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             if (IsDefined)

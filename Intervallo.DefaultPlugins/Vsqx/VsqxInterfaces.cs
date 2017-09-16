@@ -74,6 +74,8 @@ namespace Intervallo.DefaultPlugins.Vsqx
 
     public interface IVSNote
     {
+        string Character { get; }
+
         int Tick { get; }
 
         int Duration { get; }

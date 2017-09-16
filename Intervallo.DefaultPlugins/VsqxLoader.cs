@@ -114,22 +114,23 @@ namespace Intervallo.DefaultPlugins
                         var partTick = p.Tick - preMeasureTicks;
                         var partStartTime = tempo[partTick].TickToTime(partTick);
 
+                        var pbs = GetControlChange(p, "S", 2.0, partTick, tempo);
+                        var pitchBend = GetControlChange(p, "P", 0.0, partTick, tempo)
+                            .ToRangeDictionary((e) => e.Key, e => e.Value / 8192.0 * pbs[e.Key], IntervalMode.OpenInterval);
+                        var portamento = GetControlChange(p, "T", 64.0, partTick, tempo);
+
                         var notes = p.Note
                             .Select((n) =>
                             {
                                 var tick = partTick + n.Tick;
                                 var time = tempo[tick].TickToTime(tick);
                                 var length = tempo[tick + n.Duration].TickToTime(tick + n.Duration) - time;
-                                return new Note(time - partStartTime, length, n.NoteNumber, GetVibratoInfo(n, partTick, length, tempo));
+                                var pot = new Portamento((int)portamento[time]);
+                                return new Note(n.Character, time - partStartTime, length, n.NoteNumber, GetVibratoInfo(n, partTick, length, tempo), pot);
                             })
                             .ToRangeDictionary((n) => n.Position, IntervalMode.OpenInterval);
 
-                        var pbs = GetControlChange(p, "S", 2.0, partTick, tempo);
-                        var pitchBend = GetControlChange(p, "P", 0.0, partTick, tempo)
-                            .ToRangeDictionary((e) => e.Key, e => e.Value / 8192.0 * pbs[e.Key], IntervalMode.OpenInterval);
-                        var portamento = GetControlChange(p, "T", 64.0, partTick, tempo);
-
-                        return new Part(partStartTime, tempo[partTick + p.PlayTime].TickToTime(partTick + p.PlayTime) - partStartTime, notes, pitchBend, portamento);
+                        return new Part(partStartTime, tempo[partTick + p.PlayTime].TickToTime(partTick + p.PlayTime) - partStartTime, notes, pitchBend);
                     })
                     .ToRangeDictionary((p) => p.TrackPosition, IntervalMode.OpenInterval);
 

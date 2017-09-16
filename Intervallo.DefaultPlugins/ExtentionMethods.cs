@@ -158,6 +158,42 @@ namespace Intervallo.DefaultPlugins
                 traversal = traversal.Skip(count);
             }
         }
+
+        public static IEnumerable<T> SkipPrevWhile<T>(this IEnumerable<T> source, Predicate<T> predicate)
+        {
+            var prev = Optional<T>.None();
+            var hit = true;
+            foreach (var v in source)
+            {
+                if (hit)
+                {
+                    hit = predicate(v);
+                }
+                if (!hit)
+                {
+                    if (prev.IsDefined)
+                    {
+                        yield return prev.Value;
+                        prev = Optional<T>.None();
+                    }
+                    yield return v;
+                }
+                else
+                {
+                    prev = Optional<T>.Some(v);
+                }
+            }
+        }
+
+        public static Optional<T> FirstOption<T>(this IEnumerable<T> source)
+        {
+            foreach (var v in source)
+            {
+                return Optional<T>.Some(v);
+            }
+
+            return Optional<T>.None();
+        }
     }
 
     public static class PrimitiveArrayExtentionMethods

@@ -26,28 +26,28 @@ namespace Intervallo.DefaultPlugins.Vsqx
 
             Part currentPart = null;
             Note currentNote = null;
-            IEnumerator<double> currentVibrato = null;
+            IEnumerator<double> curve = null;
             for (var time = 0.0; time < length; time += framePeriod)
             {
                 if (currentPart != Parts[time])
                 {
                     currentPart = Parts[time];
                     currentNote = null;
-                    currentVibrato?.Dispose();
-                    currentVibrato = null;
+                    curve?.Dispose();
+                    curve = null;
                 }
-                if (time < currentPart.TrackPosition || time - currentPart.TrackPosition > currentPart.PlayTime)
+                if (time < currentPart.TrackPosition || time - currentPart.TrackPosition > currentPart.PlayTime || !currentPart.HasNote())
                 {
                     yield return 0.0;
                     continue;
                 }
 
                 var partTime = time - currentPart.TrackPosition;
-                if (currentNote != currentPart.Note[partTime])
+                if (currentNote != currentPart.GetNote(partTime))
                 {
-                    currentNote = currentPart.Note[partTime];
-                    currentVibrato?.Dispose();
-                    currentVibrato = currentNote.Vibrato.CreateVibrato(currentNote.Length, framePeriod).Concat(EnumerableUtil.Infinity(0.0)).GetEnumerator();
+                    currentNote = currentPart.GetNote(partTime);
+                    curve?.Dispose();
+                    curve = currentPart.CreateCurve(partTime, framePeriod).GetEnumerator();
                 }
                 if (partTime < currentNote.Position || partTime - currentNote.Position > currentNote.Length)
                 {
@@ -55,8 +55,8 @@ namespace Intervallo.DefaultPlugins.Vsqx
                     continue;
                 }
 
-                currentVibrato.MoveNext();
-                yield return GetFrequency(currentNote.NoteNumber + currentVibrato.Current + currentPart.PitchBend[partTime]);
+                curve.MoveNext();
+                yield return GetFrequency(curve.Current + currentPart.PitchBend[partTime]);
             }
         }
 
@@ -70,13 +70,12 @@ namespace Intervallo.DefaultPlugins.Vsqx
     {
         const double MaxPortamentoDelay = 0.25;
 
-        public Part(double trackPosition, double playTime, RangeDictionary<double, Note> note, RangeDictionary<double, double> pitchBend, RangeDictionary<double, double> portamento)
+        public Part(double trackPosition, double playTime, RangeDictionary<double, Note> note, RangeDictionary<double, double> pitchBend)
         {
             TrackPosition = trackPosition;
             PlayTime = playTime;
             Note = note;
             PitchBend = pitchBend;
-            Portamento = portamento;
         }
 
         public double TrackPosition { get; }
@@ -87,7 +86,110 @@ namespace Intervallo.DefaultPlugins.Vsqx
 
         public RangeDictionary<double, double> PitchBend { get; }
 
-        public RangeDictionary<double, double> Portamento { get; }
+        public bool HasNote()
+        {
+            return Note.Count > 0;
+        }
+
+        public Note GetNote(double time)
+        {
+            return Note[time];
+        }
+
+        public IEnumerable<double> CreateCurve(double time, double framePeriod)
+        {
+            var note = GetNote(time);
+            return ApplyPortamento(note, time, framePeriod)
+                .Zip(note.Vibrato.CreateVibrato(note.Length, framePeriod), (n, v) => n + v);
+        }
+
+        Optional<Note> GetNextNote(double time)
+        {
+            var key = Note.SelectKey(time).Value;
+            return Note.Keys
+                .SkipWhile((k) => k != key)
+                .Skip(1)
+                .FirstOption()
+                .Select((k) => Note[k]);
+        }
+
+        Optional<Note> GetPrevNote(double time)
+        {
+            var key = Note.SelectKey(time).Value;
+            return Note.Keys
+                .SkipPrevWhile((k) => k != key)
+                .FirstOption()
+                .Where((k) => k != time)
+                .Select((k) => Note[k]);
+        }
+
+        IEnumerable<double> ApplyPortamento(Note note, double time, double framePeriod)
+        {
+            var prev = GetPrevNote(time);
+            var next = GetNextNote(time);
+
+            var positionAdjustment = framePeriod - note.Position % framePeriod;
+            var f0 = new double[(int)Math.Ceiling(note.Length / framePeriod)];
+            f0.Fill(note.NoteNumber);
+
+            prev.ForEach((p) =>
+            {
+                var prevTimeRate = Math.Min(p.Length * 0.5 / Portamento.MaxPrevNoteTime, 1.0);
+                var currentTimeRate = Math.Min(note.Length * 0.5 / Portamento.MaxNextNoteTime, 1.0);
+                var startTime = Math.Max(Portamento.MaxPrevNoteTime - p.Portamento.BeginMarginTimeRate, 0.0);
+                var blendTime = startTime * prevTimeRate + Math.Max(p.Portamento.BlendTimeRate - startTime, 0.0) * currentTimeRate;
+                var rad = (Math.PI * 2.0) / blendTime;
+                if (note.Position - (p.Position + p.Length) > p.Portamento.GapToleranceTime)
+                {
+                    blendTime = 0.0;
+                }
+                else
+                {
+                    blendTime += Math.Max(note.Position - (p.Position + p.Length), 0.0);
+                }
+
+                for (var i = 0; i < f0.Length; i++)
+                {
+                    var t = Math.Max(startTime * prevTimeRate + positionAdjustment + i * framePeriod, 0.0);
+                    if (t >= blendTime)
+                    {
+                        break;
+                    }
+                    var blendRate = (1.0 + Math.Tanh(rad * t - Math.PI)) * 0.5;
+                    f0[i] = p.NoteNumber + (note.NoteNumber - p.NoteNumber) * blendRate;
+                }
+            });
+
+            next.ForEach((n) =>
+            {
+                var prevTimeRate = Math.Min(note.Length * 0.5 / Portamento.MaxPrevNoteTime, 1.0);
+                var currentTimeRate = Math.Min(n.Length * 0.5 / Portamento.MaxNextNoteTime, 1.0);
+                var startTime = Math.Max(Portamento.MaxPrevNoteTime - note.Portamento.BeginMarginTimeRate, 0.0);
+                var blendTime = startTime * prevTimeRate + Math.Max(note.Portamento.BlendTimeRate - startTime, 0.0) * currentTimeRate;
+                var rad = (Math.PI * 2.0) / blendTime;
+                if (n.Position - (note.Position + note.Length) > note.Portamento.GapToleranceTime)
+                {
+                    blendTime = 0.0;
+                }
+                else
+                {
+                    blendTime += Math.Max(n.Position - (note.Position + note.Length), 0.0);
+                }
+
+                for (var i = 0; i < f0.Length; i++)
+                {
+                    var t = startTime * prevTimeRate - (positionAdjustment + i * framePeriod);
+                    if (t < 0.0)
+                    {
+                        break;
+                    }
+                    var blendRate = (1.0 + Math.Tanh(rad * t - Math.PI)) * 0.5;
+                    f0[f0.Length - i - 1] = note.NoteNumber + (n.NoteNumber - note.NoteNumber) * blendRate;
+                }
+            });
+
+            return f0;
+        }
     }
 
     public class Tempo
@@ -118,13 +220,17 @@ namespace Intervallo.DefaultPlugins.Vsqx
 
     public class Note
     {
-        public Note(double position, double length, int noteNumber, Vibrato vibrato)
+        public Note(string character, double position, double length, int noteNumber, Vibrato vibrato, Portamento portamento)
         {
+            Character = character;
             Position = position;
             Length = length;
             NoteNumber = noteNumber;
             Vibrato = vibrato;
+            Portamento = portamento;
         }
+
+        public string Character { get; }
 
         public double Position { get; }
 
@@ -135,6 +241,8 @@ namespace Intervallo.DefaultPlugins.Vsqx
         public double VibratoLength { get; }
 
         public Vibrato Vibrato { get; }
+
+        public Portamento Portamento { get; }
     }
 
     public class Vibrato
@@ -200,41 +308,54 @@ namespace Intervallo.DefaultPlugins.Vsqx
         }
     }
 
-    public class PortamentoInfo
+    public class Portamento
     {
+        const double Resolution = 960.0;
+        const double BaseBPM = 120.0;
+        const double TickToTime = 60.0 / BaseBPM / Resolution;
+
         const double BeginTick = 660.0;
         const double EndTick = 880.0;
-        const double TotalPortamentoTime = EndTick + BeginTick;
 
-        public const double MaxBeginTime = BeginTick * (60.0 / 120.0 / 960.0);
-        public const double MaxEndTime = EndTick * (60.0 / 120.0 / 960.0);
+        const double Sum0To63 = 2016.0;
+        const double BeginMarginGTE64 = 511.0 / Sum0To63;
+        const double BeginMarginLT64 = 101.0 / Sum0To63;
+        const double BlendTimeGTE64 = 100.0 / Sum0To63;
+        const double BlendTimeLT64 = -60.0 / Sum0To63;
+        const double GapToleranceGTE64 = 500.0 / Sum0To63;
+        const double GapToleranceLT64 = 240.0 / Sum0To63;
 
-        public PortamentoInfo(int portamento)
+        public const double MaxBeginTime = BeginTick * TickToTime;
+        public const double MaxEndTime = EndTick * TickToTime;
+        public const double MaxPrevNoteTime = 0.5 - MaxBeginTime;
+        public const double MaxNextNoteTime = MaxEndTime;
+
+        public Portamento(int portamento)
         {
             var beginMarginTick = 0.0;
-            var endMarginTick = 0.0;
-            var blendTick = 0.0;
-
+            var blendTick = 340.0;
+            var gapToleranceTick = 240.0;
             if (portamento >= 64)
             {
-                beginMarginTick = BeginTick - 135.0 + Enumerable.Range(0, portamento - 64).Select((i) => 1.0 + 0.2385913 * i).Sum();
-                blendTick = 280.0 + Enumerable.Range(0, portamento - 64).Select((i) => 1.0 + 0.0476191 * i).Sum();
+                beginMarginTick = 165.0 + Enumerable.Range(0, portamento - 64).Select((i) => 1.0 + BeginMarginGTE64 * i).Sum();
+                blendTick += Enumerable.Range(0, portamento - 64).Select((i) => 1.0 + BlendTimeGTE64 * i).Sum();
+                gapToleranceTick += Enumerable.Range(0, portamento - 64).Select((i) => 1.0 + GapToleranceGTE64 * i).Sum(); 
             }
             else
             {
-                beginMarginTick = BeginTick - 135.0 - Enumerable.Range(0, 64 - portamento).Select((i) => 1.0 + 0.2286706 * i).Sum();
-                blendTick = 280.0;
+                beginMarginTick = Math.Max(165.0 - Enumerable.Range(0, 64 - portamento).Select((i) => 1.0 + BeginMarginLT64 * i).Sum(), 0.0);
+                gapToleranceTick += Enumerable.Range(0, 64 - portamento).Select((i) => 1.0 + GapToleranceLT64 * i).Sum();
             }
-            endMarginTick = beginMarginTick + blendTick;
 
-            BeginMarginTimeRate = beginMarginTick / TotalPortamentoTime;
-            EndMarginTimeRate = (TotalPortamentoTime - endMarginTick) / TotalPortamentoTime;
+            BeginMarginTimeRate = beginMarginTick * TickToTime;
+            BlendTimeRate = blendTick * TickToTime;
+            GapToleranceTime = gapToleranceTick * TickToTime;
         }
 
         public double BeginMarginTimeRate { get; }
 
-        public double EndMarginTimeRate { get; }
+        public double BlendTimeRate { get; }
 
-        public double BlendTimeRate => 1.0 - (BeginMarginTimeRate + EndMarginTimeRate);
+        public double GapToleranceTime { get; }
     }
 }

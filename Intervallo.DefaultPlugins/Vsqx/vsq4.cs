@@ -2199,6 +2199,9 @@ namespace Intervallo.DefaultPlugins.Vsqx
 
         [XmlIgnore]
         public IVSNStyle NStyle => nStyleField;
+
+        [XmlIgnore]
+        public string Character => yField;
     }
 
     /// <remarks/>
