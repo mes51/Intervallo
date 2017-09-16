@@ -209,7 +209,7 @@ namespace Intervallo.Form
                         MainView.MessageText = LangResources.ProgressMessage_AnalyzingWave;
                     });
 
-                    AnalyzedAudio = CacheFile.FindCache<AnalyzedAudioCache>(WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName)
+                    AnalyzedAudio = CacheFile.FindCache<AnalyzedAudioCache>(WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName + ApplicationSettings.Setting.PitchOperation.FramePeriod)
                         .GetOrElse(() =>
                         {
                             var aa = AudioOperatorPlugins[0].Analyze(new WaveData(WaveData.Data, WaveData.Fs), ApplicationSettings.Setting.PitchOperation.FramePeriod, (p) =>
@@ -220,7 +220,7 @@ namespace Intervallo.Form
                                 });
                             });
                             var result = new AnalyzedAudioCache(AudioOperatorPlugins[0].GetType(), aa, WaveData.Data.Length, WaveData.Fs, WaveData.Hash);
-                            CacheFile.SaveCache(result, WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName);
+                            CacheFile.SaveCache(result, WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName + ApplicationSettings.Setting.PitchOperation.FramePeriod);
                             return result;
                         });
 
