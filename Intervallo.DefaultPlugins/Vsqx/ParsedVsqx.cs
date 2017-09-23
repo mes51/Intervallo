@@ -147,8 +147,8 @@ namespace Intervallo.DefaultPlugins.Vsqx
 
             var prevTimeRate = Math.Min(affector.Length * 0.5 / Portamento.MaxPrevNoteTime, 1.0);
             var currentTimeRate = Math.Min(note.Length * 0.5 / Portamento.MaxNextNoteTime, 1.0);
-            var startTime = Math.Max(Portamento.MaxPrevNoteTime - affector.Portamento.BeginMarginTimeRate, 0.0);
-            var blendTime = startTime * prevTimeRate + Math.Max(affector.Portamento.BlendTimeRate - startTime, 0.0) * currentTimeRate;
+            var startTime = Portamento.MaxPrevNoteTime - affector.Portamento.BeginMarginTimeRate;
+            var blendTime = Math.Max(startTime, 0.0) * prevTimeRate + Math.Max(affector.Portamento.BlendTimeRate - Math.Max(startTime, 0.0), 0.0) * currentTimeRate;
             var rad = (Math.PI * 2.0) / blendTime;
             blendTime += Math.Max(note.Position - (affector.Position + affector.Length), 0.0);
 

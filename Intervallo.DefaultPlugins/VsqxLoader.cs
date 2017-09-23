@@ -125,7 +125,7 @@ namespace Intervallo.DefaultPlugins
                                 var tick = partTick + n.Tick;
                                 var time = tempo[tick].TickToTime(tick);
                                 var length = tempo[tick + n.Duration].TickToTime(tick + n.Duration) - time;
-                                var pot = new Portamento((int)portamento[time]);
+                                var pot = new Portamento((int)portamento[time + tempo[tick + n.Duration].TickToTime(tick + n.Duration)]);
                                 return new Note(n.Character, time - partStartTime, length, n.NoteNumber, GetVibratoInfo(n, partTick, length, tempo), pot);
                             })
                             .ToRangeDictionary((n) => n.Position, IntervalMode.OpenInterval);
