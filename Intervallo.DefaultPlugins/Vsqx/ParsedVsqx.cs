@@ -99,8 +99,14 @@ namespace Intervallo.DefaultPlugins.Vsqx
         public IEnumerable<double> CreateCurve(double time, double framePeriod)
         {
             var note = GetNote(time);
-            return ApplyPortamento(note, time, framePeriod)
-                .Zip(note.Vibrato.CreateVibrato(note.Length, framePeriod), (n, v) => n + v);
+
+            var f0 = new double[(int)Math.Ceiling(note.Length / framePeriod)];
+            f0.Fill(note.NoteNumber);
+
+            GetPrevNote(time).ForEach((p) => ApplyPortamento(note, p, f0, framePeriod, false));
+            GetNextNote(time).ForEach((n) => ApplyPortamento(note, n, f0, framePeriod, true));
+
+            return f0.Zip(note.Vibrato.CreateVibrato(note.Length, framePeriod), (n, v) => n + v);
         }
 
         Optional<Note> GetNextNote(double time)
@@ -123,31 +129,31 @@ namespace Intervallo.DefaultPlugins.Vsqx
                 .Select((k) => Note[k]);
         }
 
-        IEnumerable<double> ApplyPortamento(Note note, double time, double framePeriod)
+        void ApplyPortamento(Note note, Note affector, double[] f0, double framePeriod, bool reverse)
         {
-            var prev = GetPrevNote(time);
-            var next = GetNextNote(time);
-
             var positionAdjustment = framePeriod - note.Position % framePeriod;
-            var f0 = new double[(int)Math.Ceiling(note.Length / framePeriod)];
-            f0.Fill(note.NoteNumber);
 
-            prev.ForEach((p) =>
+            if (reverse)
             {
-                var prevTimeRate = Math.Min(p.Length * 0.5 / Portamento.MaxPrevNoteTime, 1.0);
-                var currentTimeRate = Math.Min(note.Length * 0.5 / Portamento.MaxNextNoteTime, 1.0);
-                var startTime = Math.Max(Portamento.MaxPrevNoteTime - p.Portamento.BeginMarginTimeRate, 0.0);
-                var blendTime = startTime * prevTimeRate + Math.Max(p.Portamento.BlendTimeRate - startTime, 0.0) * currentTimeRate;
-                var rad = (Math.PI * 2.0) / blendTime;
-                if (note.Position - (p.Position + p.Length) > p.Portamento.GapToleranceTime)
-                {
-                    blendTime = 0.0;
-                }
-                else
-                {
-                    blendTime += Math.Max(note.Position - (p.Position + p.Length), 0.0);
-                }
+                var tmp = note;
+                note = affector;
+                affector = tmp;
+            }
 
+            if (note.Position - (affector.Position + affector.Length) > affector.Portamento.GapToleranceTime)
+            {
+                return;
+            }
+
+            var prevTimeRate = Math.Min(affector.Length * 0.5 / Portamento.MaxPrevNoteTime, 1.0);
+            var currentTimeRate = Math.Min(note.Length * 0.5 / Portamento.MaxNextNoteTime, 1.0);
+            var startTime = Math.Max(Portamento.MaxPrevNoteTime - affector.Portamento.BeginMarginTimeRate, 0.0);
+            var blendTime = startTime * prevTimeRate + Math.Max(affector.Portamento.BlendTimeRate - startTime, 0.0) * currentTimeRate;
+            var rad = (Math.PI * 2.0) / blendTime;
+            blendTime += Math.Max(note.Position - (affector.Position + affector.Length), 0.0);
+
+            if (!reverse)
+            {
                 for (var i = 0; i < f0.Length; i++)
                 {
                     var t = Math.Max(startTime * prevTimeRate + positionAdjustment + i * framePeriod, 0.0);
@@ -155,27 +161,12 @@ namespace Intervallo.DefaultPlugins.Vsqx
                     {
                         break;
                     }
-                    var blendRate = (1.0 + Math.Tanh(rad * t - Math.PI)) * 0.5;
-                    f0[i] = p.NoteNumber + (note.NoteNumber - p.NoteNumber) * blendRate;
+                    var blendRate = CurveFunction(rad * t);
+                    f0[i] = affector.NoteNumber + (note.NoteNumber - affector.NoteNumber) * blendRate;
                 }
-            });
-
-            next.ForEach((n) =>
+            }
+            else
             {
-                var prevTimeRate = Math.Min(note.Length * 0.5 / Portamento.MaxPrevNoteTime, 1.0);
-                var currentTimeRate = Math.Min(n.Length * 0.5 / Portamento.MaxNextNoteTime, 1.0);
-                var startTime = Math.Max(Portamento.MaxPrevNoteTime - note.Portamento.BeginMarginTimeRate, 0.0);
-                var blendTime = startTime * prevTimeRate + Math.Max(note.Portamento.BlendTimeRate - startTime, 0.0) * currentTimeRate;
-                var rad = (Math.PI * 2.0) / blendTime;
-                if (n.Position - (note.Position + note.Length) > note.Portamento.GapToleranceTime)
-                {
-                    blendTime = 0.0;
-                }
-                else
-                {
-                    blendTime += Math.Max(n.Position - (note.Position + note.Length), 0.0);
-                }
-
                 for (var i = 0; i < f0.Length; i++)
                 {
                     var t = startTime * prevTimeRate - (positionAdjustment + i * framePeriod);
@@ -183,12 +174,15 @@ namespace Intervallo.DefaultPlugins.Vsqx
                     {
                         break;
                     }
-                    var blendRate = (1.0 + Math.Tanh(rad * t - Math.PI)) * 0.5;
-                    f0[f0.Length - i - 1] = note.NoteNumber + (n.NoteNumber - note.NoteNumber) * blendRate;
+                    var blendRate = CurveFunction(rad * t);
+                    f0[f0.Length - i - 1] = affector.NoteNumber + (note.NoteNumber - affector.NoteNumber) * blendRate;
                 }
-            });
+            }
+        }
 
-            return f0;
+        double CurveFunction(double rad)
+        {
+            return (1.0 + Math.Tanh(rad - Math.PI)) * 0.5;
         }
     }
 
