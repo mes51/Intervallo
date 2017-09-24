@@ -93,12 +93,13 @@ namespace Intervallo.UI
                 var framePerSample = 1000.0 / AudioScale.SampleRate / AudioScale.FramePeriod;
                 var frameCount = Math.Min((int)Math.Ceiling(SampleRange.Length * framePerSample) + 1, AudioScale.FrameLength);
                 var begin = (int)Math.Floor(SampleRange.Begin * framePerSample);
+                var xOffset = (float)(begin - (SampleRange.Begin * framePerSample));
                 var points = AudioScale.F0
                     .Skip(begin)
-                    .Take(frameCount)
+                    .Take(frameCount + 1)
                     .Select((f, i) => new { Scale = FreqencyToScale(f), Index = i })
                     .Where((sx) => sx.Scale > 0.0)
-                    .Select((sx) => new System.Drawing.PointF(sx.Index, (float)((12.0 - sx.Scale) * DefaultHeight)))
+                    .Select((sx) => new System.Drawing.PointF(sx.Index + xOffset, (float)((12.0 - sx.Scale) * DefaultHeight)))
                     .ToArray();
 
                 var groupStartIndex = 0;
@@ -122,7 +123,7 @@ namespace Intervallo.UI
             }
             else
             {
-                return ActualWidth / Math.Max(1, SampleRange.Length / (AudioScale.SampleRate * AudioScale.FramePeriod * 0.001));
+                return ActualWidth / Math.Max(0.0001, SampleRange.Length / (AudioScale.SampleRate * AudioScale.FramePeriod * 0.001));
             }
         }
 
