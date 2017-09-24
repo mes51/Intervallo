@@ -182,7 +182,9 @@ namespace Intervallo.DefaultPlugins.Vsqx
 
         double CurveFunction(double rad)
         {
-            return (1.0 + Math.Tanh(rad - Math.PI)) * 0.5;
+            // see: https://ja.wikipedia.org/wiki/%E3%82%B0%E3%83%BC%E3%83%87%E3%83%AB%E3%83%9E%E3%83%B3%E9%96%A2%E6%95%B0
+            const double GPPI = 0.9450125422; // gp(PI) * 2 / PI
+            return (1.0 + Math.Atan(Math.Sinh(rad - Math.PI)) * 2 / Math.PI / GPPI) * 0.5;
         }
     }
 
