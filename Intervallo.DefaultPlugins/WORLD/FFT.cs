@@ -284,7 +284,7 @@ namespace Intervallo.DefaultPlugins.WORLD
         }
     }
 
-    static class FFT
+    static unsafe class FFT
     {
         public static void Execute(FFTPlan plan)
         {
@@ -308,7 +308,13 @@ namespace Intervallo.DefaultPlugins.WORLD
             if (plan.CIn == null)
             {
                 plan.In.BlockCopy(0, plan.Input, 0, plan.N);
-                Rdft(plan.N, plan.Input, plan.IP, plan.W);
+
+                fixed (double* w = &plan.W[0])
+                fixed (double* input = &plan.Input[0])
+                {
+                    Rdft(plan.N, input, plan.IP, w);
+                }
+
                 plan.COut[0] = new Complex(plan.Input[0], 0.0);
                 for (int i = 1, ii = 2, limit = plan.N / 2; i < limit; i++, ii += 2)
                 {
@@ -323,7 +329,13 @@ namespace Intervallo.DefaultPlugins.WORLD
                     plan.Input[ii] = plan.CIn[i].Real;
                     plan.Input[ii + 1] = plan.CIn[i].Imaginary;
                 }
-                Cdft(plan.N * 2, plan.Input, plan.IP, plan.W);
+
+                fixed (double* w = &plan.W[0])
+                fixed (double* input = &plan.Input[0])
+                {
+                    Cdft(plan.N * 2, input, plan.IP, w);
+                }
+
                 for (int i = 0, ii = 0; i < plan.N; i++, ii += 2)
                 {
                     plan.COut[i] = new Complex(plan.Input[ii], plan.Input[ii + 1]);
@@ -342,7 +354,11 @@ namespace Intervallo.DefaultPlugins.WORLD
                     plan.Input[ii] = plan.CIn[i].Real;
                     plan.Input[ii + 1] = plan.CIn[i].Imaginary;
                 }
-                RdftInv(plan.N, plan.Input, plan.IP, plan.W);
+                fixed (double* w = &plan.W[0])
+                fixed (double* input = &plan.Input[0])
+                {
+                    RdftInv(plan.N, input, plan.IP, w);
+                }
                 for (int i = 0; i < plan.N; i++)
                 {
                     plan.Out[i] = plan.Input[i] * 2.0;
@@ -355,7 +371,11 @@ namespace Intervallo.DefaultPlugins.WORLD
                     plan.Input[ii] = plan.CIn[i].Real;
                     plan.Input[ii + 1] = plan.CIn[i].Imaginary;
                 }
-                CdftInv(plan.N * 2, plan.Input, plan.IP, plan.W);
+                fixed (double* w = &plan.W[0])
+                fixed (double* input = &plan.Input[0])
+                {
+                    CdftInv(plan.N * 2,input, plan.IP, w);
+                }
                 for (int i = 0, ii = 0; i < plan.N; i++, ii += 2)
                 {
                     plan.COut[i] = new Complex(plan.Input[ii], plan.Input[ii + 1]);
@@ -363,7 +383,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             }
         }
 
-        static void Rdft(int n, double[] a, int[] ip, double[] w)
+        static void Rdft(int n, double* a, int[] ip, double* w)
         {
             var nw = ip[0];
             var nc = ip[1];
@@ -371,7 +391,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             if (n > 4)
             {
                 CFTFSub(n, a, ip, nw, w);
-                RFTFSub(n, a, nc, w.SubSequence(nw));
+                RFTFSub(n, a, nc, &w[nw]);
             }
             else if (n == 4)
             {
@@ -382,7 +402,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[1] = xi;
         }
 
-        static void RdftInv(int n, double[] a, int[] ip, double[] w)
+        static void RdftInv(int n, double* a, int[] ip, double* w)
         {
             var nw = ip[0];
             var nc = ip[1];
@@ -391,7 +411,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[0] -= a[1];
             if (n > 4)
             {
-                RFTBSub(n, a, nc, w.SubSequence(nw));
+                RFTBSub(n, a, nc, &w[nw]);
                 CFTBSub(n, a, ip, nw, w);
             }
             else if (n == 4)
@@ -400,23 +420,23 @@ namespace Intervallo.DefaultPlugins.WORLD
             }
         }
 
-        static void Cdft(int n, double[] a, int[] ip, double[] w)
+        static void Cdft(int n, double* a, int[] ip, double* w)
         {
             CFTFSub(n, a, ip, ip[0], w);
         }
 
-        static void CdftInv(int n, double[] a, int[] ip, double[] w)
+        static void CdftInv(int n, double* a, int[] ip, double* w)
         {
             CFTBSub(n, a, ip, ip[0], w);
         }
 
-        static void CFTFSub(int n, double[] a, int[] ip, int nw, double[] w)
+        static void CFTFSub(int n, double* a, int[] ip, int nw, double* w)
         {
             if (n > 8)
             {
                 if (n > 32)
                 {
-                    CftF1st(n, a, w.SubSequence(nw - (n >> 2)));
+                    CftF1st(n, a, &w[nw - (n >> 2)]);
                     if (n > 512)
                     {
                         CFTRec4(n, a, nw, w);
@@ -433,7 +453,7 @@ namespace Intervallo.DefaultPlugins.WORLD
                 }
                 else if (n == 32)
                 {
-                    CFTF161(a, w.SubSequence(nw - 8));
+                    CFTF161(a, &w[nw - 8]);
                     BitRV216(a);
                 }
                 else
@@ -452,13 +472,13 @@ namespace Intervallo.DefaultPlugins.WORLD
             }
         }
 
-        static void CFTBSub(int n, double[] a, int[] ip, int nw, double[] w)
+        static void CFTBSub(int n, double* a, int[] ip, int nw, double* w)
         {
             if (n > 8)
             {
                 if (n > 32)
                 {
-                    CftB1st(n, a, w.SubSequence(nw - (n >> 2)));
+                    CftB1st(n, a, &w[nw - (n >> 2)]);
                     if (n > 512)
                     {
                         CFTRec4(n, a, nw, w);
@@ -475,7 +495,7 @@ namespace Intervallo.DefaultPlugins.WORLD
                 }
                 else if (n == 32)
                 {
-                    CFTF161(a, w.SubSequence(nw - 8));
+                    CFTF161(a, &w[nw - 8]);
                     BitRV216Neg(a);
                 }
                 else
@@ -494,7 +514,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             }
         }
 
-        static void BitRV2(int n, int[] ip, double[] a)
+        static void BitRV2(int n, int[] ip, double* a)
         {
             var m = 1;
             var l = n >> 2;
@@ -853,7 +873,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             }
         }
 
-        static void BitRV2Conj(int n, int[] ip, double[] a)
+        static void BitRV2Conj(int n, int[] ip, double* a)
         {
             var m = 1;
             var l = n >> 2;
@@ -1221,7 +1241,7 @@ namespace Intervallo.DefaultPlugins.WORLD
 
         }
 
-        static void BitRV216(double[] a)
+        static void BitRV216(double* a)
         {
             var x1r = a[2];
             var x1i = a[3];
@@ -1273,7 +1293,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[29] = x7i;
         }
 
-        static void BitRV216Neg(double[] a)
+        static void BitRV216Neg(double* a)
         {
             var x1r = a[2];
             var x1i = a[3];
@@ -1337,7 +1357,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[31] = x8i;
         }
 
-        static void BitRV208(double[] a)
+        static void BitRV208(double* a)
         {
             var x1r = a[2];
             var x1i = a[3];
@@ -1357,7 +1377,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[13] = x3i;
         }
 
-        static void BitRV208Neg(double[] a)
+        static void BitRV208Neg(double* a)
         {
             var x1r = a[2];
             var x1i = a[3];
@@ -1389,7 +1409,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[15] = x4i;
         }
 
-        static void CftF1st(int n, double[] a, SubSequence<double> w)
+        static void CftF1st(int n, double* a, double* w)
         {
             var mh = n >> 3;
             var m = 2 * mh;
@@ -1594,7 +1614,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[j3 + 3] = wk3i * x0i - wk3r * x0r;
         }
 
-        static void CftB1st(int n, double[] a, SubSequence<double> w)
+        static void CftB1st(int n, double* a, double* w)
         {
             var mh = n >> 3;
             var m = 2 * mh;
@@ -1799,25 +1819,25 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[j3 + 3] = wk3i * x0i - wk3r * x0r;
         }
 
-        static void CFTRec4(int n, double[] a, int nw, double[] w)
+        static void CFTRec4(int n, double* a, int nw, double* w)
         {
             var m = n;
             while (m > 512)
             {
                 m >>= 2;
-                CFTMdl1(m, a.SubSequence(n - m), w.SubSequence(nw - (m >> 1)));
+                CFTMdl1(m, &a[n - m], &w[nw - (m >> 1)]);
             }
-            CFTLeaf(m, 1, a.SubSequence(n - m), nw, w);
+            CFTLeaf(m, 1, &a[n - m], nw, w);
             var k = 0;
             for (var j = n - m; j > 0; j -= m)
             {
                 k++;
                 var isplt = CFTTree(m, j, k, a, nw, w);
-                CFTLeaf(m, isplt,a.SubSequence(j - m), nw, w);
+                CFTLeaf(m, isplt, &a[j - m], nw, w);
             }
         }
 
-        static int CFTTree(int n, int j, int k, double[] a, int nw, double[] w)
+        static int CFTTree(int n, int j, int k, double* a, int nw, double* w)
         {
             var isplt = 0;
             if ((k & 3) != 0)
@@ -1825,11 +1845,11 @@ namespace Intervallo.DefaultPlugins.WORLD
                 isplt = k & 1;
                 if (isplt != 0)
                 {
-                    CFTMdl1(n, a.SubSequence(j - n), w.SubSequence(nw - (n >> 1)));
+                    CFTMdl1(n, &a[j - n], &w[nw - (n >> 1)]);
                 }
                 else
                 {
-                    CFTMdl2(n, a.SubSequence(j - n), w.SubSequence(nw - n));
+                    CFTMdl2(n, &a[j - n], &w[nw - n]);
                 }
             }
             else
@@ -1845,7 +1865,7 @@ namespace Intervallo.DefaultPlugins.WORLD
                 {
                     while (m > 128)
                     {
-                        CFTMdl1(m, a.SubSequence(j - m), w.SubSequence(nw - (m >> 1)));
+                        CFTMdl1(m, &a[j - m], &w[nw - (m >> 1)]);
                         m >>= 2;
                     }
                 }
@@ -1853,7 +1873,7 @@ namespace Intervallo.DefaultPlugins.WORLD
                 {
                     while (m > 128)
                     {
-                        CFTMdl2(m, a.SubSequence(j - m), w.SubSequence(nw - m));
+                        CFTMdl2(m, &a[j - m], &w[nw - m]);
                         m >>= 2;
                     }
                 }
@@ -1861,73 +1881,73 @@ namespace Intervallo.DefaultPlugins.WORLD
             return isplt;
         }
 
-        static void CFTLeaf(int n, int isplt, SubSequence<double> a, int nw, double[] w)
+        static void CFTLeaf(int n, int isplt, double* a, int nw, double* w)
         {
             if (n == 512)
             {
-                CFTMdl1(128, a, w.SubSequence(nw - 64));
-                CFTF161(a, w.SubSequence(nw - 8));
-                CFTF162(a.SubSequence(32), w.SubSequence(nw - 32));
-                CFTF161(a.SubSequence(64), w.SubSequence(nw - 8));
-                CFTF161(a.SubSequence(96), w.SubSequence(nw - 8));
-                CFTMdl2(128, a.SubSequence(128), w.SubSequence(nw - 128));
-                CFTF161(a.SubSequence(128), w.SubSequence(nw - 8));
-                CFTF162(a.SubSequence(160), w.SubSequence(nw - 32));
-                CFTF161(a.SubSequence(192), w.SubSequence(nw - 8));
-                CFTF162(a.SubSequence(224), w.SubSequence(nw - 32));
-                CFTMdl1(128, a.SubSequence(256), w.SubSequence(nw - 64));
-                CFTF161(a.SubSequence(256), w.SubSequence(nw - 8));
-                CFTF162(a.SubSequence(288), w.SubSequence(nw - 32));
-                CFTF161(a.SubSequence(320), w.SubSequence(nw - 8));
-                CFTF161(a.SubSequence(352), w.SubSequence(nw - 8));
+                CFTMdl1(128, a, &w[nw - 64]);
+                CFTF161(a, &w[nw - 8]);
+                CFTF162(&a[32], &w[nw - 32]);
+                CFTF161(&a[64], &w[nw - 8]);
+                CFTF161(&a[96], &w[nw - 8]);
+                CFTMdl2(128, &a[128], &w[nw - 128]);
+                CFTF161(&a[128], &w[nw - 8]);
+                CFTF162(&a[160], &w[nw - 32]);
+                CFTF161(&a[192], &w[nw - 8]);
+                CFTF162(&a[224], &w[nw - 32]);
+                CFTMdl1(128, &a[256], &w[nw - 64]);
+                CFTF161(&a[256], &w[nw - 8]);
+                CFTF162(&a[288], &w[nw - 32]);
+                CFTF161(&a[320], &w[nw - 8]);
+                CFTF161(&a[352], &w[nw - 8]);
                 if (isplt != 0)
                 {
-                    CFTMdl1(128, a.SubSequence(384), w.SubSequence(nw - 64));
-                    CFTF161(a.SubSequence(480), w.SubSequence(nw - 8));
+                    CFTMdl1(128, &a[384], &w[nw - 64]);
+                    CFTF161(&a[480], &w[nw - 8]);
                 }
                 else
                 {
-                    CFTMdl2(128, a.SubSequence(384), w.SubSequence(nw - 128));
-                    CFTF162(a.SubSequence(480), w.SubSequence(nw - 32));
+                    CFTMdl2(128, &a[384], &w[nw - 128]);
+                    CFTF162(&a[480], &w[nw - 32]);
                 }
-                CFTF161(a.SubSequence(384), w.SubSequence(nw - 8));
-                CFTF162(a.SubSequence(416), w.SubSequence(nw - 32));
-                CFTF161(a.SubSequence(448), w.SubSequence(nw - 8));
+                CFTF161(&a[384], &w[nw - 8]);
+                CFTF162(&a[416], &w[nw - 32]);
+                CFTF161(&a[448], &w[nw - 8]);
             }
             else
             {
-                CFTMdl1(64, a, w.SubSequence(nw - 32));
-                CFTF081(a, w.SubSequence(nw - 8));
-                CFTF082(a.SubSequence(16), w.SubSequence(nw - 8));
-                CFTF081(a.SubSequence(32), w.SubSequence(nw - 8));
-                CFTF081(a.SubSequence(48), w.SubSequence(nw - 8));
-                CFTMdl2(64, a.SubSequence(64), w.SubSequence(nw - 64));
-                CFTF081(a.SubSequence(64), w.SubSequence(nw - 8));
-                CFTF082(a.SubSequence(80), w.SubSequence(nw - 8));
-                CFTF081(a.SubSequence(96), w.SubSequence(nw - 8));
-                CFTF082(a.SubSequence(112), w.SubSequence(nw - 8));
-                CFTMdl1(64, a.SubSequence(128), w.SubSequence(nw - 32));
-                CFTF081(a.SubSequence(128), w.SubSequence(nw - 8));
-                CFTF082(a.SubSequence(144), w.SubSequence(nw - 8));
-                CFTF081(a.SubSequence(160), w.SubSequence(nw - 8));
-                CFTF081(a.SubSequence(176), w.SubSequence(nw - 8));
+                CFTMdl1(64, a, &w[nw - 32]);
+                CFTF081(a, &w[nw - 8]);
+                CFTF082(&a[16], &w[nw - 8]);
+                CFTF081(&a[32], &w[nw - 8]);
+                CFTF081(&a[48], &w[nw - 8]);
+                CFTMdl2(64, &a[64], &w[nw - 64]);
+                CFTF081(&a[64], &w[nw - 8]);
+                CFTF082(&a[80], &w[nw - 8]);
+                CFTF081(&a[96], &w[nw - 8]);
+                CFTF082(&a[112], &w[nw - 8]);
+                CFTMdl1(64, &a[128], &w[nw - 32]);
+                CFTF081(&a[128], &w[nw - 8]);
+                CFTF082(&a[144], &w[nw - 8]);
+                CFTF081(&a[160], &w[nw - 8]);
+                CFTF081(&a[176], &w[nw - 8]);
                 if (isplt != 0)
                 {
-                    CFTMdl1(64, a.SubSequence(192), w.SubSequence(nw - 32));
-                    CFTF081(a.SubSequence(240), w.SubSequence(nw - 8));
+                    CFTMdl1(64, &a[192], &w[nw - 32]);
+                    CFTF081(&a[240], &w[nw - 8]);
                 }
                 else
                 {
-                    CFTMdl2(64, a.SubSequence(192), w.SubSequence(nw - 64));
-                    CFTF082(a.SubSequence(240), w.SubSequence(nw - 8));
+                    CFTMdl2(64, &a[192], &w[nw - 64]);
+                    CFTF082(&a[240], &w[nw - 8]);
                 }
-                CFTF081(a.SubSequence(192), w.SubSequence(nw - 8));
-                CFTF082(a.SubSequence(208), w.SubSequence(nw - 8));
-                CFTF081(a.SubSequence(224), w.SubSequence(nw - 8));
+                CFTF081(&a[192], &w[nw - 8]);
+                CFTF082(&a[208], &w[nw - 8]);
+                CFTF081(&a[224], &w[nw - 8]);
             }
         }
 
-        static void CFTMdl1(int n, SubSequence<double> a, SubSequence<double> w)
+        static void CFTMdl1(int n, double* a, double* w)
         {
             var mh = n >> 3;
             var m = 2 * mh;
@@ -2036,7 +2056,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[j3 + 1] = -wn4r * (x0i - x0r);
         }
 
-        static void CFTMdl2(int n, SubSequence<double> a, SubSequence<double> w)
+        static void CFTMdl2(int n, double* a, double* w)
         {
             var mh = n >> 3;
             var m = 2 * mh;
@@ -2171,25 +2191,25 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[j3 + 1] = y0i + y2i;
         }
 
-        static void CFTX41(int n, double[] a, int nw, double[] w)
+        static void CFTX41(int n, double* a, int nw, double* w)
         {
             if (n == 128)
             {
-                CFTF161(a, w.SubSequence(nw - 8));
-                CFTF162(a.SubSequence(32), w.SubSequence(nw - 32));
-                CFTF161(a.SubSequence(64), w.SubSequence(nw - 8));
-                CFTF161(a.SubSequence(96), w.SubSequence(nw - 8));
+                CFTF161(a, &w[nw - 8]);
+                CFTF162(&a[32], &w[nw - 32]);
+                CFTF161(&a[64], &w[nw - 8]);
+                CFTF161(&a[96], &w[nw - 8]);
             }
             else
             {
-                CFTF081(a, w.SubSequence(nw - 8));
-                CFTF082(a.SubSequence(16), w.SubSequence(nw - 8));
-                CFTF081(a.SubSequence(32), w.SubSequence(nw - 8));
-                CFTF081(a.SubSequence(48), w.SubSequence(nw - 8));
+                CFTF081(a, &w[nw - 8]);
+                CFTF082(&a[16], &w[nw - 8]);
+                CFTF081(&a[32], &w[nw - 8]);
+                CFTF081(&a[48], &w[nw - 8]);
             }
         }
 
-        static void CFTF161(SubSequence<double> a, SubSequence<double> w)
+        static void CFTF161(double* a, double* w)
         {
             var wn4r = w[1];
             var wk1r = w[2];
@@ -2340,7 +2360,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[7] = x1i - x3r;
         }
 
-        static void CFTF162(SubSequence<double> a, SubSequence<double> w)
+        static void CFTF162(double* a, double* w)
         {
             var wn4r = w[1];
             var wk1r = w[4];
@@ -2515,7 +2535,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[31] = x1i - x2r;
         }
 
-        static void CFTF081(SubSequence<double> a, SubSequence<double> w)
+        static void CFTF081(double* a, double* w)
         {
             var wn4r = w[1];
             var x0r = a[0] + a[8];
@@ -2572,7 +2592,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[7] = y2i - y6r;
         }
 
-        static void CFTF082(SubSequence<double> a, SubSequence<double> w)
+        static void CFTF082(double* a, double* w)
         {
             var wn4r = w[1];
             var wk1r = w[2];
@@ -2639,7 +2659,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[15] = x0i - x1r;
         }
 
-        static void CFTF040(double[] a)
+        static void CFTF040(double* a)
         {
             var x0r = a[0] + a[4];
             var x0i = a[1] + a[5];
@@ -2659,7 +2679,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[7] = x1i - x3r;
         }
 
-        static void CFTB040(double[] a)
+        static void CFTB040(double* a)
         {
             var x0r = a[0] + a[4];
             var x0i = a[1] + a[5];
@@ -2679,7 +2699,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[7] = x1i + x3r;
         }
 
-        static void CFTX020(double[] a)
+        static void CFTX020(double* a)
         {
             var x0r = a[0] - a[2];
             var x0i = a[1] - a[3];
@@ -2689,7 +2709,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[3] = x0i;
         }
 
-        static void RFTFSub(int n, double[] a, int nc, SubSequence<double> c)
+        static void RFTFSub(int n, double* a, int nc, double* c)
         {
             var m = n >> 1;
             var ks = 2 * nc / m;
@@ -2711,7 +2731,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             }
         }
 
-        static void RFTBSub(int n, double[] a, int nc, SubSequence<double> c)
+        static void RFTBSub(int n, double* a, int nc, double* c)
         {
             var m = n >> 1;
             var ks = 2 * nc / m;
@@ -2734,7 +2754,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             }
         }
 
-        static void DCTSub(int n, double[] a, int nc, double[] c)
+        static void DCTSub(int n, double* a, int nc, double* c)
         {
             var m = n >> 1;
             var ks = nc / n;
@@ -2752,7 +2772,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             a[m] *= c[0];
         }
 
-        static void DSTSub(int n, double[] a, int nc, double[] c)
+        static void DSTSub(int n, double* a, int nc, double* c)
         {
             var m = n >> 1;
             var ks = nc / n;
