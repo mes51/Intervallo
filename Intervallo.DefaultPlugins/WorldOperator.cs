@@ -136,7 +136,6 @@ namespace Intervallo.DefaultPlugins
                 }
             });
 
-            elements.RemoveAll(skipElement.Contains);
             while (true)
             {
                 var concat = combineElement.Zip(combineElement.Skip(1), (t, n) => Optional<CombineElement>.Iif(() => t.Concat(n), t.CanConcat(n)));
@@ -147,9 +146,12 @@ namespace Intervallo.DefaultPlugins
                 }
                 else
                 {
-                    combineElement = concat.SelectMany((c) => c).ToList();
+                    var newCombineElement = concat.SelectMany((c) => c).ToList();
+                    skipElement.AddRange(combineElement.SelectMany(c => c.Targets).Except(newCombineElement.SelectMany(c => c.Targets)));
+                    combineElement = newCombineElement;
                 }
             }
+            elements.RemoveAll(skipElement.Contains);
 
             double totalCount = elements.Count + combineElement.Count + 1.0;
             progress = elements.Count + 1;
