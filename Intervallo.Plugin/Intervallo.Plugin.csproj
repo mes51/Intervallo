@@ -52,6 +52,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IScaleLoader.cs" />
     <Compile Include="WaveData.cs" />
+    <Compile Include="WaveDataStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\LangResource.resx">

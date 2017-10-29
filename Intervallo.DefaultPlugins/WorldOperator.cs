@@ -244,6 +244,11 @@ namespace Intervallo.DefaultPlugins
             );
         }
 
+        public WaveDataStream Synthesize(AnalyzedAudio analyzedAudio)
+        {
+            return new WorldSynthesisStream(analyzedAudio as WorldAnalyzedAudio);
+        }
+
         class CombineElement
         {
             public CombineElement(List<AnalyzedElement> targets, List<AnalyzedElement> sideElements)
@@ -474,6 +479,96 @@ namespace Intervallo.DefaultPlugins
                 begin,
                 newElements
             );
+        }
+    }
+
+    public class WorldSynthesisStream : WaveDataStream
+    {
+        class Synthesizer
+        {
+            public Synthesizer(AnalyzedElement element)
+            {
+                var length = (int)((element.F0.Length - 1) * element.FramePeriod / 1000.0 * element.SampleRate) + 1;
+                Element = element;
+                Samples = new double[length];
+                Synthesis = new SynthesisRealTime(element.SampleRate, element.FramePeriod, element.FFTSize, 64, 1);
+                Synthesis.AddParameters(element.F0, element.F0.Length, element.Spectrogram, element.Aperiodicity);
+            }
+
+            public AnalyzedElement Element { get; }
+
+            public SynthesisRealTime Synthesis { get; }
+
+            public double[] Samples { get; }
+
+            public int GeneratedSamples { get; private set; }
+
+            public void Synthesize()
+            {
+                Synthesis.Synthesize();
+                var count = Math.Min(Synthesis.AudioBufferSize, Samples.Length - GeneratedSamples);
+                Synthesis.AudioBuffer.BlockCopy(0, Samples, GeneratedSamples, count);
+                GeneratedSamples += count;
+            }
+        }
+
+        public WorldSynthesisStream(WorldAnalyzedAudio analyzedAudio)
+        {
+            AnalyzedAudio = analyzedAudio;
+            Length = analyzedAudio.SampleCount * sizeof(double);
+            Synthesizers = AnalyzedAudio.Elements.ToRangeDictionary(
+                (e) => e.SamplePosition,
+                (e) => Optional<Synthesizer>.None(),
+                IntervalMode.OpenInterval
+           );
+        }
+
+        public override long Length { get; }
+
+        WorldAnalyzedAudio AnalyzedAudio { get; }
+
+        RangeDictionary<int, Optional<Synthesizer>> Synthesizers { get; }
+
+        public override int ReadSamples(double[] buffer, int count)
+        {
+            if (Synthesizers.Count < 1)
+            {
+                return count;
+            }
+
+            var bufferOffset = 0;
+
+            while (count > bufferOffset)
+            {
+                var key = Synthesizers.SelectKey(SamplePosition).Value;
+                if (Synthesizers[key].IsEmpty)
+                {
+                    var element = AnalyzedAudio.Elements.First((e) => e.SamplePosition == key);
+                    Synthesizers[key] = Optional<Synthesizer>.Some(new Synthesizer(element));
+                }
+
+                var synthesis = Synthesizers[key].Value;
+                if (key <= SamplePosition && synthesis.Samples.Length > SamplePosition - key)
+                {
+                    while (SamplePosition - key >= synthesis.GeneratedSamples)
+                    {
+                        synthesis.Synthesize();
+                    }
+
+                    var copySize = Math.Min(synthesis.GeneratedSamples - (SamplePosition - key), count - bufferOffset);
+                    synthesis.Samples.BlockCopy(SamplePosition - key, buffer, bufferOffset, copySize);
+
+                    SamplePosition += copySize;
+                    bufferOffset += copySize;
+                }
+                else
+                {
+                    SamplePosition++;
+                    bufferOffset++;
+                }
+            }
+
+            return bufferOffset;
         }
     }
 }

@@ -29,5 +29,12 @@ namespace Intervallo.Plugin
         /// <param name="notifyProgress">進捗の通知を行うメソッド(%)</param>
         /// <returns>合成された音声データ</returns>
         WaveData Synthesize(AnalyzedAudio analyzedAudio, Action<double> notifyProgress);
+
+        /// <summary>
+        /// 音声の合成を行います。
+        /// </summary>
+        /// <param name="analyzedAudio">操作済みの解析された音声データ</param>
+        /// <returns>合成された音声データを出力するStream</returns>
+        WaveDataStream Synthesize(AnalyzedAudio analyzedAudio);
     }
 }

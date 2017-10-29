@@ -503,6 +503,10 @@ namespace Intervallo.DefaultPlugins.WORLD
 
         public double[] AudioBuffer { get; }
 
+        public int AudioBufferSize { get; }
+
+        public int SynthesizedSample { get; private set; }
+
         XorShift Rand { get; } = new XorShift();
 
         RingBuffer Buffer { get; }
@@ -530,10 +534,6 @@ namespace Intervallo.DefaultPlugins.WORLD
         int I { get; set; }
 
         int CurrentFrame { get; set; }
-
-        int SynthesizedSample { get; set; }
-
-        int AudioBufferSize { get; }
 
         int CurrentLocation { get; set; }
 
