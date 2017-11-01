@@ -1,4 +1,5 @@
-﻿using Intervallo.Util;
+﻿using Intervallo.Plugin;
+using Intervallo.Util;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -30,14 +31,11 @@ namespace Intervallo.Audio.Player
         const int BytePerSample = 2;
         const int MaxLevel = 1 << (BytePerSample * 8 - 1);
 
-        public LoopableWaveStream(double[] wave, int fs)
+        public LoopableWaveStream(int fs)
         {
-            Wave = wave;
             WaveFormat = new WaveFormat(fs, BytePerSample * 8, 2);
             History = new RingBuffer<ReadHistory>(fs);
         }
-
-        public double[] Wave { get; }
 
         public IntRange LoopRange { get; set; }
 
@@ -61,7 +59,7 @@ namespace Intervallo.Audio.Player
         {
             get
             {
-                return Wave.Length * WaveFormat.BlockAlign;
+                return (Wave?.Length ?? 0) * WaveFormat.BlockAlign;
             }
         }
 
@@ -71,12 +69,14 @@ namespace Intervallo.Audio.Player
 
         RingBuffer<ReadHistory> History { get; }
 
+        PreviewableStream Wave { get; set; }
+
         public override int Read(byte[] buffer, int offset, int count)
         {
             var beginPosition = SamplePosition;
             var beginTotalReadSamples = TotalReadSamples;
 
-            var loopRange = LoopRange ?? new IntRange(0, Wave.Length);
+            var loopRange = LoopRange ?? new IntRange(0, Wave.SampleCount);
             if (SamplePosition < loopRange.Begin)
             {
                 SamplePosition = loopRange.Begin;
@@ -106,9 +106,13 @@ namespace Intervallo.Audio.Player
                     }
                     else
                     {
-                        for (int s = SamplePosition, c = 0; c < canRead && ms.Position < buffer.Length; s++, c++)
+                        if (Wave.SamplePosition != SamplePosition)
                         {
-                            var sampleData = (short)(Wave[s] * MaxLevel);
+                            Wave.SamplePosition = SamplePosition;
+                        }
+                        for (var c = 0; c < canRead && ms.Position < buffer.Length; c++)
+                        {
+                            var sampleData = (short)(Wave.ReadSample() * MaxLevel);
                             ms.WriteShort(sampleData);
                             ms.WriteShort(sampleData);
                         }
@@ -124,6 +128,12 @@ namespace Intervallo.Audio.Player
             return totalSamples * WaveFormat.BlockAlign;
         }
 
+        public void SetStream(PreviewableStream stream)
+        {
+            Wave = stream;
+            Wave.SamplePosition = SamplePosition;
+        }
+
         internal ReadHistory GetHistory(long totalReadCount)
         {
             for (var i = History.Count - 1; i > -1; i--)
@@ -136,6 +146,12 @@ namespace Intervallo.Audio.Player
             }
 
             return null;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            Wave.Dispose();
         }
     }
 }

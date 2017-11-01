@@ -31,7 +31,6 @@ namespace Intervallo.Form
     /// </summary>
     public partial class MainWindow : Window
     {
-        const int DoubleSize = sizeof(double);
         const string PluginDirectory = "Plugins";
         static readonly Regex LoaderExtentionRegex = new Regex(@"^\*?\.?", RegexOptions.Compiled);
 
@@ -92,6 +91,8 @@ namespace Intervallo.Form
         WavePlayer Player { get; set; }
 
         SeekPlayer SeekPlayer { get; set; }
+
+        PreviewableStream PreviewStream { get; set; }
 
         [ImportMany]
         List<IAudioOperator> AudioOperatorPlugins { get; set; }
@@ -182,6 +183,11 @@ namespace Intervallo.Form
 
         async void LoadWave(string filePath)
         {
+            if (Player?.PlaybackState == PlaybackState.Playing)
+            {
+                PauseAudio();
+            }
+
             await Task.Run(() =>
             {
                 try
@@ -197,13 +203,15 @@ namespace Intervallo.Form
 
                         SeekPlayer = new SeekPlayer(WaveData.Fs);
 
-                        Player = new WavePlayer(WaveData.Data, WaveData.Fs);
+                        Player = new WavePlayer(WaveData.Fs);
                         Player.EnableLoop = true;
                         Player.PlaybackStopped += (s, ea) =>
                         {
                             Player.SeekToStart();
                             MainView.IndicatorPosition = Player.GetCurrentSample();
                         };
+                        PreviewStream = new RawWaveStream(WaveData.Data);
+                        Player.SetStream(PreviewStream);
 
                         MainView.Progress = 25.0;
                         MainView.MessageText = LangResources.ProgressMessage_AnalyzingWave;
@@ -262,6 +270,8 @@ namespace Intervallo.Form
 
         async void ExportWave(string filePath, double[] newF0)
         {
+            Player?.Stop();
+
             await Task.Run(() =>
             {
                 var edited = AnalyzedAudio.AnalyzedAudio.ReplaceF0(newF0);
@@ -287,6 +297,7 @@ namespace Intervallo.Form
         {
             Player?.Stop();
             Player?.Dispose();
+            PreviewStream?.Dispose();
 
             MainView.Wave = null;
             MainView.AudioScale = null;
@@ -310,10 +321,17 @@ namespace Intervallo.Form
                 newF0[i] = newScale[i];
             }
             MainView.EditableAudioScale = new AudioScaleModel(newF0, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.SampleCount, AnalyzedAudio.SampleRate);
+
+            PreviewStream.Dispose();
+            var edited = AnalyzedAudio.AnalyzedAudio.ReplaceF0(newF0);
+            PreviewStream = new WaveCacheStream(AudioOperatorPlugins[0].Synthesize(edited));
+            Player.SetStream(PreviewStream);
         }
 
         async void LoadScale(IScaleLoader loader, string filePath)
         {
+            PauseAudio();
+
             MainView.Progress = 0.0;
             Lock = true;
             MainView.MessageText = LangResources.ProgressMessage_LoadScale;
@@ -345,6 +363,8 @@ namespace Intervallo.Form
 
         async void LoadScaleFromWave(string filePath)
         {
+            PauseAudio();
+
             MainView.Progress = 0.0;
             Lock = true;
             MainView.MessageText = LangResources.ProgressMessage_LoadScale;
@@ -534,8 +554,9 @@ namespace Intervallo.Form
         void MainView_IndicatorMoved(object sender, EventArgs e)
         {
             Player.SamplePosition = MainView.IndicatorPosition;
+            PreviewStream.SamplePosition = MainView.IndicatorPosition;
             var samples = new double[(int)(WaveData.Fs * 0.05)];
-            Buffer.BlockCopy(WaveData.Data, MainView.IndicatorPosition * DoubleSize, samples, 0, Math.Min(samples.Length, WaveData.Data.Length - MainView.IndicatorPosition) * DoubleSize);
+            PreviewStream.ReadSamples(samples, samples.Length);
             SeekPlayer.AddSample(samples);
         }
 

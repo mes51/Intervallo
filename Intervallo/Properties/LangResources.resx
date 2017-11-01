@@ -192,7 +192,7 @@
     <value>オプション(_O)...</value>
   </data>
   <data name="MainMenu_Preview" xml:space="preserve">
-    <value>原音の再生・停止(_P)</value>
+    <value>再生・停止(_P)</value>
   </data>
   <data name="MainMenu_ToolMenu" xml:space="preserve">
     <value>ツール(_T)</value>

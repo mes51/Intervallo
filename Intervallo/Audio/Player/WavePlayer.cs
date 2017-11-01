@@ -1,4 +1,5 @@
 ﻿using Intervallo.Config;
+using Intervallo.Plugin;
 using Intervallo.Util;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
@@ -12,9 +13,9 @@ namespace Intervallo.Audio.Player
 {
     public class WavePlayer : IWavePlayer
     {
-        public WavePlayer(double[] wave, int fs)
+        public WavePlayer(int fs)
         {
-            Stream = new LoopableWaveStream(wave, fs);
+            Stream = new LoopableWaveStream(fs);
             SampleRate = fs;
 
             using (var mmDeviceEnumerator = new MMDeviceEnumerator())
@@ -143,6 +144,11 @@ namespace Intervallo.Audio.Player
         public void Init(IWaveProvider waveProvider)
         {
             throw new InvalidOperationException("already initialized");
+        }
+
+        public void SetStream(PreviewableStream stream)
+        {
+            Stream.SetStream(stream);
         }
 
         public void Dispose()

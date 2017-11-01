@@ -117,8 +117,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Audio\Player\LoopableWaveStream.cs" />
+    <Compile Include="Audio\Player\PreviewableStream.cs" />
+    <Compile Include="Audio\Player\RawWaveStream.cs" />
     <Compile Include="Audio\Player\SampleBufferedWaveProvider.cs" />
     <Compile Include="Audio\Player\SeekPlayer.cs" />
+    <Compile Include="Audio\Player\WaveCacheStream.cs" />
     <Compile Include="Audio\Player\WavePlayer.cs" />
     <Compile Include="Audio\Wavefile.cs" />
     <Compile Include="Cache\AnalyzedAudioCache.cs" />

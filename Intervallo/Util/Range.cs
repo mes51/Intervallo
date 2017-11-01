@@ -73,6 +73,11 @@ namespace Intervallo.Util
             return n >= Begin && n < End;
         }
 
+        public bool IsInclude(IntRange range)
+        {
+            return range.Begin >= Begin && range.End <= End;
+        }
+
         public int ClipValue(int v)
         {
             return Math.Max(Math.Min(v, End), Begin);
