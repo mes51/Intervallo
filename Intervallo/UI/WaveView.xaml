@@ -31,7 +31,7 @@
             </ScrollBar.RenderTransform>
         </ScrollBar>
         <Rectangle Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" HorizontalAlignment="Right" Width="17" Height="17" VerticalAlignment="Bottom"/>
-        <Grid Margin="0,0,17,17">
+        <Grid Margin="0,0,17,17" ClipToBounds="True">
             <local:TimeMeasureView
                 MeasurePen="{Binding Source=LightGray}"
                 SampleRange="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:WaveView}}, Path=SampleRange, Mode=OneWay}"
