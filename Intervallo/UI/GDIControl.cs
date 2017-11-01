@@ -32,8 +32,8 @@ namespace Intervallo.UI
             {
                 if (prevSize.Width != ActualWidth || prevSize.Height != ActualHeight)
                 {
-                    var intWidth = (int)Math.Ceiling(ActualWidth);
-                    var intHeight = (int)Math.Ceiling(ActualHeight);
+                    var intWidth = Math.Max((int)Math.Ceiling(ActualWidth), 1);
+                    var intHeight = Math.Max((int)Math.Ceiling(ActualHeight), 1);
                     Bitmap = new WriteableBitmap(intWidth, intHeight, 96.0, 96.0, PixelFormats.Bgra32, null);
                     NativeBitmap = new System.Drawing.Bitmap(intWidth, intHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                     DataLength = intWidth * intHeight * 4;
