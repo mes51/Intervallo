@@ -51,7 +51,7 @@ namespace Intervallo.UI
 
         public WaveCanvas()
         {
-            PenColor = System.Drawing.Color.FromArgb(255, 74, 171, 246);
+            PenColor = System.Drawing.Color.FromArgb(255, 135, 203, 255);
         }
 
         protected override void UpdatePath(GraphicsPath path)
