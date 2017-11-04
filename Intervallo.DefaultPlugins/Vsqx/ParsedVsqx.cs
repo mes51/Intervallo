@@ -146,9 +146,18 @@ namespace Intervallo.DefaultPlugins.Vsqx
             }
 
             var prevTimeRate = Math.Min(affector.Length * 0.5 / Portamento.MaxPrevNoteTime, 1.0);
-            var currentTimeRate = Math.Min(note.Length * 0.5 / Portamento.MaxNextNoteTime, 1.0);
-            var startTime = Portamento.MaxPrevNoteTime - affector.Portamento.BeginMarginTimeRate;
-            var blendTime = Math.Max(startTime, 0.0) * prevTimeRate + Math.Max(affector.Portamento.BlendTimeRate - Math.Max(startTime, 0.0), 0.0) * currentTimeRate;
+            var currentTimeRate = Math.Min(Math.Min(note.Length, affector.Length) * 0.5 / Portamento.MaxNextNoteTime, 1.0);
+            var startTime = Math.Min(Portamento.CenterTime, affector.Portamento.BeginMarginTimeRate) * prevTimeRate + Math.Max(0.0, affector.Portamento.BeginMarginTimeRate - Portamento.CenterTime) * currentTimeRate;
+            var blendTime = affector.Portamento.BlendTimeRate * currentTimeRate; //Math.Max(startTime, 0.0) * prevTimeRate + Math.Max(affector.Portamento.BlendTimeRate - Math.Max(startTime, 0.0), 0.0) * currentTimeRate;
+            if (blendTime < affector.Portamento.BlendTimeRate)
+            {
+                var diff = (Math.Min(Math.Min(note.Length, affector.Length), affector.Portamento.BlendTimeRate) - blendTime) * affector.Portamento.CutTolerance;
+                if (diff > 0.0)
+                {
+                    blendTime += diff;
+                    startTime += diff * 0.5;
+                }
+            }
             var rad = (Math.PI * 2.0) / blendTime;
             blendTime += Math.Max(note.Position - (affector.Position + affector.Length), 0.0);
 
@@ -156,7 +165,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
             {
                 for (var i = 0; i < f0.Length; i++)
                 {
-                    var t = Math.Max(startTime * prevTimeRate + positionAdjustment + i * framePeriod, 0.0);
+                    var t = Math.Max(startTime + positionAdjustment + i * framePeriod, 0.0);
                     if (t >= blendTime)
                     {
                         break;
@@ -169,7 +178,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
             {
                 for (var i = 0; i < f0.Length; i++)
                 {
-                    var t = startTime * prevTimeRate - (positionAdjustment + i * framePeriod);
+                    var t = startTime - (positionAdjustment + i * framePeriod);
                     if (t < 0.0)
                     {
                         break;
@@ -184,7 +193,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
         {
             // see: https://ja.wikipedia.org/wiki/%E3%82%B0%E3%83%BC%E3%83%87%E3%83%AB%E3%83%9E%E3%83%B3%E9%96%A2%E6%95%B0
             const double GPPI = 0.9450125422; // gp(PI) * 2 / PI
-            return (1.0 + Math.Atan(Math.Sinh(rad - Math.PI)) * 2 / Math.PI / GPPI) * 0.5;
+            return Math.Min(1.0, (1.0 + Math.Atan(Math.Sinh(rad - Math.PI)) * 2 / Math.PI / GPPI) * 0.5);
         }
     }
 
@@ -312,6 +321,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
 
         const double BeginTick = 660.0;
         const double EndTick = 880.0;
+        const double CenterTick = 165.0;
 
         const double Sum0To63 = 2016.0;
         const double BeginMarginGTE64 = 511.0 / Sum0To63;
@@ -321,6 +331,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
         const double GapToleranceGTE64 = 500.0 / Sum0To63;
         const double GapToleranceLT64 = 240.0 / Sum0To63;
 
+        public const double CenterTime = CenterTick * TickToTime;
         public const double MaxBeginTime = BeginTick * TickToTime;
         public const double MaxEndTime = EndTick * TickToTime;
         public const double MaxPrevNoteTime = 0.5 - MaxBeginTime;
@@ -333,19 +344,20 @@ namespace Intervallo.DefaultPlugins.Vsqx
             var gapToleranceTick = 240.0;
             if (portamento >= 64)
             {
-                beginMarginTick = 165.0 + Enumerable.Range(0, portamento - 64).Select((i) => 1.0 + BeginMarginGTE64 * i).Sum();
+                beginMarginTick = CenterTick + Enumerable.Range(0, portamento - 64).Select((i) => 1.0 + BeginMarginGTE64 * i).Sum();
                 blendTick += Enumerable.Range(0, portamento - 64).Select((i) => 1.0 + BlendTimeGTE64 * i).Sum();
                 gapToleranceTick += Enumerable.Range(0, portamento - 64).Select((i) => 1.0 + GapToleranceGTE64 * i).Sum(); 
             }
             else
             {
-                beginMarginTick = Math.Max(165.0 - Enumerable.Range(0, 64 - portamento).Select((i) => 1.0 + BeginMarginLT64 * i).Sum(), 0.0);
+                beginMarginTick = Math.Max(CenterTick - Enumerable.Range(0, 64 - portamento).Select((i) => 1.0 + BeginMarginLT64 * i).Sum(), 0.0);
                 gapToleranceTick += Enumerable.Range(0, 64 - portamento).Select((i) => 1.0 + GapToleranceLT64 * i).Sum();
             }
 
             BeginMarginTimeRate = beginMarginTick * TickToTime;
             BlendTimeRate = blendTick * TickToTime;
             GapToleranceTime = gapToleranceTick * TickToTime;
+            CutTolerance = 1.0 - Math.Abs(64 - portamento) / 64.0;
         }
 
         public double BeginMarginTimeRate { get; }
@@ -353,5 +365,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
         public double BlendTimeRate { get; }
 
         public double GapToleranceTime { get; }
+
+        public double CutTolerance { get; }
     }
 }
