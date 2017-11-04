@@ -74,17 +74,35 @@ namespace Intervallo.UI
         {
             base.Draw(g);
 
+            if (Path.PointCount < 2)
+            {
+                return;
+            }
+
+            var progress = (float)GetSampleProgress();
+            var heightScale = (float)(ActualHeight / PathHeight);
+
             using (Matrix m = new Matrix())
             {
-                if (Path.PointCount > 1)
+                m.Scale(progress, heightScale);
+                m.Translate(0.0F, (float)BaseY);
+                g.Transform = m.Clone();
+                m.Invert();
+                Pen.Transform = m;
+                g.DrawPath(Pen, Path);
+
+                if (progress > 10.0F)
                 {
-                    var progress = (float)GetSampleProgress();
-                    m.Scale(progress, (float)(ActualHeight / PathHeight));
-                    m.Translate(0.0F, (float)BaseY);
-                    g.Transform = m.Clone();
-                    m.Invert();
-                    Pen.Transform = m;
-                    g.DrawPath(Pen, Path);
+                    var pointSize = Math.Min(10.0F, progress / 10.0F);
+                    using (var points = new GraphicsPath(FillMode.Winding))
+                    using (var brush = new SolidBrush(Pen.Color))
+                    {
+                        foreach (var p in Path.PathPoints)
+                        {
+                            points.AddRectangle(new RectangleF(p.X - pointSize * 0.5F / progress, p.Y - pointSize * 0.5F / heightScale, pointSize / progress, pointSize / heightScale));
+                        }
+                        g.FillPath(brush, points);
+                    }
                 }
             }
         }
