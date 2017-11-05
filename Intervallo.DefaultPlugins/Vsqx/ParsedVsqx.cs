@@ -328,8 +328,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
         const double BeginMarginLT64 = 101.0 / Sum0To63;
         const double BlendTimeGTE64 = 100.0 / Sum0To63;
         const double BlendTimeLT64 = -60.0 / Sum0To63;
-        const double GapToleranceGTE64 = 500.0 / Sum0To63;
-        const double GapToleranceLT64 = 240.0 / Sum0To63;
+        const double GapToleranceInterval = 660.0 / Sum0To63;
 
         public const double CenterTime = CenterTick * TickToTime;
         public const double MaxBeginTime = BeginTick * TickToTime;
@@ -341,23 +340,21 @@ namespace Intervallo.DefaultPlugins.Vsqx
         {
             var beginMarginTick = 0.0;
             var blendTick = 340.0;
-            var gapToleranceTick = 240.0;
+            var diff = Math.Abs(portamento - 64);
             if (portamento >= 64)
             {
-                beginMarginTick = CenterTick + Enumerable.Range(0, portamento - 64).Select((i) => 1.0 + BeginMarginGTE64 * i).Sum();
-                blendTick += Enumerable.Range(0, portamento - 64).Select((i) => 1.0 + BlendTimeGTE64 * i).Sum();
-                gapToleranceTick += Enumerable.Range(0, portamento - 64).Select((i) => 1.0 + GapToleranceGTE64 * i).Sum(); 
+                beginMarginTick = CenterTick + Enumerable.Range(0, diff).Select((i) => 1.0 + BeginMarginGTE64 * i).Sum();
+                blendTick += Enumerable.Range(0, diff).Select((i) => 1.0 + BlendTimeGTE64 * i).Sum();
             }
             else
             {
-                beginMarginTick = Math.Max(CenterTick - Enumerable.Range(0, 64 - portamento).Select((i) => 1.0 + BeginMarginLT64 * i).Sum(), 0.0);
-                gapToleranceTick += Enumerable.Range(0, 64 - portamento).Select((i) => 1.0 + GapToleranceLT64 * i).Sum();
+                beginMarginTick = Math.Max(CenterTick - Enumerable.Range(0, diff).Select((i) => 1.0 + BeginMarginLT64 * i).Sum(), 0.0);
             }
 
             BeginMarginTimeRate = beginMarginTick * TickToTime;
             BlendTimeRate = blendTick * TickToTime;
-            GapToleranceTime = gapToleranceTick * TickToTime;
-            CutTolerance = 1.0 - Math.Abs(64 - portamento) / 64.0;
+            GapToleranceTime = (60.0 + Enumerable.Range(0, diff).Select((i) => 1.0 + GapToleranceInterval * i).Sum()) * TickToTime;
+            CutTolerance = 1.0 - diff / 64.0;
         }
 
         public double BeginMarginTimeRate { get; }
