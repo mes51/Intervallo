@@ -46,6 +46,7 @@
             <MenuItem Header="{x:Static p:LangResources.MainMenu_ToolMenu}">
                 <MenuItem Header="{x:Static p:LangResources.MainMenu_ClearCache}" Command="{Binding ElementName=Window, Path=ClearCacheCommand}"/>
                 <Separator />
+                <MenuItem Name="UseOperatorMenu" Header="{x:Static p:LangResources.Menu_UseOperator}" />
                 <MenuItem Header="{x:Static p:LangResources.MainMenu_Option}" Command="{Binding ElementName=Window, Path=OptionCommand}"/>
             </MenuItem>
             <MenuItem Header="{x:Static p:LangResources.MainMenu_HelpMenu}">

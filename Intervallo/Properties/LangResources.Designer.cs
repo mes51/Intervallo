@@ -291,6 +291,15 @@ namespace Intervallo.Properties {
         }
         
         /// <summary>
+        ///   解析・生成プラグインの選択(_S) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Menu_UseOperator {
+            get {
+                return ResourceManager.GetString("Menu_UseOperator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   音声解析プラグインの読み込み失敗 に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string MessageBoxTitle_CannotLoadAudioOperator {

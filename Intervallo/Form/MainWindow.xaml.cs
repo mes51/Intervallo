@@ -39,6 +39,7 @@ namespace Intervallo.Form
         public CommandBase ExitCommand { get; }
         public CommandBase LoadScaleCommand { get; }
         public CommandBase LoadScaleFromWaveCommand { get; }
+        public CommandBase UseOperatorCommand { get; }
         public CommandBase PreviewCommand { get; }
         public CommandBase ClearCacheCommand { get; }
         public CommandBase OptionCommand { get; }
@@ -51,14 +52,25 @@ namespace Intervallo.Form
             ExitCommand = new ActionCommand(this, () => Close(), true);
             LoadScaleCommand = new LoadScaleCommand(this, true);
             LoadScaleFromWaveCommand = new LoadScaleCommand(this, false);
+            UseOperatorCommand = new ActionCommand(this, (plugin) =>
+            {
+                var name = plugin.GetType().FullName;
+                foreach (var item in UseOperatorMenu.Items.Cast<MenuItem>())
+                {
+                    item.IsChecked = item.CommandParameter.GetType().FullName == name;
+                }
+                ApplicationSettings.Setting.PitchOperation.UseOperatorName = name;
+            });
             PreviewCommand = new PreviewCommand(this);
             ClearCacheCommand = new ActionCommand(this, () => CacheFile.ClearChaceFile(), true);
-            OptionCommand = new ActionCommand(this, () => {
+            OptionCommand = new ActionCommand(this, () =>
+            {
                 var window = new OptionWindow();
                 window.Owner = this;
                 window.ShowDialog();
             }, true);
-            AboutCommand = new ActionCommand(this, () => {
+            AboutCommand = new ActionCommand(this, () =>
+            {
                 var window = new AboutWindow();
                 window.Owner = this;
                 window.ShowDialog();
@@ -97,6 +109,8 @@ namespace Intervallo.Form
         [ImportMany]
         List<IAudioOperator> AudioOperatorPlugins { get; set; }
 
+        IAudioOperator SelectedOperator => AudioOperatorPlugins.Find((p) => p.GetType().FullName == ApplicationSettings.Setting.PitchOperation.UseOperatorName);
+
         [ImportMany]
         List<IScaleLoader> ScaleLoaderPlugins { get; set; }
 
@@ -109,18 +123,6 @@ namespace Intervallo.Form
                 {
                     container.ComposeParts(this);
                 }
-
-                ScaleLoaderPlugins.Sort((a, b) => b.PluginName.CompareTo(a.PluginName));
-                foreach (var loader in ScaleLoaderPlugins)
-                {
-                    var item = new MenuItem();
-                    item.Header = loader.PluginName + "...";
-                    item.Command = LoadScaleCommand;
-                    item.CommandParameter = loader;
-                    item.CommandTarget = this;
-                    LoadScaleMenu.Items.Insert(0, item);
-                }
-                ScaleLoaderPlugins.Reverse();
             }
             catch (Exception e)
             {
@@ -132,10 +134,46 @@ namespace Intervallo.Form
                 MessageBox.ShowError(LangResources.Fatal_CannotLoadAudioOperator, LangResources.MessageBoxTitle_CannotLoadAudioOperator);
                 Close();
             }
-            else if ((ScaleLoaderPlugins?.Count ?? 0) < 1)
+            else
+            {
+                AudioOperatorPlugins.Sort((a, b) => a.PluginName.CompareTo(b.PluginName));
+                foreach (var op in AudioOperatorPlugins)
+                {
+                    var item = new MenuItem();
+                    item.Header = op.PluginName;
+                    item.IsCheckable = true;
+                    item.IsChecked = ApplicationSettings.Setting.PitchOperation.UseOperatorName == op.GetType().FullName;
+                    item.Command = UseOperatorCommand;
+                    item.CommandParameter = op;
+                    item.CommandTarget = this;
+                    UseOperatorMenu.Items.Add(item);
+                }
+
+                if (string.IsNullOrEmpty(ApplicationSettings.Setting.PitchOperation.UseOperatorName) || !UseOperatorMenu.Items.Cast<MenuItem>().Any((i) => i.IsChecked))
+                {
+                    ApplicationSettings.Setting.PitchOperation.UseOperatorName = AudioOperatorPlugins[0].GetType().FullName;
+                    ((MenuItem)UseOperatorMenu.Items[0]).IsChecked = true;
+                }
+            }
+
+            if ((ScaleLoaderPlugins?.Count ?? 0) < 1)
             {
                 MessageBox.ShowWarning(LangResources.Error_CannotLoadScaleLoader, LangResources.MessageBoxTitle_CannotLoadScaleLoader);
                 ScaleLoaderPlugins = new List<IScaleLoader>();
+            }
+            else
+            {
+                ScaleLoaderPlugins.Sort((a, b) => b.PluginName.CompareTo(a.PluginName));
+                foreach (var loader in ScaleLoaderPlugins)
+                {
+                    var item = new MenuItem();
+                    item.Header = loader.PluginName + "...";
+                    item.Command = LoadScaleCommand;
+                    item.CommandParameter = loader;
+                    item.CommandTarget = this;
+                    LoadScaleMenu.Items.Insert(0, item);
+                }
+                ScaleLoaderPlugins.Reverse();
             }
         }
 
@@ -217,18 +255,19 @@ namespace Intervallo.Form
                         MainView.MessageText = LangResources.ProgressMessage_AnalyzingWave;
                     });
 
-                    AnalyzedAudio = CacheFile.FindCache<AnalyzedAudioCache>(WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName + ApplicationSettings.Setting.PitchOperation.FramePeriod)
+                    var selectedOperator = SelectedOperator;
+                    AnalyzedAudio = CacheFile.FindCache<AnalyzedAudioCache>(WaveData.Hash + selectedOperator.GetType().FullName + ApplicationSettings.Setting.PitchOperation.FramePeriod)
                         .GetOrElse(() =>
                         {
-                            var aa = AudioOperatorPlugins[0].Analyze(new WaveData(WaveData.Data, WaveData.Fs), ApplicationSettings.Setting.PitchOperation.FramePeriod, (p) =>
+                            var aa = selectedOperator.Analyze(new WaveData(WaveData.Data, WaveData.Fs), ApplicationSettings.Setting.PitchOperation.FramePeriod, (p) =>
                             {
                                 Dispatcher.Invoke(() =>
                                 {
                                     MainView.Progress = p * 0.75 + 25.0;
                                 });
                             });
-                            var result = new AnalyzedAudioCache(AudioOperatorPlugins[0].GetType(), aa, WaveData.Data.Length, WaveData.Fs, WaveData.Hash);
-                            CacheFile.SaveCache(result, WaveData.Hash + AudioOperatorPlugins[0].GetType().FullName + ApplicationSettings.Setting.PitchOperation.FramePeriod);
+                            var result = new AnalyzedAudioCache(selectedOperator.GetType(), aa, WaveData.Data.Length, WaveData.Fs, WaveData.Hash);
+                            CacheFile.SaveCache(result, WaveData.Hash + selectedOperator.GetType().FullName + ApplicationSettings.Setting.PitchOperation.FramePeriod);
                             return result;
                         });
 
@@ -275,7 +314,7 @@ namespace Intervallo.Form
             await Task.Run(() =>
             {
                 var edited = AnalyzedAudio.AnalyzedAudio.ReplaceF0(newF0);
-                var synthesizedAudio = AudioOperatorPlugins[0].Synthesize(edited, (p) =>
+                var synthesizedAudio = AudioOperatorPlugins.Find(p => p.GetType() == AnalyzedAudio.OperatorType).Synthesize(edited, (p) =>
                 {
                     Dispatcher.Invoke(() =>
                     {
@@ -324,7 +363,7 @@ namespace Intervallo.Form
 
             PreviewStream.Dispose();
             var edited = AnalyzedAudio.AnalyzedAudio.ReplaceF0(newF0);
-            PreviewStream = new WaveCacheStream(AudioOperatorPlugins[0].Synthesize(edited));
+            PreviewStream = new WaveCacheStream(AudioOperatorPlugins.Find(p => p.GetType() == AnalyzedAudio.OperatorType).Synthesize(edited));
             Player.SetStream(PreviewStream);
         }
 
@@ -374,18 +413,19 @@ namespace Intervallo.Form
                 try
                 {
                     var wave = Wavefile.Read(filePath);
-                    var aac = CacheFile.FindCache<AnalyzedAudioCache>(wave.Hash + AudioOperatorPlugins[0].GetType().FullName)
+                    var selectedOperator = SelectedOperator;
+                    var aac = CacheFile.FindCache<AnalyzedAudioCache>(wave.Hash + selectedOperator.GetType().FullName)
                         .GetOrElse(() =>
                         {
-                            var aa = AudioOperatorPlugins[0].Analyze(new Plugin.WaveData(wave.Data, wave.Fs), ApplicationSettings.Setting.PitchOperation.FramePeriod, (p) =>
+                            var aa = selectedOperator.Analyze(new Plugin.WaveData(wave.Data, wave.Fs), ApplicationSettings.Setting.PitchOperation.FramePeriod, (p) =>
                             {
                                 Dispatcher.Invoke(() =>
                                 {
                                     MainView.Progress = p * 0.75 + 25.0;
                                 });
                             });
-                            var result = new AnalyzedAudioCache(AudioOperatorPlugins[0].GetType(), aa, wave.Data.Length, wave.Fs, wave.Hash);
-                            CacheFile.SaveCache(result, wave.Hash + AudioOperatorPlugins[0].GetType().FullName);
+                            var result = new AnalyzedAudioCache(selectedOperator.GetType(), aa, wave.Data.Length, wave.Fs, wave.Hash);
+                            CacheFile.SaveCache(result, wave.Hash + selectedOperator.GetType().FullName);
                             return result;
                         });
 

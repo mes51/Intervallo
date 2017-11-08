@@ -12,5 +12,8 @@ namespace Intervallo.Config
     {
         [DataMember(Name = "framePeriod")]
         public double FramePeriod { get; set; } = 5.0;
+
+        [DataMember(Name = "useOperatorName")]
+        public string UseOperatorName { get; set; } = "";
     }
 }

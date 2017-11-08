@@ -197,6 +197,9 @@
   <data name="MainMenu_ToolMenu" xml:space="preserve">
     <value>ツール(_T)</value>
   </data>
+  <data name="Menu_UseOperator" xml:space="preserve">
+    <value>解析・生成プラグインの選択(_S)</value>
+  </data>
   <data name="MessageBoxTitle_CannotLoadAudioOperator" xml:space="preserve">
     <value>音声解析プラグインの読み込み失敗</value>
   </data>

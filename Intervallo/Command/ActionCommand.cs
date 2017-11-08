@@ -11,13 +11,17 @@ namespace Intervallo.Command
     {
         public ActionCommand(MainWindow window, Action action) : this(window, action, false) { }
 
-        public ActionCommand(MainWindow window, Action action, bool forceEnable) : base(window)
+        public ActionCommand(MainWindow window, Action action, bool forceEnable) : this(window, (parameter) => action(), forceEnable) { }
+
+        public ActionCommand(MainWindow window, Action<object> action) : this(window, action, false) { }
+
+        public ActionCommand(MainWindow window, Action<object> action, bool forceEnable) : base(window)
         {
             Action = action;
             ForceEnable = forceEnable;
         }
 
-        Action Action { get; }
+        Action<object> Action { get; }
 
         bool ForceEnable { get; }
 
@@ -28,7 +32,7 @@ namespace Intervallo.Command
 
         public override void Execute(object parameter)
         {
-            Action();
+            Action(parameter);
         }
     }
 }
