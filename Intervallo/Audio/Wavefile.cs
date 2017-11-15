@@ -69,23 +69,26 @@ namespace Intervallo.Audio
 
         public string Hash { get; }
 
-        public Wavefile(int fs, int bit, double[] data, string hash)
+        public string FilePath { get; }
+
+        public Wavefile(int fs, int bit, double[] data, string hash = "", string filePath = "")
         {
             Fs = fs;
             Bit = bit;
             Data = data;
             Hash = hash;
+            FilePath = filePath;
         }
 
         /// <summary>
         /// Read wave file
         /// </summary>
-        /// <param name="filename">File path</param>
+        /// <param name="filePath">File path</param>
         /// <returns>Read wave file data</returns>
         /// <exception cref="InvalidDataException">File is not wave file, or not supported format</exception>
-        public static Wavefile Read(string filename)
+        public static Wavefile Read(string filePath)
         {
-            using (var fs = new FileStream(Path.GetFullPath(filename), FileMode.Open))
+            using (var fs = new FileStream(Path.GetFullPath(filePath), FileMode.Open))
             using (var reader = new BinaryReader(fs, ASCIIEncoding.ASCII))
             {
                 var headerSize = Marshal.SizeOf<WaveHeader>();
@@ -128,16 +131,16 @@ namespace Intervallo.Audio
                     hash = string.Join("", algorithm.ComputeHash(fs).Select((x) => x.ToString("X2")));
                 }
 
-                return new Wavefile((int)header.Format.nSamplesPerSec, header.Format.wBitsPerSample, waveData, hash);
+                return new Wavefile((int)header.Format.nSamplesPerSec, header.Format.wBitsPerSample, waveData, hash, filePath);
             }
         }
 
-        public void Write(string filename)
+        public void Write(string fileName)
         {
             var header = new WaveHeader();
             header.Initialize(Fs, Bit, Data.Length);
 
-            using (FileStream fs = new FileStream(filename, FileMode.Create))
+            using (FileStream fs = new FileStream(fileName, FileMode.Create))
             using (BinaryWriter writer = new BinaryWriter(fs, Encoding.ASCII))
             {
                 WriteHeader(writer, header);

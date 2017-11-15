@@ -60,6 +60,11 @@ namespace Intervallo.Form
                     item.IsChecked = item.CommandParameter.GetType().FullName == name;
                 }
                 ApplicationSettings.Setting.PitchOperation.UseOperatorName = name;
+
+                if (WaveData != null)
+                {
+                    OpenFile(WaveData.FilePath);
+                }
             });
             PreviewCommand = new PreviewCommand(this);
             ClearCacheCommand = new ActionCommand(this, () => CacheFile.ClearChaceFile(), true);
@@ -322,7 +327,7 @@ namespace Intervallo.Form
                     });
                 });
 
-                var waveFile = new Wavefile(synthesizedAudio.SampleRate, WaveData.Bit, synthesizedAudio.Wave, "");
+                var waveFile = new Wavefile(synthesizedAudio.SampleRate, WaveData.Bit, synthesizedAudio.Wave);
                 waveFile.Write(filePath);
 
                 Dispatcher.Invoke(() =>
