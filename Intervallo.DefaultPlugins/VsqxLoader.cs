@@ -95,12 +95,9 @@ namespace Intervallo.DefaultPlugins
                 .Select((sig) => measureTicks / sig.Denominator * sig.Nume)
                 .Sum();
 
-            var firstTempo = vsq.MasterTrack.Tempo
-                .TakeWhile((t) => t.Tick <= preMeasureTicks)
-                .Last();
+            var firstTempo = vsq.MasterTrack.Tempo.First().PushTo(vsq.MasterTrack.Tempo.TakeWhile((t) => t.Tick <= preMeasureTicks)).Last();
             firstTempo.Tick = preMeasureTicks;
-            var tempo = firstTempo
-                .PushTo(vsq.MasterTrack.Tempo.SkipWhile((t) => t.Tick > preMeasureTicks))
+            var tempo = vsq.MasterTrack.Tempo.SkipWhile((t) => t.Tick < preMeasureTicks)
                 .SelectReferencePrev<IVSTempo, Tempo>((v, p) =>
                     new Tempo(v.Tick - preMeasureTicks, p.Select((pt) => pt.TotalTime + (v.Tick - preMeasureTicks - pt.Tick) / pt.TickPerTime).FirstOrDefault(), v.BPM * 0.01, resolution)
                 )
