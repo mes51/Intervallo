@@ -60,6 +60,7 @@ namespace Intervallo.Form
                     item.IsChecked = item.CommandParameter.GetType().FullName == name;
                 }
                 ApplicationSettings.Setting.PitchOperation.UseOperatorName = name;
+                MainView.PluginName = SelectedOperator.PluginName;
 
                 if (WaveData != null)
                 {
@@ -159,6 +160,8 @@ namespace Intervallo.Form
                     ApplicationSettings.Setting.PitchOperation.UseOperatorName = AudioOperatorPlugins[0].GetType().FullName;
                     ((MenuItem)UseOperatorMenu.Items[0]).IsChecked = true;
                 }
+
+                MainView.PluginName = SelectedOperator.PluginName;
             }
 
             if ((ScaleLoaderPlugins?.Count ?? 0) < 1)

@@ -36,6 +36,7 @@
             IndicatorMoved="WaveView_IndicatorMoved"
             IndicatorMoveFinish="WaveView_IndicatorMoveFinish"
             IndicatorMoveStart="WaveView_IndicatorMoveStart"/>
+        <TextBlock x:Name="PluginNameText" HorizontalAlignment="Right" Margin="0,0,22,19" TextWrapping="Wrap" Text="{c:Binding ElementName=Root, Path=(\'UsingOperator: \' + PluginName)}" VerticalAlignment="Bottom" Foreground="#FF818181" FontSize="14"/>
         <local:WaveScaler
             VerticalAlignment="Top"
             x:Name="WaveScaler"

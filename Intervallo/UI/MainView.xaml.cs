@@ -82,6 +82,16 @@ namespace Intervallo.UI
             )
         );
 
+        public static readonly DependencyProperty PluginNameProperty = DependencyProperty.Register(
+            nameof(PluginName),
+            typeof(string),
+            typeof(MainView),
+            new FrameworkPropertyMetadata(
+                "",
+                FrameworkPropertyMetadataOptions.AffectsRender
+            )
+        );
+
         public MainView()
         {
             InitializeComponent();
@@ -141,6 +151,12 @@ namespace Intervallo.UI
         {
             get { return (string)GetValue(MessageTextProperty); }
             set { SetValue(MessageTextProperty, value ?? ""); }
+        }
+
+        public string PluginName
+        {
+            get { return (string)GetValue(PluginNameProperty); }
+            set { SetValue(PluginNameProperty, value); }
         }
 
         public bool IndicatorIsVisible
