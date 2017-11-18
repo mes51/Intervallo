@@ -2,9 +2,9 @@
 
 ---
 
-## is ��
+## is 何
 
-�����̃s�b�`��VSQX�Ȃǂ̑��̃f�[�^���g���ĕύX����c�[��
+音声のピッチをVSQXなどの他のデータを使って変更するツール
 
 ## Requirements
 
@@ -13,14 +13,14 @@
 
 ## How to use
 
-1. �t�@�C�����J���܂�
-2. ���K�f�[�^��ǂݍ��݂܂�
-3. �ۑ����܂�
+1. ファイルを開きます
+2. 音階データを読み込みます
+3. 保存します
 
 end
 
 ## License
 
-* �{��: MIT
-* WORLD(Original): [�C��BSD](https://github.com/mmorise/World/blob/master/LICENSE.txt)
-* ���̎g�p���Ă��郉�C�u�����̃��C�Z���X�̓A�v������LibraryLicense���Q��
+* 本体: MIT
+* WORLD(Original): [修正BSD](https://github.com/mmorise/World/blob/master/LICENSE.txt)
+* 他の使用しているライブラリのライセンスはアプリ内のLibraryLicenseを参照
