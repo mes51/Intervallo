@@ -330,9 +330,11 @@ namespace Intervallo.DefaultPlugins.WORLD
 
             var halfWindowLength = (int)(1.5 * fs / currentF0 + 1.0);
             var windowLengthInTime = (2.0 * halfWindowLength + 1.0) / fs;
-            var baseTime = Enumerable.Range(0, halfWindowLength * 2 + 1)
-                .Select((i) => (-halfWindowLength + i) / fs)
-                .ToArray();
+            var baseTime = new double[halfWindowLength * 2 + 1];
+            for (var i = 0; i < baseTime.Length; i++)
+            {
+                baseTime[i] = (-halfWindowLength + i) / fs;
+            }
             var fftSize = (int)Math.Pow(2.0, 2.0 + (int)MathUtil.Log2(halfWindowLength * 2 + 1));
 
             GetMeanF0(x, fs, currentPosition, currentF0, fftSize, windowLengthInTime, baseTime, ref refinedF0, ref refinedScore);
@@ -1068,12 +1070,13 @@ namespace Intervallo.DefaultPlugins.WORLD
 
             GetSpectra(x, fftSize, baseIndex, mainWindow, diffWindow, forwardRealFft, mainSpectrum, diffSpectrum);
 
-            var powerSpectrum = Enumerable.Range(0, fftSize / 2 + 1)
-                .Select((j) => mainSpectrum[j].Real * mainSpectrum[j].Real + mainSpectrum[j].Imaginary * mainSpectrum[j].Imaginary)
-                .ToArray();
-            var numeratorI = Enumerable.Range(0, fftSize / 2 + 1)
-                .Select((j) => mainSpectrum[j].Real * diffSpectrum[j].Imaginary - mainSpectrum[j].Imaginary * diffSpectrum[j].Real)
-                .ToArray();
+            var powerSpectrum = new double[fftSize / 2 + 1];
+            var numeratorI = new double[fftSize / 2 + 1];
+            for (var j = 0; j < powerSpectrum.Length; j++)
+            {
+                powerSpectrum[j] = mainSpectrum[j].Real * mainSpectrum[j].Real + mainSpectrum[j].Imaginary * mainSpectrum[j].Imaginary;
+                numeratorI[j] = mainSpectrum[j].Real * diffSpectrum[j].Imaginary - mainSpectrum[j].Imaginary * diffSpectrum[j].Real;
+            }
 
             var numberOfHarmonics = Math.Min((int)(fs / 2.0 / currentF0), 6);
             FixF0(powerSpectrum, numeratorI, fftSize, fs, currentF0, numberOfHarmonics, ref refinedF0, ref refinedScore);

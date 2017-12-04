@@ -158,14 +158,18 @@ namespace Intervallo.DefaultPlugins.WORLD
 
         public static void Interp1(SubSequence<double> x, double[] y, SubSequence<double> xi, double[] yi)
         {
-            var h = x.Zip(x.Skip(1), (x1, x2) => x2 - x1).ToArray();
+            var h = new double[x.Length - 1];
+            for (var i = 0; i < h.Length; i++)
+            {
+                h[i] = x[i + 1] - x[i];
+            }
             var k = new int[xi.Length];
             Histc(x, xi, k);
 
-            var s = Enumerable.Range(0, xi.Length).Select((i) => (xi[i] - x[k[i] - 1]) / h[k[i] - 1]).ToArray();
             for (var i = 0; i < xi.Length; i++)
             {
-                yi[i] = y[k[i] - 1] + s[i] * (y[k[i]] - y[k[i] - 1]);
+                var s = (xi[i] - x[k[i] - 1]) / h[k[i] - 1];
+                yi[i] = y[k[i] - 1] + s * (y[k[i]] - y[k[i] - 1]);
             }
         }
 
@@ -211,15 +215,15 @@ namespace Intervallo.DefaultPlugins.WORLD
 
         public static void Interp1Q(double x, double shift, SubSequence<double> y, SubSequence<double> xi, double[] yi)
         {
-            var xiBase = xi.Select((xie) => (int)((xie - x) / shift)).ToArray();
-            var xiFraction = xi.Zip(xiBase, (xie, xiBe) => (xie - x) / shift - xiBe).ToArray();
             var deltaY = new double[y.Length];
             Diff(y, deltaY);
             deltaY[y.Length - 1] = 0.0;
 
             for (var i = 0; i < xi.Length; i++)
             {
-                yi[i] = y[xiBase[i]] + deltaY[xiBase[i]] * xiFraction[i];
+                var xiBase = (int)((xi[i] - x) / shift);
+                var xiFraction = (xi[i] - x) / shift - xiBase;
+                yi[i] = y[xiBase] + deltaY[xiBase] * xiFraction;
             }
         }
 
