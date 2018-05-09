@@ -105,7 +105,8 @@ namespace Intervallo.DefaultPlugins
 
             return vsq.VSTrack.Select((t) =>
             {
-                var parts = t.Part
+                var parts = Optional<IVSPart[]>.FromNull(t.Part)
+                    .SelectMany(_ => _)
                     .Select((p) =>
                     {
                         var partTick = p.Tick - preMeasureTicks;
