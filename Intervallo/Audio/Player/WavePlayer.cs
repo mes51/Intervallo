@@ -129,11 +129,13 @@ namespace Intervallo.Audio.Player
         public void Stop()
         {
             Player.Stop();
+            Stream.ResetReadSamples();
         }
 
         public void Pause()
         {
             Player.Pause();
+            Stream.ResetReadSamples();
         }
 
         public void SeekToStart()

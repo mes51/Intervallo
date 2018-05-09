@@ -94,27 +94,23 @@ namespace Intervallo.Form
             Height = ApplicationSettings.Setting.General.Size.Height;
             WindowState = ApplicationSettings.Setting.General.State;
 
-            Timer.Tick += (sender, e) =>
-            {
-                var nowIndicatorIsVisible = MainView.IndicatorIsVisible;
-                MainView.IndicatorPosition = Player.GetCurrentSample();
-                if (nowIndicatorIsVisible && nowIndicatorIsVisible != MainView.IndicatorIsVisible)
-                {
-                    MainView.ScrollToIndicatorIfOutOfScreen();
-                }
-            };
-            Timer.Stop();
-
             LoadPlugin();
             CacheFile.CreateCacheDirectory();
 
             CompositionTarget.Rendering += (sender, e) =>
             {
                 MainView.PreviewableSampleRanges = PreviewStream?.PreviewableSampleRanges;
+                if (Player?.PlaybackState == PlaybackState.Playing)
+                {
+                    var nowIndicatorIsVisible = MainView.IndicatorIsVisible;
+                    MainView.IndicatorPosition = Player.GetCurrentSample();
+                    if (nowIndicatorIsVisible && nowIndicatorIsVisible != MainView.IndicatorIsVisible)
+                    {
+                        MainView.ScrollToIndicatorIfOutOfScreen();
+                    }
+                }
             };
         }
-
-        DispatcherTimer Timer { get; } = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, 16), IsEnabled = true };
 
         WavePlayer Player { get; set; }
 
@@ -227,13 +223,11 @@ namespace Intervallo.Form
         void PlayAudio()
         {
             Player.Play();
-            Timer.Start();
         }
 
         void PauseAudio()
         {
             Player.Pause();
-            Timer.Stop();
             MainView.IndicatorPosition = Player.GetCurrentSample();
         }
 

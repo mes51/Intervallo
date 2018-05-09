@@ -132,6 +132,13 @@ namespace Intervallo.Audio.Player
         {
             Wave = stream;
             Wave.SamplePosition = SamplePosition;
+            ResetReadSamples();
+        }
+
+        public void ResetReadSamples()
+        {
+            TotalReadSamples = 0;
+            History.Clear();
         }
 
         internal ReadHistory GetHistory(long totalReadCount)

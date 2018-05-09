@@ -171,7 +171,7 @@ namespace Intervallo.UI
             var x = e.GetPosition(ClickedElement).X;
             if (ClickedElement == IndicatorMoveArea)
             {
-                IndicatorPosition = (int)Math.Round(x / IndicatorMoveArea.ActualWidth * SampleRange.Length) + SampleRange.Begin;
+                IndicatorPosition = Math.Min((int)Math.Round(x / IndicatorMoveArea.ActualWidth * SampleRange.Length) + SampleRange.Begin, Wave.SampleCount - 1);
                 if (x > IndicatorMoveArea.ActualWidth)
                 {
                     SampleRange = SampleRange.MoveTo(IndicatorPosition - SampleRange.Length);
