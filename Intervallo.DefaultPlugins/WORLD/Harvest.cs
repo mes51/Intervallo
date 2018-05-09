@@ -216,9 +216,9 @@ namespace Intervallo.DefaultPlugins.WORLD
 
             // normalization
             var decimationRatio = Math.Max(Math.Min(speed, 12), 1);
-            var yLength = 1 + (x.Length / decimationRatio);
+            var yLength = (int)Math.Ceiling((double)x.Length / decimationRatio);
             var actualFs = (double)fs / decimationRatio;
-            var fftSize = GetSuitableFFTSize(yLength + 4 * (int)(1.0 + actualFs / boundaryF0List[0] / 2.0));
+            var fftSize = GetSuitableFFTSize(yLength + 5 + 2 * (int)(2.0 * actualFs / boundaryF0List[0]));
 
             // Calculation of the spectrum used for the f0 estimation
             var y = new double[fftSize];
@@ -232,7 +232,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             }
 
             const int OverlapParameter = 7;
-            var maxCandidates = MatlabFunctions.MatlabRound(numberOfChannels / 10) * OverlapParameter;
+            var maxCandidates = MatlabFunctions.MatlabRound(numberOfChannels / 10.0) * OverlapParameter;
             var f0Candidates = Util.Mak2DArray<double>(f0Length, maxCandidates);
             var f0CandidatesScore = Util.Mak2DArray<double>(f0Length, maxCandidates);
 
@@ -1139,7 +1139,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             FFT.Execute(forwardRealFft.ForwardFFT);
             for (int i = 0, limit = fftSize / 2; i <= limit; i++)
             {
-                mainSpectrum[i] = new Complex(forwardRealFft.Spectrum[i].Real, -forwardRealFft.Spectrum[i].Imaginary);
+                mainSpectrum[i] = new Complex(forwardRealFft.Spectrum[i].Real, forwardRealFft.Spectrum[i].Imaginary);
             }
 
             for (var i = 0; i < baseIndex.Length; i++)
@@ -1151,7 +1151,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             FFT.Execute(forwardRealFft.ForwardFFT);
             for (int i = 0, limit = fftSize / 2; i <= limit; i++)
             {
-                diffSpectrum[i] = new Complex(forwardRealFft.Spectrum[i].Real, -forwardRealFft.Spectrum[i].Imaginary);
+                diffSpectrum[i] = new Complex(forwardRealFft.Spectrum[i].Real, forwardRealFft.Spectrum[i].Imaginary);
             }
         }
 

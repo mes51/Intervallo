@@ -148,7 +148,7 @@ namespace Intervallo.DefaultPlugins.WORLD
                 var re2 = Math.Cos(coefficient * i);
                 var im2 = Math.Sqrt(1.0 - re2 * re2);
 
-                inverseRealFFT.Spectrum[i] = new Complex(complex.Real * re2 - complex.Imaginary * im2, complex.Real * im2 + complex.Imaginary * re2);
+                inverseRealFFT.Spectrum[i] = new Complex(complex.Real * re2 + complex.Imaginary * im2, complex.Imaginary * re2 - complex.Real * im2);
             }
         }
 

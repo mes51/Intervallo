@@ -318,7 +318,7 @@ namespace Intervallo.DefaultPlugins.WORLD
                 plan.COut[0] = new Complex(plan.Input[0], 0.0);
                 for (int i = 1, ii = 2, limit = plan.N / 2; i < limit; i++, ii += 2)
                 {
-                    plan.COut[i] = new Complex(plan.Input[ii], plan.Input[ii + 1]);
+                    plan.COut[i] = new Complex(plan.Input[ii], -plan.Input[ii + 1]);
                 }
                 plan.COut[plan.N / 2] = new Complex(plan.Input[1], 0.0);
             }
@@ -338,7 +338,7 @@ namespace Intervallo.DefaultPlugins.WORLD
 
                 for (int i = 0, ii = 0; i < plan.N; i++, ii += 2)
                 {
-                    plan.COut[i] = new Complex(plan.Input[ii], plan.Input[ii + 1]);
+                    plan.COut[i] = new Complex(plan.Input[ii], -plan.Input[ii + 1]);
                 }
             }
         }
@@ -352,7 +352,7 @@ namespace Intervallo.DefaultPlugins.WORLD
                 for (int i = 1, ii = 2, limit = plan.N / 2; i < limit; i++, ii += 2)
                 {
                     plan.Input[ii] = plan.CIn[i].Real;
-                    plan.Input[ii + 1] = plan.CIn[i].Imaginary;
+                    plan.Input[ii + 1] = -plan.CIn[i].Imaginary;
                 }
                 fixed (double* w = &plan.W[0])
                 fixed (double* input = &plan.Input[0])
@@ -378,7 +378,7 @@ namespace Intervallo.DefaultPlugins.WORLD
                 }
                 for (int i = 0, ii = 0; i < plan.N; i++, ii += 2)
                 {
-                    plan.COut[i] = new Complex(plan.Input[ii], plan.Input[ii + 1]);
+                    plan.COut[i] = new Complex(plan.Input[ii], -plan.Input[ii + 1]);
                 }
             }
         }

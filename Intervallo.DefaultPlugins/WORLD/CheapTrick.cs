@@ -12,6 +12,7 @@ namespace Intervallo.DefaultPlugins.WORLD
         const double DefaultQ1 = -0.15;
         const double DefaultF0Floor = 71.0;
         const double DefaultF0 = 500.0;
+        const double SafeGuardMinimum = 0.000000000001;
 
         public double Q1 { get; set; }
 
@@ -179,7 +180,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             var waveForm = forwardRealFFT.Waveform;
             for (int i = 0, limit = halfWindowLength * 2; i <= limit; i++)
             {
-                waveForm[i] = x[safeIndex[i]] * window[i] + Rand.Next() * 0.000000000000001;
+                waveForm[i] = x[safeIndex[i]] * window[i] + Rand.Next() * SafeGuardMinimum;
             }
 
             var tmpWeight1 = waveForm.Take(halfWindowLength * 2 + 1).Sum();
