@@ -8,7 +8,8 @@
                                     xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
                                     mc:Ignorable="d"
                                     x:Name="Root"
-                                    d:DesignHeight="610" d:DesignWidth="945">
+                                    d:DesignHeight="610" d:DesignWidth="945"
+                                    SampleCount="{c:Binding ElementName=Root, Path=Wave.SampleCount, Mode=OneWay}">
     <local:SampleRangeChangeableControl.Resources>
         <Style x:Key="EllipseStyle" TargetType="ProgressBar">
             <Setter Property="Margin" Value="0,0,0,0" />
@@ -25,31 +26,33 @@
         </Style>
     </local:SampleRangeChangeableControl.Resources>
     <Grid>
-        <local:WaveView
-            x:Name="WaveView"
-            Margin="0,75,0,0"
-            IndicatorPosition="{Binding ElementName=Root, Path=IndicatorPosition, Mode=TwoWay}"
-            SampleRange="{Binding ElementName=Root, Path=SampleRange, Mode=TwoWay}"
-            AudioScale="{Binding ElementName=Root, Path=AudioScale, Mode=OneWay}"
-            EditableAudioScale="{Binding ElementName=Root, Path=EditableAudioScale, Mode=OneWay}"
-            Wave="{Binding ElementName=Root, Path=Wave}"
-            IndicatorMoved="WaveView_IndicatorMoved"
-            IndicatorMoveFinish="WaveView_IndicatorMoveFinish"
-            IndicatorMoveStart="WaveView_IndicatorMoveStart"/>
-        <TextBlock x:Name="PluginNameText" HorizontalAlignment="Right" Margin="0,0,22,19" TextWrapping="Wrap" Text="{c:Binding ElementName=Root, Path=(\'UsingOperator: \' + PluginName)}" VerticalAlignment="Bottom" Foreground="#FF818181" FontSize="14"/>
-        <local:WaveScaler
-            VerticalAlignment="Top"
-            x:Name="WaveScaler"
-            Height="70"
-            SampleRange="{Binding ElementName=Root, Path=SampleRange, Mode=TwoWay}"
-            Wave="{Binding ElementName=Root, Path=Wave}"/>
-        <Grid Margin="{Binding ElementName=WaveView, Path=Margin, Mode=OneWay}" Visibility="{c:Binding ElementName=Root, Path=Lock, FalseToVisibility=Hidden}">
-            <Rectangle Fill="#3F9C9C9C"/>
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" Background="#FF9C9C9C" Visibility="{c:Binding ElementName=Root, Path='MessageText.Length!=0', FalseToVisibility=Hidden}">
-                <TextBlock x:Name="Message" TextWrapping="Wrap" VerticalAlignment="Center" Margin="4" Text="{Binding ElementName=Root, Path=MessageText, Mode=OneWay}"/>
-                <ProgressBar Height="20" Width="20" Style="{StaticResource EllipseStyle}" Value="{Binding ElementName=Root, Path=Progress, Mode=OneWay}" BorderThickness="0.5" Margin="4"/>
-            </StackPanel>
+        <Grid Margin="0,75,0,0">
+            <local:WaveView
+                x:Name="WaveView"
+                IndicatorPosition="{Binding ElementName=Root, Path=IndicatorPosition, Mode=TwoWay}"
+                SampleRange="{Binding ElementName=Root, Path=SampleRange, Mode=TwoWay}"
+                AudioScale="{Binding ElementName=Root, Path=AudioScale, Mode=OneWay}"
+                EditableAudioScale="{Binding ElementName=Root, Path=EditableAudioScale, Mode=OneWay}"
+                Wave="{Binding ElementName=Root, Path=Wave}"
+                PreviewableSampleRanges="{Binding ElementName=Root, Path=PreviewableSampleRanges, Mode=OneWay}"
+                IndicatorMoved="WaveView_IndicatorMoved"
+                IndicatorMoveFinish="WaveView_IndicatorMoveFinish"
+                IndicatorMoveStart="WaveView_IndicatorMoveStart"/>
+            <TextBlock x:Name="PluginNameText" HorizontalAlignment="Right" Margin="0,0,22,19" TextWrapping="Wrap" Text="{c:Binding ElementName=Root, Path=(\'UsingOperator: \' + PluginName)}" VerticalAlignment="Bottom" Foreground="#FF818181" FontSize="14"/>
+            <Grid Margin="{Binding ElementName=WaveView, Path=Margin, Mode=OneWay}" Visibility="{c:Binding ElementName=Root, Path=Lock, FalseToVisibility=Hidden}">
+                <Rectangle Fill="#3F9C9C9C"/>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" Background="#FF9C9C9C" Visibility="{c:Binding ElementName=Root, Path='MessageText.Length!=0', FalseToVisibility=Hidden}">
+                    <TextBlock x:Name="Message" TextWrapping="Wrap" VerticalAlignment="Center" Margin="4" Text="{Binding ElementName=Root, Path=MessageText, Mode=OneWay}"/>
+                    <ProgressBar Height="20" Width="20" Style="{StaticResource EllipseStyle}" Value="{Binding ElementName=Root, Path=Progress, Mode=OneWay}" BorderThickness="0.5" Margin="4"/>
+                </StackPanel>
+            </Grid>
         </Grid>
-        <Rectangle Height="{Binding ElementName=WaveScaler, Path=Height}" Fill="#3F9C9C9C" VerticalAlignment="Top" Visibility="{c:Binding ElementName=Root, Path=Lock, FalseToVisibility=Hidden}"/>
+        <Grid Height="70" VerticalAlignment="Top">
+            <local:WaveScaler
+                x:Name="WaveScaler"
+                SampleRange="{Binding ElementName=Root, Path=SampleRange, Mode=TwoWay}"
+                Wave="{Binding ElementName=Root, Path=Wave}"/>
+            <Rectangle Fill="#3F9C9C9C" Visibility="{c:Binding ElementName=Root, Path=Lock, FalseToVisibility=Hidden}"/>
+        </Grid>
     </Grid>
 </local:SampleRangeChangeableControl>

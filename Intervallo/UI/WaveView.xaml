@@ -64,6 +64,15 @@
                 SampleRange="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:WaveView}}, Path=SampleRange, Mode=OneWay}"/>
             <Line Stroke="LightGray" X1="0" Y1="25" X2="35" Y2="25" RenderOptions.EdgeMode="Aliased"/>
             <Line Stroke="LightGray" X1="35" Y1="0" X2="35" Y2="25" RenderOptions.EdgeMode="Aliased"/>
+            <local:CachedSampleRangeLine
+                VerticalAlignment="Top"
+                Height="3"
+                Margin="35,22,0,0"
+                SampleCount="{c:Binding ElementName=Root, Path=Wave.SampleCount, Mode=OneWay}"
+                SampleRange="{Binding ElementName=Root, Path=SampleRange, Mode=OneWay}"
+                PreviewableSampleRanges="{Binding ElementName=Root, Path=PreviewableSampleRanges, Mode=OneWay}"
+                ClipToBounds="True"
+                LineBrush="#FF0CFF00"/>
             <Canvas Name="IndicatorCanvas" Margin="35,0,0,0">
                 <local:IndicatorView x:Name="Indicator" Canvas.Top="13" Canvas.Left="-5" Height="{c:Binding ElementName=IndicatorCanvas, Path=ActualHeight-13}" />
             </Canvas>

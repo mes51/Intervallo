@@ -50,14 +50,6 @@ namespace Intervallo.UI
             set { SetValue(AudioScaleProperty, value); }
         }
 
-        public override int SampleCount
-        {
-            get
-            {
-                return AudioScale?.SampleCount ?? 0;
-            }
-        }
-
         protected override double PathHeight
         {
             get
@@ -147,6 +139,7 @@ namespace Intervallo.UI
 
         static void AnalyzedAudioChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
+            ((ScaleCanvas)dependencyObject).SampleCount = ((AudioScaleModel)e.NewValue)?.SampleCount ?? 0;
             ((ScaleCanvas)dependencyObject).RefreshPath();
             ((ScaleCanvas)dependencyObject).RedrawBitmap();
         }

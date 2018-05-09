@@ -23,7 +23,8 @@ namespace Intervallo.UI
             typeof(WaveCanvas),
             new FrameworkPropertyMetadata(
                 null,
-                FrameworkPropertyMetadataOptions.AffectsRender
+                FrameworkPropertyMetadataOptions.AffectsRender,
+                WaveChanged
             )
         );
 
@@ -31,14 +32,6 @@ namespace Intervallo.UI
         {
             get { return (WaveLineCache)GetValue(WaveProperty); }
             set { SetValue(WaveProperty, value); }
-        }
-
-        public override int SampleCount
-        {
-            get
-            {
-                return Wave?.SampleCount ?? 0;
-            }
         }
 
         protected override double PathHeight
@@ -86,6 +79,11 @@ namespace Intervallo.UI
                     }
                     break;
             }
+        }
+
+        static void WaveChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            ((WaveCanvas)dependencyObject).SampleCount = ((WaveLineCache)e.NewValue)?.SampleCount ?? 0;
         }
     }
 }

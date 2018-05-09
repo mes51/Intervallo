@@ -23,6 +23,7 @@ using Intervallo.Command;
 using System.Windows.Controls;
 using System.Text.RegularExpressions;
 using Intervallo.Config;
+using System.Windows.Media;
 
 namespace Intervallo.Form
 {
@@ -47,6 +48,8 @@ namespace Intervallo.Form
 
         public MainWindow()
         {
+            // create command
+
             OpenCommand = new OpenCommand(this);
             ExportCommand = new ExportCommand(this);
             ExitCommand = new ActionCommand(this, () => Close(), true);
@@ -82,6 +85,8 @@ namespace Intervallo.Form
                 window.ShowDialog();
             });
 
+            // initialize
+
             InitializeComponent();
             Top = ApplicationSettings.Setting.General.Position.Y;
             Left = ApplicationSettings.Setting.General.Position.X;
@@ -102,6 +107,11 @@ namespace Intervallo.Form
 
             LoadPlugin();
             CacheFile.CreateCacheDirectory();
+
+            CompositionTarget.Rendering += (sender, e) =>
+            {
+                MainView.PreviewableSampleRanges = PreviewStream?.PreviewableSampleRanges;
+            };
         }
 
         DispatcherTimer Timer { get; } = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, 16), IsEnabled = true };

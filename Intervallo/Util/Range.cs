@@ -78,6 +78,11 @@ namespace Intervallo.Util
             return range.Begin >= Begin && range.End <= End;
         }
 
+        public bool IsOverlap(IntRange range)
+        {
+            return range.End >= Begin || range.Begin <= End;
+        }
+
         public int ClipValue(int v)
         {
             return Math.Max(Math.Min(v, End), Begin);
@@ -186,6 +191,11 @@ namespace Intervallo.Util
         public bool IsInclude(double n)
         {
             return n >= Begin && n < End;
+        }
+
+        public bool IsOverlap(IntRange range)
+        {
+            return range.End >= Begin || range.Begin <= End;
         }
 
         public double ClipValue(double v)

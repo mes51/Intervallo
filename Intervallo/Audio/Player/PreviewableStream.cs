@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Intervallo.Util;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,6 +31,8 @@ namespace Intervallo.Audio.Player
         }
 
         public virtual int SampleCount => (int)(Length / sizeof(double));
+
+        public abstract IReadOnlyList<IntRange> PreviewableSampleRanges { get; }
 
         public override void Flush() { }
 

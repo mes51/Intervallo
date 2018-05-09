@@ -45,14 +45,6 @@ namespace Intervallo.UI
             set { SetValue(WaveProperty, value); }
         }
 
-        public override int SampleCount
-        {
-            get
-            {
-                return Wave?.SampleCount ?? 0;
-            }
-        }
-
         FrameworkElement ClickedElement { get; set; }
 
         Point ClickPosition { get; set; } = new Point();
@@ -158,7 +150,8 @@ namespace Intervallo.UI
 
         static void ViewDependOnPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
-            (dependencyObject as WaveScaler).UpdateScaler();
+            ((WaveScaler)dependencyObject).SampleCount = ((WaveLineCache)e.NewValue)?.SampleCount ?? 0;
+            ((WaveScaler)dependencyObject).UpdateScaler();
         }
     }
 }

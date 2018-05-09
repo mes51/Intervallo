@@ -92,6 +92,16 @@ namespace Intervallo.UI
             )
         );
 
+        public static readonly DependencyProperty PreviewableSampleRangesProperty = DependencyProperty.Register(
+            nameof(PreviewableSampleRanges),
+            typeof(IReadOnlyList<IntRange>),
+            typeof(MainView),
+            new FrameworkPropertyMetadata(
+                new List<IntRange>(),
+                FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsArrange
+            )
+        );
+
         public MainView()
         {
             InitializeComponent();
@@ -102,14 +112,6 @@ namespace Intervallo.UI
         public event EventHandler IndicatorMoved;
 
         public event EventHandler IndicatorMoveFinish;
-
-        public override int SampleCount
-        {
-            get
-            {
-                return Wave?.SampleCount ?? 0;
-            }
-        }
 
         public int IndicatorPosition
         {
@@ -157,6 +159,12 @@ namespace Intervallo.UI
         {
             get { return (string)GetValue(PluginNameProperty); }
             set { SetValue(PluginNameProperty, value); }
+        }
+
+        public IReadOnlyList<IntRange> PreviewableSampleRanges
+        {
+            get { return (IReadOnlyList<IntRange>)GetValue(PreviewableSampleRangesProperty); }
+            set { SetValue(PreviewableSampleRangesProperty, value); }
         }
 
         public bool IndicatorIsVisible

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Intervallo.Util;
 
 namespace Intervallo.Audio.Player
 {
@@ -14,6 +15,8 @@ namespace Intervallo.Audio.Player
         }
 
         public override long Length => Wave.Length * sizeof(double);
+
+        public override IReadOnlyList<IntRange> PreviewableSampleRanges => new List<IntRange> { new IntRange(0, Wave.Length - 1) };
 
         double[] Wave { get; }
 

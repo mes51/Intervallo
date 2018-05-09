@@ -25,16 +25,21 @@ namespace Intervallo.UI
             )
         );
 
+        public static readonly DependencyProperty SampleCountProperty = DependencyProperty.Register(
+            nameof(SampleCount),
+            typeof(int),
+            typeof(SampleRangeChangeableControl),
+            new FrameworkPropertyMetadata(
+                0,
+                FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsArrange,
+                SampleRangeChanged
+            )
+        );
+
         public IntRange SampleRange
         {
-            get
-            {
-                return (IntRange)GetValue(SampleRangeProperty);
-            }
-            set
-            {
-                SetValue(SampleRangeProperty, value.Adjust(0.To(SampleCount)));
-            }
+            get { return (IntRange)GetValue(SampleRangeProperty); }
+            set { SetValue(SampleRangeProperty, value.Adjust(0.To(SampleCount))); }
         }
 
         public int ScrollableSampleCount
@@ -45,7 +50,11 @@ namespace Intervallo.UI
             }
         }
 
-        public virtual int SampleCount { get; }
+        public int SampleCount
+        {
+            get { return (int)GetValue(SampleCountProperty); }
+            set { SetValue(SampleCountProperty, value); }
+        }
 
         protected virtual void OnSampleRangeChanged() { }
 

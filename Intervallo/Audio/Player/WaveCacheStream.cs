@@ -96,6 +96,17 @@ namespace Intervallo.Audio.Player
 
         public override int SampleCount => Stream.SampleCount;
 
+        public override IReadOnlyList<IntRange> PreviewableSampleRanges
+        {
+            get
+            {
+                lock (BufferedRange)
+                {
+                    return new List<IntRange>(BufferedRange);
+                }
+            }
+        }
+
         bool Disposed { get; set; }
 
         WaveDataStream Stream { get; }

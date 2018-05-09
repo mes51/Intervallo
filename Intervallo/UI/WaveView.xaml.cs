@@ -2,6 +2,7 @@
 using Intervallo.Model;
 using Intervallo.Util;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -48,6 +49,16 @@ namespace Intervallo.UI
             new PropertyMetadata(null)
         );
 
+        public static readonly DependencyProperty PreviewableSampleRangesProperty = DependencyProperty.Register(
+            nameof(PreviewableSampleRanges),
+            typeof(IReadOnlyList<IntRange>),
+            typeof(WaveView),
+            new FrameworkPropertyMetadata(
+                new List<IntRange>(),
+                FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsArrange
+            )
+        );
+
         readonly Pen Pen = new Pen(new SolidColorBrush(Color.FromRgb(43, 137, 201)), 1.0);
 
         public WaveView()
@@ -79,12 +90,10 @@ namespace Intervallo.UI
             set { SetValue(IndicatorPositionProperty, Math.Min(SampleCount, Math.Max(0, value))); }
         }
 
-        public override int SampleCount
+        public IReadOnlyList<IntRange> PreviewableSampleRanges
         {
-            get
-            {
-                return Wave?.SampleCount ?? 0;
-            }
+            get { return (IReadOnlyList<IntRange>)GetValue(PreviewableSampleRangesProperty); }
+            set { SetValue(PreviewableSampleRangesProperty, value); }
         }
 
         public bool IndicatorIsVisible
@@ -288,8 +297,9 @@ namespace Intervallo.UI
 
         static void ViewDependOnPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
-            (dependencyObject as WaveView).RefreshTimeScrollBar();
-            (dependencyObject as WaveView).RefreshIndicator();
+            ((WaveView)dependencyObject).SampleCount = ((WaveLineCache)e.NewValue)?.SampleCount ?? 0;
+            ((WaveView)dependencyObject).RefreshTimeScrollBar();
+            ((WaveView)dependencyObject).RefreshIndicator();
         }
     }
 }
