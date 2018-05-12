@@ -73,6 +73,15 @@ namespace Intervallo.Audio
         public ushort cbSize;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+    struct WaveChunkHeader
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public char[] ChunkID;
+        public int Size;
+
+        public string ChunkIDStr => new string(ChunkID);
+    }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     struct Int24 : IComparable, IComparable<Int24>, IEquatable<Int24>
@@ -225,15 +234,23 @@ namespace Intervallo.Audio
             using (var fs = new FileStream(Path.GetFullPath(filePath), FileMode.Open))
             using (var reader = new BinaryReader(fs, ASCIIEncoding.ASCII))
             {
-                var headerSize = Marshal.SizeOf<WaveHeader>();
-                var headerData = reader.ReadBytes(headerSize);
-                var header = Marshal.PtrToStructure<WaveHeader>(Marshal.UnsafeAddrOfPinnedArrayElement(headerData, 0));
+                var header = reader.ReadStruct<WaveHeader>();
                 CheckHeader(header);
                 if (header.FmtSize == 18)
                 {
-                    fs.Seek(header.Format.cbSize + 2, SeekOrigin.Current); // seek extra header and 'd', 'a'
+                    fs.Seek(header.Format.cbSize, SeekOrigin.Current);
                 }
-                fs.Seek(2, SeekOrigin.Current); // seek 't', 'a'
+                else
+                {
+                    fs.Seek(-2, SeekOrigin.Current);
+                }
+
+                for (var chunkHeader = reader.ReadStruct<WaveChunkHeader>(); chunkHeader.ChunkIDStr != "data"; chunkHeader = reader.ReadStruct<WaveChunkHeader>())
+                {
+                    fs.Seek(chunkHeader.Size, SeekOrigin.Current);
+                }
+
+                fs.Seek(-4, SeekOrigin.Current);
                 var length = reader.ReadInt32();
 
                 var waveStartPos = fs.Position;
@@ -354,6 +371,23 @@ namespace Intervallo.Audio
             if (header.Format.nChannels != 1)
             {
                 throw new InvalidDataException("support monaural only");
+            }
+        }
+    }
+
+    static class BinaryReaderExtension
+    {
+        public static T ReadStruct<T>(this BinaryReader reader) where T : struct
+        {
+            var data = reader.ReadBytes(Marshal.SizeOf<T>());
+            var ptr = GCHandle.Alloc(data, GCHandleType.Pinned);
+            try
+            {
+                return Marshal.PtrToStructure<T>(Marshal.UnsafeAddrOfPinnedArrayElement(data, 0));
+            }
+            finally
+            {
+                ptr.Free();
             }
         }
     }
