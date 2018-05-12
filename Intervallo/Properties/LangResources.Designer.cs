@@ -19,7 +19,7 @@ namespace Intervallo.Properties {
     // または Visual Studio のようなツールを使用して自動生成されました。
     // メンバーを追加または削除するには、.ResX ファイルを編集して、/str オプションと共に
     // ResGen を実行し直すか、または VS プロジェクトをビルドし直します。
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class LangResources {
@@ -539,6 +539,150 @@ namespace Intervallo.Properties {
         public static string ProgressMessage_LoadWave {
             get {
                 return ResourceManager.GetString("ProgressMessage_LoadWave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   16bit に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveBits_Bit16 {
+            get {
+                return ResourceManager.GetString("WaveBits_Bit16", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   24bit に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveBits_Bit24 {
+            get {
+                return ResourceManager.GetString("WaveBits_Bit24", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   32bit(浮動小数) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveBits_Bit32 {
+            get {
+                return ResourceManager.GetString("WaveBits_Bit32", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   8bit に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveBits_Bit8 {
+            get {
+                return ResourceManager.GetString("WaveBits_Bit8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   キャンセル に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveExportSettingWindow_CancelButton {
+            get {
+                return ResourceManager.GetString("WaveExportSettingWindow_CancelButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   パス「{0}」にファイルを保存することは出来ません。ディレクトリ「{1}」が存在しません に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveExportSettingWindow_DirectoryNotFoundMessage {
+            get {
+                return ResourceManager.GetString("WaveExportSettingWindow_DirectoryNotFoundMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   パス「{0}」にファイルを保存することは出来ません。ファイル名がありません に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveExportSettingWindow_EmptyFileNameMessage {
+            get {
+                return ResourceManager.GetString("WaveExportSettingWindow_EmptyFileNameMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   保存先のパスを空にすることは出来ません に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveExportSettingWindow_EmptySavePathMessage {
+            get {
+                return ResourceManager.GetString("WaveExportSettingWindow_EmptySavePathMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   パス「{0}」にファイルを保存することは出来ません。パスが不正です に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveExportSettingWindow_InvalidSavePathMessage {
+            get {
+                return ResourceManager.GetString("WaveExportSettingWindow_InvalidSavePathMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   出力Bit数 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveExportSettingWindow_OutputBits {
+            get {
+                return ResourceManager.GetString("WaveExportSettingWindow_OutputBits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ファイル「{0}」は既に存在します。上書きしますか? に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveExportSettingWindow_OverWriteCautionMessage {
+            get {
+                return ResourceManager.GetString("WaveExportSettingWindow_OverWriteCautionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   上書き保存 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveExportSettingWindow_OverWriteTitle {
+            get {
+                return ResourceManager.GetString("WaveExportSettingWindow_OverWriteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   保存 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveExportSettingWindow_SaveButton {
+            get {
+                return ResourceManager.GetString("WaveExportSettingWindow_SaveButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   保存先: に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveExportSettingWindow_SavePath {
+            get {
+                return ResourceManager.GetString("WaveExportSettingWindow_SavePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   参照 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveExportSettingWindow_SelectPathButton {
+            get {
+                return ResourceManager.GetString("WaveExportSettingWindow_SelectPathButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   書き出し に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string WaveExportSettingWindow_Title {
+            get {
+                return ResourceManager.GetString("WaveExportSettingWindow_Title", resourceCulture);
             }
         }
     }

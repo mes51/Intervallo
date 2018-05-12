@@ -319,7 +319,7 @@ namespace Intervallo.Form
             });
         }
 
-        async void ExportWave(string filePath, double[] newF0)
+        async void ExportWave(string filePath, WaveBit bit, double[] newF0)
         {
             Player?.Stop();
 
@@ -334,7 +334,7 @@ namespace Intervallo.Form
                     });
                 });
 
-                var waveFile = new Wavefile(synthesizedAudio.SampleRate, WaveData.Bit, synthesizedAudio.Wave);
+                var waveFile = new Wavefile(synthesizedAudio.SampleRate, bit, synthesizedAudio.Wave);
                 waveFile.Write(filePath);
 
                 Dispatcher.Invoke(() =>
@@ -485,14 +485,16 @@ namespace Intervallo.Form
 
         public void ExecExportWave()
         {
-            var save = new SaveFileDialog();
-            save.Filter = "Wave PCM(*.wav)|*.wav";
+            var save = new WaveExportSettingWindow();
+            save.SelectedWaveBit = WaveData.Bit;
+            save.SavePath = Path.Combine(Path.GetDirectoryName(WaveData.FilePath), Path.GetFileNameWithoutExtension(WaveData.FilePath) + "_edited" + Path.GetExtension(WaveData.FilePath));
+            save.Owner = this;
             if (save.ShowDialog() ?? false)
             {
                 MainView.Progress = 0.0;
                 Lock = true;
                 MainView.MessageText = LangResources.ProgressMessage_ExportWave;
-                ExportWave(save.FileName, MainView.EditableAudioScale.F0);
+                ExportWave(save.SavePath + (Path.GetExtension(save.SavePath) != ".wav" ? ".wav" : ""), save.SelectedWaveBit, MainView.EditableAudioScale.F0);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Intervallo.Properties;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,9 +7,22 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using static Intervallo.Markup.EnumerationLangKeyExtension;
 
 namespace Intervallo.Audio
 {
+    public enum WaveBit : int
+    {
+        [LangKey(nameof(LangResources.WaveBits_Bit8))]
+        Bit8 = 8,
+        [LangKey(nameof(LangResources.WaveBits_Bit16))]
+        Bit16 = 16,
+        [LangKey(nameof(LangResources.WaveBits_Bit24))]
+        Bit24 = 24,
+        [LangKey(nameof(LangResources.WaveBits_Bit32))]
+        Bit32 = 32,
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
     struct WaveHeader
     {
@@ -28,13 +42,13 @@ namespace Intervallo.Audio
 
         public string fmt => new string(Rawfmt);
 
-        public void Initialize(int fs, int bit, int sampleLength)
+        public void Initialize(int fs, WaveBit bit, int sampleLength)
         {
             var format = new WAVEFORMATEX();
-            format.wFormatTag = 0x01;
-            format.nChannels = 1;
+            format.wFormatTag = (ushort)(bit != WaveBit.Bit32 ? 0x01 : 0x03);
+            format.nChannels = 0x01;
             format.nSamplesPerSec = (uint)fs;
-            format.nBlockAlign = (ushort)(bit / 8);
+            format.nBlockAlign = (ushort)((int)bit / 8);
             format.wBitsPerSample = (ushort)bit;
             format.nAvgBytesPerSec = (uint)(fs * format.nBlockAlign);
 
@@ -59,11 +73,131 @@ namespace Intervallo.Audio
         public ushort cbSize;
     }
 
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct Int24 : IComparable, IComparable<Int24>, IEquatable<Int24>
+    {
+        public static readonly Int24 MaxValue = new Int24(0x7FFFFF);
+
+        public static readonly Int24 MinValue = new Int24(-0x800000);
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public readonly byte[] Data;
+
+        public Int24(int value)
+        {
+            Data = new byte[]
+            {
+                (byte)(value & 0xff),
+                (byte)((value >> 8) & 0xff),
+                (byte)((value >> 16) & 0xff)
+            };
+        }
+
+        public Int24(byte[] data)
+        {
+            Data = new byte[] { data[0], data[1], data[2] };
+        }
+
+        public int Int32Value
+        {
+            get
+            {
+                if ((Data[2] & 0x80) != 0)
+                {
+                    return 0xFF << 24 | Data[2] << 16 | Data[1] << 8 | Data[0];
+                }
+                else
+                {
+                    return Data[2] << 16 | Data[1] << 8 | Data[0];
+                }
+            }
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (obj is Int24)
+            {
+                return CompareTo((Int24)obj);
+            }
+            else
+            {
+                throw new ArgumentException("not same type");
+            }
+        }
+
+        public int CompareTo(Int24 other)
+        {
+            return Int32Value.CompareTo(other.Int32Value);
+        }
+
+        public bool Equals(Int24 other)
+        {
+            return Data[0] == other.Data[0] && Data[1] == other.Data[1] && Data[2] == other.Data[2];
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Int24)
+            {
+                return Equals((Int24)obj);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return Int32Value << 8 | Data[0];
+        }
+
+        public override string ToString()
+        {
+            return Int32Value.ToString();
+        }
+
+        public static implicit operator int(Int24 value)
+        {
+            return value.Int32Value;
+        }
+
+        public static implicit operator Int24(int value)
+        {
+            return new Int24(value);
+        }
+
+        public static Int24 Max(Int24 a, Int24 b)
+        {
+            if (a > b)
+            {
+                return a;
+            }
+            else
+            {
+                return b;
+            }
+        }
+
+        public static Int24 Min(Int24 a, Int24 b)
+        {
+            if (a < b)
+            {
+                return a;
+            }
+            else
+            {
+                return b;
+            }
+        }
+    }
+
     class Wavefile
     {
         public int Fs { get; }
 
-        public int Bit { get; }
+        public WaveBit Bit { get; }
 
         public double[] Data { get; }
 
@@ -71,7 +205,7 @@ namespace Intervallo.Audio
 
         public string FilePath { get; }
 
-        public Wavefile(int fs, int bit, double[] data, string hash = "", string filePath = "")
+        public Wavefile(int fs, WaveBit bit, double[] data, string hash = "", string filePath = "")
         {
             Fs = fs;
             Bit = bit;
@@ -113,13 +247,25 @@ namespace Intervallo.Audio
                     case 1:
                         for (var i = 0; i < waveData.Length; i++)
                         {
-                            waveData[i] = reader.ReadSByte() / scale;
+                            waveData[i] = (reader.ReadByte() - 128) / scale;
                         }
                         break;
                     case 2:
                         for (var i = 0; i < waveData.Length; i++)
                         {
                             waveData[i] = reader.ReadInt16() / scale;
+                        }
+                        break;
+                    case 3:
+                        for (var i = 0; i < waveData.Length; i++)
+                        {
+                            waveData[i] = new Int24(reader.ReadBytes(3)) / scale;
+                        }
+                        break;
+                    case 4:
+                        for (var i = 0; i < waveData.Length; i++)
+                        {
+                            waveData[i] = reader.ReadSingle();
                         }
                         break;
                 }
@@ -131,7 +277,7 @@ namespace Intervallo.Audio
                     hash = string.Join("", algorithm.ComputeHash(fs).Select((x) => x.ToString("X2")));
                 }
 
-                return new Wavefile((int)header.Format.nSamplesPerSec, header.Format.wBitsPerSample, waveData, hash, filePath);
+                return new Wavefile((int)header.Format.nSamplesPerSec, (WaveBit)header.Format.wBitsPerSample, waveData, hash, filePath);
             }
         }
 
@@ -145,19 +291,31 @@ namespace Intervallo.Audio
             {
                 WriteHeader(writer, header);
 
-                var quantization = (int)Math.Pow(2.0, Bit - 1);
+                var quantization = (int)Math.Pow(2.0, (int)Bit - 1);
                 switch (Bit)
                 {
-                    case 8:
+                    case WaveBit.Bit8:
                         foreach (var sample in Data)
                         {
-                            writer.Write((sbyte)Math.Min(sbyte.MaxValue, Math.Max(sbyte.MinValue, (sbyte)(sample * quantization))));
+                            writer.Write((byte)(sample * quantization + 128));
                         }
                         break;
-                    case 16:
+                    case WaveBit.Bit16:
                         foreach (var sample in Data)
                         {
-                            writer.Write((short)Math.Min(short.MaxValue, Math.Max(short.MinValue, (short)(sample * quantization))));
+                            writer.Write((short)(sample * quantization));
+                        }
+                        break;
+                    case WaveBit.Bit24:
+                        foreach (var sample in Data)
+                        {
+                            writer.Write(((Int24)(int)(sample * quantization)).Data);
+                        }
+                        break;
+                    case WaveBit.Bit32:
+                        foreach (var sample in Data)
+                        {
+                            writer.Write((float)sample);
                         }
                         break;
                 }
@@ -189,7 +347,7 @@ namespace Intervallo.Audio
             {
                 throw new InvalidDataException("invalid header");
             }
-            if (header.Format.wFormatTag != 0x01)
+            if (header.Format.wFormatTag != 0x01 && header.Format.wFormatTag != 0x03)
             {
                 throw new InvalidDataException("invalid fmt Tag");
             }

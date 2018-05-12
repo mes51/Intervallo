@@ -56,6 +56,18 @@ namespace Intervallo.InternalUtil
             }
         }
 
+        public TResult Fold<TResult>(Func<TResult> defaultValue, Func<T, TResult> func)
+        {
+            if (IsDefined)
+            {
+                return func(Value);
+            }
+            else
+            {
+                return defaultValue();
+            }
+        }
+
         public Optional<T> OrElse(Func<Optional<T>> defaultValue)
         {
             if (IsDefined)

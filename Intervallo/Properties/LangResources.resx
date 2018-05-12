@@ -281,4 +281,52 @@
   <data name="ProgressMessage_LoadWave" xml:space="preserve">
     <value>wavファイル読み込み中...</value>
   </data>
+  <data name="WaveBits_Bit16" xml:space="preserve">
+    <value>16bit</value>
+  </data>
+  <data name="WaveBits_Bit24" xml:space="preserve">
+    <value>24bit</value>
+  </data>
+  <data name="WaveBits_Bit32" xml:space="preserve">
+    <value>32bit(浮動小数)</value>
+  </data>
+  <data name="WaveBits_Bit8" xml:space="preserve">
+    <value>8bit</value>
+  </data>
+  <data name="WaveExportSettingWindow_CancelButton" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="WaveExportSettingWindow_DirectoryNotFoundMessage" xml:space="preserve">
+    <value>パス「{0}」にファイルを保存することは出来ません。ディレクトリ「{1}」が存在しません</value>
+  </data>
+  <data name="WaveExportSettingWindow_EmptyFileNameMessage" xml:space="preserve">
+    <value>パス「{0}」にファイルを保存することは出来ません。ファイル名がありません</value>
+  </data>
+  <data name="WaveExportSettingWindow_EmptySavePathMessage" xml:space="preserve">
+    <value>保存先のパスを空にすることは出来ません</value>
+  </data>
+  <data name="WaveExportSettingWindow_InvalidSavePathMessage" xml:space="preserve">
+    <value>パス「{0}」にファイルを保存することは出来ません。パスが不正です</value>
+  </data>
+  <data name="WaveExportSettingWindow_OutputBits" xml:space="preserve">
+    <value>出力Bit数</value>
+  </data>
+  <data name="WaveExportSettingWindow_OverWriteCautionMessage" xml:space="preserve">
+    <value>ファイル「{0}」は既に存在します。上書きしますか?</value>
+  </data>
+  <data name="WaveExportSettingWindow_OverWriteTitle" xml:space="preserve">
+    <value>上書き保存</value>
+  </data>
+  <data name="WaveExportSettingWindow_SaveButton" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="WaveExportSettingWindow_SavePath" xml:space="preserve">
+    <value>保存先:</value>
+  </data>
+  <data name="WaveExportSettingWindow_SelectPathButton" xml:space="preserve">
+    <value>参照</value>
+  </data>
+  <data name="WaveExportSettingWindow_Title" xml:space="preserve">
+    <value>書き出し</value>
+  </data>
 </root>
