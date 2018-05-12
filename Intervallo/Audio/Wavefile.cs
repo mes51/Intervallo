@@ -253,36 +253,54 @@ namespace Intervallo.Audio
                 fs.Seek(-4, SeekOrigin.Current);
                 var length = reader.ReadInt32();
 
-                var waveStartPos = fs.Position;
-
                 var quantizationSize = header.Format.wBitsPerSample / 8;
-                var waveData = new double[length / quantizationSize];
+                var waveData = new double[length / quantizationSize / header.Format.nChannels];
 
-                var scale = Math.Pow(2.0, header.Format.wBitsPerSample - 1);
+                var scale = Math.Pow(2.0, header.Format.wBitsPerSample - 1) * header.Format.nChannels;
                 switch(quantizationSize)
                 {
                     case 1:
                         for (var i = 0; i < waveData.Length; i++)
                         {
-                            waveData[i] = (reader.ReadByte() - 128) / scale;
+                            var combinedSample = 0;
+                            for (var c = 0; c < header.Format.nChannels; c++)
+                            {
+                                combinedSample += reader.ReadByte() - 128;
+                            }
+                            waveData[i] = combinedSample / scale;
                         }
                         break;
                     case 2:
                         for (var i = 0; i < waveData.Length; i++)
                         {
-                            waveData[i] = reader.ReadInt16() / scale;
+                            var combinedSample = 0;
+                            for (var c = 0; c < header.Format.nChannels; c++)
+                            {
+                                combinedSample += reader.ReadInt16();
+                            }
+                            waveData[i] = combinedSample / scale;
                         }
                         break;
                     case 3:
                         for (var i = 0; i < waveData.Length; i++)
                         {
-                            waveData[i] = new Int24(reader.ReadBytes(3)) / scale;
+                            var combinedSample = 0;
+                            for (var c = 0; c < header.Format.nChannels; c++)
+                            {
+                                combinedSample += new Int24(reader.ReadBytes(3));
+                            }
+                            waveData[i] = combinedSample / scale;
                         }
                         break;
                     case 4:
                         for (var i = 0; i < waveData.Length; i++)
                         {
-                            waveData[i] = reader.ReadSingle();
+                            var combinedSample = 0.0;
+                            for (var c = 0; c < header.Format.nChannels; c++)
+                            {
+                                combinedSample += reader.ReadSingle();
+                            }
+                            waveData[i] = combinedSample / header.Format.nChannels;
                         }
                         break;
                 }
@@ -367,10 +385,6 @@ namespace Intervallo.Audio
             if (header.Format.wFormatTag != 0x01 && header.Format.wFormatTag != 0x03)
             {
                 throw new InvalidDataException("invalid fmt Tag");
-            }
-            if (header.Format.nChannels != 1)
-            {
-                throw new InvalidDataException("support monaural only");
             }
         }
     }
