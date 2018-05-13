@@ -177,9 +177,16 @@ namespace Intervallo.UI
             drawingContext.Pop();
         }
 
+        protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi)
+        {
+            base.OnDpiChanged(oldDpi, newDpi);
+
+            InvalidateVisual();
+        }
+
         FormattedText CreateScaleText(string scale)
         {
-            return new FormattedText(scale, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Typeface, 10.0, ScaleTextBrush);
+            return new FormattedText(scale, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Typeface, 10.0, ScaleTextBrush, VisualTreeHelper.GetDpi(this).PixelsPerDip);
         }
     }
 }

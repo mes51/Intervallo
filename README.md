@@ -8,8 +8,8 @@
 
 ## Requirements
 
-* >= Windows 7
-* >= .NET Framework 4.5.2
+* \>= Windows 7 SP1
+* \>= .NET Framework 4.7.1
 
 ## How to use
 

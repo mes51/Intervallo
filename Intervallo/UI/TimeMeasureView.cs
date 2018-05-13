@@ -182,6 +182,13 @@ namespace Intervallo.UI
             drawingContext.Pop();
         }
 
+        protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi)
+        {
+            base.OnDpiChanged(oldDpi, newDpi);
+
+            InvalidateVisual();
+        }
+
         FormattedText CreateTimecodeText(TimeSpan time)
         {
             var hour = (24 * time.Days + time.Hours).ToString("D2");
@@ -189,7 +196,7 @@ namespace Intervallo.UI
             var second = time.Seconds.ToString("D2");
             var smallTime = ((time.Ticks % TimeSpan.TicksPerSecond) / (double)TimeSpan.TicksPerSecond).ToString("F5").Substring(2);
             var timeText = $"{hour}:{minuets}:{second}.{smallTime}";
-            return new FormattedText(timeText, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Typeface, 10.0, TimeTextBrush);
+            return new FormattedText(timeText, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Typeface, 10.0, TimeTextBrush, VisualTreeHelper.GetDpi(this).PixelsPerDip);
         }
     }
 }
