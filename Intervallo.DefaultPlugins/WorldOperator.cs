@@ -36,10 +36,11 @@ namespace Intervallo.DefaultPlugins
         {
             var frameSize = wave.SampleRate * framePeriod * 0.001 * FrameSizeRate;
             var frameCount = (int)Math.Ceiling(wave.Wave.Length / frameSize);
-            var silentFrames = wave.Wave.SplitByIndexes(
+            var frames = wave.Wave.SplitByIndexes(
                 Enumerable.Range(0, frameCount).Select((i) => (int)Math.Ceiling(i * frameSize)),
                 (frame, start, i) => new Frame(start, i, frame)
-            ).Where((x) => x.Silent).ToArray();
+            );
+            var silentFrames = frames.Where((x) => x.Silent).ToArray();
 
             var elements = new List<AnalyzedElement>();
             if (silentFrames.Any())
@@ -47,6 +48,10 @@ namespace Intervallo.DefaultPlugins
                 if (silentFrames.First().Index != 0)
                 {
                     silentFrames = new Frame(0, 0, (int)Math.Ceiling(frameSize), false).PushTo(silentFrames).ToArray();
+                }
+                if (!frames.Last().Silent)
+                {
+                    silentFrames = silentFrames.Append(frames.Last()).ToArray();
                 }
 
                 var capFrames = silentFrames.Zip3(
