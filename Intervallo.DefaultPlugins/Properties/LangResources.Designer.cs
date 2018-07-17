@@ -61,6 +61,78 @@ namespace Intervallo.DefaultPlugins.Properties {
         }
         
         /// <summary>
+        ///   キャンセル に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TrackSelectWindow_Cancel {
+            get {
+                return ResourceManager.GetString("TrackSelectWindow_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   トラックが複数検出されました。読み込むトラックを選択してください: に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TrackSelectWindow_Description {
+            get {
+                return ResourceManager.GetString("TrackSelectWindow_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   OK に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TrackSelectWindow_OK {
+            get {
+                return ResourceManager.GetString("TrackSelectWindow_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   トラックの選択 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TrackSelectWindow_Title {
+            get {
+                return ResourceManager.GetString("TrackSelectWindow_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   VPRファイルの読み込みを中断しました に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string VprLoader_CancelLoad {
+            get {
+                return ResourceManager.GetString("VprLoader_CancelLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   VPRファイルから音階データを読み込みます に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string VprLoader_Description {
+            get {
+                return ResourceManager.GetString("VprLoader_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   VPRファイルの読み込みに失敗しました。ファイルが壊れている可能性があります に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string VprLoader_FailLoadFile {
+            get {
+                return ResourceManager.GetString("VprLoader_FailLoadFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   VPRファイルの読み込みに失敗しました。ボーカルトラックがありません に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string VprLoader_TrackNotFound {
+            get {
+                return ResourceManager.GetString("VprLoader_TrackNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   VSQXファイルの読み込みを中断しました に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string VsqLoader_CancelLoad {
@@ -84,42 +156,6 @@ namespace Intervallo.DefaultPlugins.Properties {
         public static string VsqxLoader_Description {
             get {
                 return ResourceManager.GetString("VsqxLoader_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   キャンセル に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string VsqxTrackSelectWindow_Cancel {
-            get {
-                return ResourceManager.GetString("VsqxTrackSelectWindow_Cancel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   トラックが複数検出されました。読み込むトラックを選択してください: に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string VsqxTrackSelectWindow_Description {
-            get {
-                return ResourceManager.GetString("VsqxTrackSelectWindow_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   OK に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string VsqxTrackSelectWindow_OK {
-            get {
-                return ResourceManager.GetString("VsqxTrackSelectWindow_OK", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   VsqxLoader トラックの選択 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        public static string VsqxTrackSelectWindow_Title {
-            get {
-                return ResourceManager.GetString("VsqxTrackSelectWindow_Title", resourceCulture);
             }
         }
         

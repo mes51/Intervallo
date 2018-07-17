@@ -1,6 +1,7 @@
 ﻿using Intervallo.DefaultPlugins;
 using Intervallo.DefaultPlugins.Properties;
-using Intervallo.DefaultPlugins.Vsqx;
+using Intervallo.DefaultPlugins.Vocaloid;
+using Intervallo.DefaultPlugins.Vocaloid.Vsqx;
 using Intervallo.Plugin;
 using Intervallo.InternalUtil;
 using System;
@@ -51,7 +52,7 @@ namespace Intervallo.DefaultPlugins
                 double[] f0 = null;
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    var selectWindow = new VsqxTrackSelectWindow();
+                    var selectWindow = new TrackSelectWindow();
                     selectWindow.Tracks = tracks;
                     selectWindow.ShowDialog();
 

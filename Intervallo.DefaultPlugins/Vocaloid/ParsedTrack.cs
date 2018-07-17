@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Intervallo.DefaultPlugins.Vsqx
+namespace Intervallo.DefaultPlugins.Vocaloid
 {
     public class Track
     {
@@ -250,6 +250,7 @@ namespace Intervallo.DefaultPlugins.Vsqx
         public Portamento Portamento { get; }
     }
 
+    // TODO: Support V5
     public class Vibrato
     {
         public const double VibratoEdgeTime = 0.4;

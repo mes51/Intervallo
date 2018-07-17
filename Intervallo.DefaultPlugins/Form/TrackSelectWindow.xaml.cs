@@ -1,4 +1,4 @@
-﻿using Intervallo.DefaultPlugins.Vsqx;
+﻿using Intervallo.DefaultPlugins.Vocaloid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +16,14 @@ using System.Windows.Shapes;
 namespace Intervallo.DefaultPlugins.Form
 {
     /// <summary>
-    /// VsqxTrackSelectWindow.xaml の相互作用ロジック
+    /// TrackSelectWindow.xaml の相互作用ロジック
     /// </summary>
-    public partial class VsqxTrackSelectWindow : Window
+    public partial class TrackSelectWindow : Window
     {
         public static readonly DependencyProperty TracksProperty = DependencyProperty.Register(
             nameof(Tracks),
             typeof(Track[]),
-            typeof(VsqxTrackSelectWindow),
+            typeof(TrackSelectWindow),
             new FrameworkPropertyMetadata(
                 new Track[0],
                 FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender,
@@ -31,7 +31,7 @@ namespace Intervallo.DefaultPlugins.Form
             )
         );
 
-        public VsqxTrackSelectWindow()
+        public TrackSelectWindow()
         {
             InitializeComponent();
         }
@@ -66,7 +66,7 @@ namespace Intervallo.DefaultPlugins.Form
 
         static void TracksChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var window = d as VsqxTrackSelectWindow;
+            var window = d as TrackSelectWindow;
             window.TrackListBox.SelectedIndex = 0;
         }
     }
