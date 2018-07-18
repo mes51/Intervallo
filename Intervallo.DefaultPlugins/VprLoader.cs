@@ -25,7 +25,7 @@ namespace Intervallo.DefaultPlugins
 
         public string Description => LangResources.VprLoader_Description;
 
-        public string PluginName => typeof(VsqxLoader).Name;
+        public string PluginName => typeof(VprLoader).Name;
 
         public Version Version => new Version(((AssemblyVersionAttribute)typeof(WorldOperator).Assembly.GetCustomAttribute(typeof(AssemblyVersionAttribute))).Version);
 
