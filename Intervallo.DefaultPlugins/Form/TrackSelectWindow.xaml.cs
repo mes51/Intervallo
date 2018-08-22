@@ -31,6 +31,20 @@ namespace Intervallo.DefaultPlugins.Form
             )
         );
 
+        public static readonly DependencyProperty IsDetectMultiTrackProperty = DependencyProperty.Register(
+            nameof(IsDetectMultiTrack),
+            typeof(bool),
+            typeof(TrackSelectWindow),
+            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender)
+        );
+
+        public static readonly DependencyProperty IsFillEmptyFrameProperty = DependencyProperty.Register(
+            nameof(IsFillEmptyFrame),
+            typeof(bool),
+            typeof(TrackSelectWindow),
+            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender)
+        );
+
         public TrackSelectWindow()
         {
             InitializeComponent();
@@ -42,7 +56,17 @@ namespace Intervallo.DefaultPlugins.Form
             set { SetValue(TracksProperty, value); }
         }
 
-        public bool Selected { get; private set; }
+        public bool IsDetectMultiTrack
+        {
+            get { return (bool)GetValue(IsDetectMultiTrackProperty); }
+            set { SetValue(IsDetectMultiTrackProperty, value); }
+        }
+
+        public bool IsFillEmptyFrame
+        {
+            get { return (bool)GetValue(IsFillEmptyFrameProperty); }
+            set { SetValue(IsFillEmptyFrameProperty, value); }
+        }
 
         public Track SelectedTrack
         {
@@ -54,13 +78,13 @@ namespace Intervallo.DefaultPlugins.Form
 
         void TrackListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Selected = true;
+            DialogResult = true;
             Close();
         }
 
         void OKButton_Click(object sender, RoutedEventArgs e)
         {
-            Selected = true;
+            DialogResult = true;
             Close();
         }
 
@@ -68,6 +92,7 @@ namespace Intervallo.DefaultPlugins.Form
         {
             var window = d as TrackSelectWindow;
             window.TrackListBox.SelectedIndex = 0;
+            window.IsDetectMultiTrack = window.Tracks.Length > 1;
         }
     }
 }

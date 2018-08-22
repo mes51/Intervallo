@@ -79,6 +79,24 @@ namespace Intervallo.DefaultPlugins.Properties {
         }
         
         /// <summary>
+        ///   読み込むトラックを選択してください: に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TrackSelectWindow_DescriptionSingleTrack {
+            get {
+                return ResourceManager.GetString("TrackSelectWindow_DescriptionSingleTrack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ノートの空白を直前・直後の高さで埋める に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TrackSelectWindow_FillEmptyFrame {
+            get {
+                return ResourceManager.GetString("TrackSelectWindow_FillEmptyFrame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   OK に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string TrackSelectWindow_OK {

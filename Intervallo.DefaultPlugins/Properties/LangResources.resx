@@ -123,6 +123,12 @@
   <data name="TrackSelectWindow_Description" xml:space="preserve">
     <value>トラックが複数検出されました。読み込むトラックを選択してください:</value>
   </data>
+  <data name="TrackSelectWindow_DescriptionSingleTrack" xml:space="preserve">
+    <value>読み込むトラックを選択してください:</value>
+  </data>
+  <data name="TrackSelectWindow_FillEmptyFrame" xml:space="preserve">
+    <value>ノートの空白を直前・直後の高さで埋める</value>
+  </data>
   <data name="TrackSelectWindow_OK" xml:space="preserve">
     <value>OK</value>
   </data>

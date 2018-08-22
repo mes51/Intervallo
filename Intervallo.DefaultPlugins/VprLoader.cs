@@ -39,37 +39,39 @@ namespace Intervallo.DefaultPlugins
             {
                 throw new ScaleLoadException(LangResources.VprLoader_TrackNotFound);
             }
-            else if (tracks.Length > 1)
+
+            Track selectedTrack = null;
+            bool fillEmptyFrame = false;
+
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                double[] f0 = null;
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    var selectWindow = new TrackSelectWindow();
-                    selectWindow.Tracks = tracks;
-                    selectWindow.ShowDialog();
+                var selectWindow = new TrackSelectWindow();
+                selectWindow.Tracks = tracks;
 
-                    if (selectWindow.Selected)
-                    {
-                        f0 = selectWindow.SelectedTrack.ToF0(framePeriod)
-                            .Concat(EnumerableUtil.Infinity(0.0))
-                            .Take(maxFrameLength).ToArray();
-                    }
-                });
+                if (selectWindow.ShowDialog() ?? false)
+                {
+                    selectedTrack = selectWindow.SelectedTrack;
+                    fillEmptyFrame = selectWindow.IsFillEmptyFrame;
+                }
+            });
 
-                if (f0 != null)
+            if (selectedTrack != null)
+            {
+                var f0 = selectedTrack.ToF0(framePeriod)
+                    .Concat(EnumerableUtil.Infinity(0.0))
+                    .Take(maxFrameLength)
+                    .ToArray();
+
+                if (fillEmptyFrame)
                 {
-                    return f0;
+                    Util.FillEmptyFrame(f0);
                 }
-                else
-                {
-                    throw new ScaleLoadException(LangResources.VsqLoader_CancelLoad);
-                }
+
+                return f0;
             }
             else
             {
-                return tracks[0].ToF0(framePeriod)
-                    .Concat(EnumerableUtil.Infinity(0.0))
-                    .Take(maxFrameLength).ToArray();
+                throw new ScaleLoadException(LangResources.VsqLoader_CancelLoad);
             }
         }
 

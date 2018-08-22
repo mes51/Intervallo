@@ -21,6 +21,44 @@ namespace Intervallo.DefaultPlugins
         {
             return Enumerable.Range(0, row).Select((x) => new T[col]).ToArray();
         }
+
+        public static void FillEmptyFrame(double[] f0)
+        {
+            var emptyStarted = -1;
+            for (var i = 0; i < f0.Length; i++)
+            {
+                if (f0[i] <= 0.0)
+                {
+                    if (emptyStarted < 0)
+                    {
+                        emptyStarted = i;
+                    }
+                }
+                else if (emptyStarted > -1)
+                {
+                    var prevEndFrame = emptyStarted != 0 ? f0[emptyStarted - 1] : 0.0;
+                    var nextBeginFrame = f0[i];
+
+                    if (prevEndFrame <= 0.0)
+                    {
+                        f0.Fill(nextBeginFrame, 0, i);
+                    }
+                    else
+                    {
+                        var center = (i - emptyStarted) / 2;
+                        f0.Fill(prevEndFrame, emptyStarted, center);
+                        f0.Fill(nextBeginFrame, center + emptyStarted, (i - emptyStarted) - center);
+                    }
+
+                    emptyStarted = -1;
+                }
+            }
+
+            if (emptyStarted > -1)
+            {
+                f0.Fill(f0[emptyStarted - 1], emptyStarted);
+            }
+        }
     }
 
     static class EnumerableUtil

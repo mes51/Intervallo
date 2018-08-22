@@ -47,37 +47,45 @@ namespace Intervallo.DefaultPlugins
                 throw new ScaleLoadException(LangResources.VsqLoader_FailLoadFile, e);
             }
 
+            Track selectedTrack = null;
+            bool fillEmptyFrame = false;
+
             if (tracks.Length > 1)
             {
-                double[] f0 = null;
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     var selectWindow = new TrackSelectWindow();
                     selectWindow.Tracks = tracks;
-                    selectWindow.ShowDialog();
-
-                    if (selectWindow.Selected)
+                    if (selectWindow.ShowDialog() ?? false)
                     {
-                        f0 = selectWindow.SelectedTrack.ToF0(framePeriod)
-                            .Concat(EnumerableUtil.Infinity(0.0))
-                            .Take(maxFrameLength).ToArray();
+                        selectedTrack = selectWindow.SelectedTrack;
+                        fillEmptyFrame = selectWindow.IsFillEmptyFrame;
                     }
                 });
 
-                if (f0 != null)
-                {
-                    return f0;
-                }
-                else
-                {
-                    throw new ScaleLoadException(LangResources.VsqLoader_CancelLoad);
-                }
             }
             else
             {
-                return tracks[0].ToF0(framePeriod)
+                selectedTrack = tracks[0];
+            }
+
+            if (selectedTrack != null)
+            {
+                var f0 = selectedTrack.ToF0(framePeriod)
                     .Concat(EnumerableUtil.Infinity(0.0))
-                    .Take(maxFrameLength).ToArray();
+                    .Take(maxFrameLength)
+                    .ToArray();
+
+                if (fillEmptyFrame)
+                {
+                    Util.FillEmptyFrame(f0);
+                }
+
+                return f0;
+            }
+            else
+            {
+                throw new ScaleLoadException(LangResources.VsqLoader_CancelLoad);
             }
         }
 

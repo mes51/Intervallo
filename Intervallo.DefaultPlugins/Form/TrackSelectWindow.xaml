@@ -22,9 +22,21 @@
         </DataTemplate>
     </Window.Resources>
     <Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="{x:Static p:LangResources.TrackSelectWindow_Description}" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top">
+            <TextBlock.Style>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Text" Value="{x:Static p:LangResources.TrackSelectWindow_DescriptionSingleTrack}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=Root, Path=IsDetectMultiTrack}" Value="True">
+                            <Setter Property="Text" Value="{x:Static p:LangResources.TrackSelectWindow_Description}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
         <ListBox x:Name="TrackListBox" Margin="10,35,10,43" ScrollViewer.VerticalScrollBarVisibility="Visible" ItemsSource="{Binding ElementName=Root, Path=Tracks}" ItemTemplate="{StaticResource TrackTemplate}" MouseDoubleClick="TrackListBox_MouseDoubleClick" />
         <Button Content="{x:Static p:LangResources.TrackSelectWindow_Cancel}" Margin="0,0,10,10" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom" IsCancel="True"/>
         <Button Content="{x:Static p:LangResources.TrackSelectWindow_OK}" Margin="0,0,96,10" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom" IsDefault="True" Click="OKButton_Click"/>
+        <CheckBox Content="{x:Static p:LangResources.TrackSelectWindow_FillEmptyFrame}" IsChecked="{Binding ElementName=Root, Path=IsFillEmptyFrame, Mode=TwoWay}" HorizontalAlignment="Left" Margin="10,0,0,12" VerticalAlignment="Bottom"/>
     </Grid>
 </Window>
