@@ -231,7 +231,7 @@ namespace Intervallo.Audio
         /// <exception cref="InvalidDataException">File is not wave file, or not supported format</exception>
         public static Wavefile Read(string filePath)
         {
-            using (var fs = new FileStream(Path.GetFullPath(filePath), FileMode.Open))
+            using (var fs = new FileStream(Path.GetFullPath(filePath), FileMode.Open, FileAccess.Read))
             using (var reader = new BinaryReader(fs, ASCIIEncoding.ASCII))
             {
                 var header = reader.ReadStruct<WaveHeader>();

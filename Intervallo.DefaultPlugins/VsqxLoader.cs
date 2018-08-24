@@ -37,7 +37,7 @@ namespace Intervallo.DefaultPlugins
             Track[] tracks = null;
             try
             {
-                using (var fs = new FileStream(filePath, FileMode.Open))
+                using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
                     tracks = LoadFromVsq4(fs);
                 }
