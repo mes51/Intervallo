@@ -49,6 +49,7 @@ namespace Intervallo.DefaultPlugins
 
             Track selectedTrack = null;
             bool fillEmptyFrame = false;
+            bool addFluctuation = false;
 
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -58,12 +59,13 @@ namespace Intervallo.DefaultPlugins
                 {
                     selectedTrack = selectWindow.SelectedTrack;
                     fillEmptyFrame = selectWindow.IsFillEmptyFrame;
+                    addFluctuation = selectWindow.IsAddFluctuation;
                 }
             });
 
             if (selectedTrack != null)
             {
-                var f0 = selectedTrack.ToF0(framePeriod)
+                var f0 = selectedTrack.ToF0(framePeriod, addFluctuation)
                     .Concat(EnumerableUtil.Infinity(0.0))
                     .Take(maxFrameLength)
                     .ToArray();

@@ -47,7 +47,7 @@ namespace Intervallo.DefaultPlugins.Properties {
         }
         
         /// <summary>
-        ///   厳密に型指定されたこのリソース クラスを使用して、すべての検索リソースに対し、
+        ///   すべてについて、現在のスレッドの CurrentUICulture プロパティをオーバーライドします
         ///   現在のスレッドの CurrentUICulture プロパティをオーバーライドします。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
@@ -57,6 +57,15 @@ namespace Intervallo.DefaultPlugins.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   揺らぎを加える(実験的機能) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TrackSelectWindow_AddFluctuation {
+            get {
+                return ResourceManager.GetString("TrackSelectWindow_AddFluctuation", resourceCulture);
             }
         }
         
@@ -102,6 +111,15 @@ namespace Intervallo.DefaultPlugins.Properties {
         public static string TrackSelectWindow_OK {
             get {
                 return ResourceManager.GetString("TrackSelectWindow_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   オプション に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TrackSelectWindow_Option {
+            get {
+                return ResourceManager.GetString("TrackSelectWindow_Option", resourceCulture);
             }
         }
         

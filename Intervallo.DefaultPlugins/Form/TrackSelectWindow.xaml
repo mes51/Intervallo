@@ -22,21 +22,36 @@
         </DataTemplate>
     </Window.Resources>
     <Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top">
-            <TextBlock.Style>
-                <Style TargetType="{x:Type TextBlock}">
-                    <Setter Property="Text" Value="{x:Static p:LangResources.TrackSelectWindow_DescriptionSingleTrack}"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=Root, Path=IsDetectMultiTrack}" Value="True">
-                            <Setter Property="Text" Value="{x:Static p:LangResources.TrackSelectWindow_Description}"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBlock.Style>
-        </TextBlock>
-        <ListBox x:Name="TrackListBox" Margin="10,35,10,43" ScrollViewer.VerticalScrollBarVisibility="Visible" ItemsSource="{Binding ElementName=Root, Path=Tracks}" ItemTemplate="{StaticResource TrackTemplate}" MouseDoubleClick="TrackListBox_MouseDoubleClick" />
-        <Button Content="{x:Static p:LangResources.TrackSelectWindow_Cancel}" Margin="0,0,10,10" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom" IsCancel="True"/>
-        <Button Content="{x:Static p:LangResources.TrackSelectWindow_OK}" Margin="0,0,96,10" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom" IsDefault="True" Click="OKButton_Click"/>
-        <CheckBox Content="{x:Static p:LangResources.TrackSelectWindow_FillEmptyFrame}" IsChecked="{Binding ElementName=Root, Path=IsFillEmptyFrame, Mode=TwoWay}" HorizontalAlignment="Left" Margin="10,0,0,12" VerticalAlignment="Bottom"/>
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" TextWrapping="Wrap">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Text" Value="{x:Static p:LangResources.TrackSelectWindow_DescriptionSingleTrack}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=Root, Path=IsDetectMultiTrack}" Value="True">
+                                <Setter Property="Text" Value="{x:Static p:LangResources.TrackSelectWindow_Description}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <ListBox Grid.Row="1" x:Name="TrackListBox" Margin="0,8,0,0" ScrollViewer.VerticalScrollBarVisibility="Visible" ItemsSource="{Binding ElementName=Root, Path=Tracks}" ItemTemplate="{StaticResource TrackTemplate}" MouseDoubleClick="TrackListBox_MouseDoubleClick" />
+            <GroupBox Grid.Row="2" Header="{x:Static p:LangResources.TrackSelectWindow_Option}" Margin="0,4,0,0">
+                <StackPanel Margin="8">
+                    <CheckBox Content="{x:Static p:LangResources.TrackSelectWindow_FillEmptyFrame}" IsChecked="{Binding ElementName=Root, Path=IsFillEmptyFrame, Mode=TwoWay}"/>
+                    <CheckBox Content="{x:Static p:LangResources.TrackSelectWindow_AddFluctuation}" IsChecked="{Binding ElementName=Root, Path=IsAddFluctuation, Mode=TwoWay}" Margin="0,8,0,0"/>
+                </StackPanel>
+            </GroupBox>
+            <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,8,0,0" HorizontalAlignment="Right">
+                <Button Content="{x:Static p:LangResources.TrackSelectWindow_OK}" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom" IsDefault="True" Click="OKButton_Click"/>
+                <Button Content="{x:Static p:LangResources.TrackSelectWindow_Cancel}" Margin="8,0,0,0" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom" IsCancel="True"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

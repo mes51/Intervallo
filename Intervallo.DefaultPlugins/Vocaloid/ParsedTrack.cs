@@ -19,7 +19,7 @@ namespace Intervallo.DefaultPlugins.Vocaloid
 
         public RangeDictionary<double, Part> Parts { get; }
 
-        public IEnumerable<double> ToF0(double framePeriod)
+        public IEnumerable<double> ToF0(double framePeriod, bool addFluctuation)
         {
             var lastPart = Parts.Last().Value;
             var length = lastPart.TrackPosition + lastPart.PlayTime;
@@ -27,42 +27,91 @@ namespace Intervallo.DefaultPlugins.Vocaloid
             Part currentPart = null;
             Note currentNote = null;
             IEnumerator<double> curve = null;
-            for (var time = 0.0; time < length; time += framePeriod)
+            using (var noise = CreateNoise(framePeriod).GetEnumerator())
             {
-                if (currentPart != Parts[time])
+                for (var time = 0.0; time < length; time += framePeriod)
                 {
-                    currentPart = Parts[time];
-                    currentNote = null;
-                    curve?.Dispose();
-                    curve = null;
-                }
-                if (time < currentPart.TrackPosition || time - currentPart.TrackPosition > currentPart.PlayTime || !currentPart.HasNote())
-                {
-                    yield return 0.0;
-                    continue;
-                }
+                    if (currentPart != Parts[time])
+                    {
+                        currentPart = Parts[time];
+                        currentNote = null;
+                        curve?.Dispose();
+                        curve = null;
+                    }
+                    if (time < currentPart.TrackPosition || time - currentPart.TrackPosition > currentPart.PlayTime || !currentPart.HasNote())
+                    {
+                        yield return 0.0;
+                        continue;
+                    }
 
-                var partTime = time - currentPart.TrackPosition;
-                if (currentNote != currentPart.GetNote(partTime))
-                {
-                    currentNote = currentPart.GetNote(partTime);
-                    curve?.Dispose();
-                    curve = currentPart.CreateCurve(partTime, framePeriod).GetEnumerator();
-                }
-                if (partTime < currentNote.Position || partTime - currentNote.Position > currentNote.Length)
-                {
-                    yield return 0.0;
-                    continue;
-                }
+                    var partTime = time - currentPart.TrackPosition;
+                    if (currentNote != currentPart.GetNote(partTime))
+                    {
+                        currentNote = currentPart.GetNote(partTime);
+                        curve?.Dispose();
+                        curve = currentPart.CreateCurve(partTime, framePeriod).GetEnumerator();
+                    }
+                    if (partTime < currentNote.Position || partTime - currentNote.Position > currentNote.Length)
+                    {
+                        yield return 0.0;
+                        continue;
+                    }
 
-                curve.MoveNext();
-                yield return GetFrequency(curve.Current + currentPart.PitchBend[partTime]);
+                    curve.MoveNext();
+
+                    var ni = curve.Current + currentPart.PitchBend[partTime];
+                    if (addFluctuation)
+                    {
+                        noise.MoveNext();
+                        ni += noise.Current;
+                    }
+                    yield return GetFrequency(ni);
+                }
             }
         }
 
         double GetFrequency(double noteNumber)
         {
             return 440.0 * Math.Pow(2, (noteNumber - 69) / 12.0);
+        }
+
+        IEnumerable<double> CreateNoise(double framePeriod)
+        {
+            const double interval = 0.1;
+            var rand = new Random(unchecked((int)504463712879));
+            var p1 = 0.0;
+            var c = 0.0;
+            var n1 = (rand.NextDouble() - 0.5) * 0.02;
+            var n2 = (rand.NextDouble() - 0.5) * 0.02;
+            var pt = 0.0;
+            var nt = interval;
+            var t = 0.0;
+
+            while (true)
+            {
+                yield return CatmullRom(p1, c, n1, n2, pt, nt, t);
+
+                t += framePeriod;
+                if (t >= nt)
+                {
+                    pt = nt;
+                    nt += interval;
+                    p1 = c;
+                    c = n1;
+                    n1 = n2;
+                    n2 = (rand.NextDouble() - 0.5) * 0.2;
+                }
+            }
+        }
+
+        static double CatmullRom(double value0, double value1, double value2, double value3, double time1, double time2, double time)
+        {
+            double t = 1.0 / (time2 - time1) * (time - time1);
+            double v0 = (value2 - value0) / 2.0;
+            double v1 = (value3 - value1) / 2.0;
+            double t2 = t * t;
+            double t3 = t2 * t;
+            return (2 * value1 - 2 * value2 + v0 + v1) * t3 + (-3 * value1 + 3 * value2 - 2 * v0 - v1) * t2 + v0 * t + value1;
         }
     }
 

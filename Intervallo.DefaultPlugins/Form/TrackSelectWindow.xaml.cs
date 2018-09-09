@@ -45,6 +45,13 @@ namespace Intervallo.DefaultPlugins.Form
             new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender)
         );
 
+        public static readonly DependencyProperty IsAddFluctuationProperty = DependencyProperty.Register(
+            nameof(IsAddFluctuation),
+            typeof(bool),
+            typeof(TrackSelectWindow),
+            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender)
+        );
+
         public TrackSelectWindow()
         {
             InitializeComponent();
@@ -66,6 +73,12 @@ namespace Intervallo.DefaultPlugins.Form
         {
             get { return (bool)GetValue(IsFillEmptyFrameProperty); }
             set { SetValue(IsFillEmptyFrameProperty, value); }
+        }
+
+        public bool IsAddFluctuation
+        {
+            get { return (bool)GetValue(IsAddFluctuationProperty); }
+            set { SetValue(IsAddFluctuationProperty, value); }
         }
 
         public Track SelectedTrack
