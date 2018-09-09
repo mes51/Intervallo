@@ -50,24 +50,16 @@ namespace Intervallo.DefaultPlugins
             Track selectedTrack = null;
             bool fillEmptyFrame = false;
 
-            if (tracks.Length > 1)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                Application.Current.Dispatcher.Invoke(() =>
+                var selectWindow = new TrackSelectWindow();
+                selectWindow.Tracks = tracks;
+                if (selectWindow.ShowDialog() ?? false)
                 {
-                    var selectWindow = new TrackSelectWindow();
-                    selectWindow.Tracks = tracks;
-                    if (selectWindow.ShowDialog() ?? false)
-                    {
-                        selectedTrack = selectWindow.SelectedTrack;
-                        fillEmptyFrame = selectWindow.IsFillEmptyFrame;
-                    }
-                });
-
-            }
-            else
-            {
-                selectedTrack = tracks[0];
-            }
+                    selectedTrack = selectWindow.SelectedTrack;
+                    fillEmptyFrame = selectWindow.IsFillEmptyFrame;
+                }
+            });
 
             if (selectedTrack != null)
             {
