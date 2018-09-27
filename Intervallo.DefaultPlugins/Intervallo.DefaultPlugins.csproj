@@ -57,6 +57,7 @@
     <Compile Include="Form\TrackSelectWindow.xaml.cs">
       <DependentUpon>TrackSelectWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="JsonLoader.cs" />
     <Compile Include="Properties\LangResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -61,6 +61,24 @@ namespace Intervallo.DefaultPlugins.Properties {
         }
         
         /// <summary>
+        ///   指定した形式のJsonから音階データを読み込みます に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string JsonLoader_Description {
+            get {
+                return ResourceManager.GetString("JsonLoader_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Jsonファイルの読み込みに失敗しました。ファイルが壊れている可能性があります に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string JsonLoader_FailLoadFile {
+            get {
+                return ResourceManager.GetString("JsonLoader_FailLoadFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   揺らぎを加える(実験的機能) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string TrackSelectWindow_AddFluctuation {

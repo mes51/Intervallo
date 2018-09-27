@@ -65,14 +65,9 @@ namespace Intervallo.DefaultPlugins.Vocaloid
                         noise.MoveNext();
                         ni += noise.Current;
                     }
-                    yield return GetFrequency(ni);
+                    yield return Frequency.FromNoteNumber(ni);
                 }
             }
-        }
-
-        double GetFrequency(double noteNumber)
-        {
-            return 440.0 * Math.Pow(2, (noteNumber - 69) / 12.0);
         }
 
         IEnumerable<double> CreateNoise(double framePeriod)
@@ -89,7 +84,7 @@ namespace Intervallo.DefaultPlugins.Vocaloid
 
             while (true)
             {
-                yield return CatmullRom(p1, c, n1, n2, pt, nt, t);
+                yield return Interpolation.CatmullRom(p1, c, n1, n2, pt, nt, t);
 
                 t += framePeriod;
                 if (t >= nt)
@@ -102,16 +97,6 @@ namespace Intervallo.DefaultPlugins.Vocaloid
                     n2 = (rand.NextDouble() - 0.5) * 0.2;
                 }
             }
-        }
-
-        static double CatmullRom(double value0, double value1, double value2, double value3, double time1, double time2, double time)
-        {
-            double t = 1.0 / (time2 - time1) * (time - time1);
-            double v0 = (value2 - value0) / 2.0;
-            double v1 = (value3 - value1) / 2.0;
-            double t2 = t * t;
-            double t3 = t2 * t;
-            return (2 * value1 - 2 * value2 + v0 + v1) * t3 + (-3 * value1 + 3 * value2 - 2 * v0 - v1) * t2 + v0 * t + value1;
         }
     }
 

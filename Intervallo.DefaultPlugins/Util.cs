@@ -61,6 +61,33 @@ namespace Intervallo.DefaultPlugins
         }
     }
 
+    static class Interpolation
+    {
+        public static double CatmullRom(double value0, double value1, double value2, double value3, double time1, double time2, double time)
+        {
+            double t = 1.0 / (time2 - time1) * (time - time1);
+            double v0 = (value2 - value0) / 2.0;
+            double v1 = (value3 - value1) / 2.0;
+            double t2 = t * t;
+            double t3 = t2 * t;
+            return (2 * value1 - 2 * value2 + v0 + v1) * t3 + (-3 * value1 + 3 * value2 - 2 * v0 - v1) * t2 + v0 * t + value1;
+        }
+
+        public static double Linear(double value1, double value2, double time1, double time2, double time)
+        {
+            var t = (time - time1) / (time2 - time1);
+            return (value2 - value1) * t + value1;
+        }
+    }
+
+    static class Frequency
+    {
+        public static double FromNoteNumber(double noteNumber)
+        {
+            return 440.0 * Math.Pow(2, (noteNumber - 69) / 12.0);
+        }
+    }
+
     static class EnumerableUtil
     {
         public static IEnumerable<T> Infinity<T>(T value)
