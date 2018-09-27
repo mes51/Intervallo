@@ -21,13 +21,13 @@ namespace Intervallo.DefaultPlugins
     [Export(typeof(IScaleLoader))]
     public class VprLoader : IScaleLoader
     {
-        public string Copyright => ((AssemblyCopyrightAttribute)typeof(WorldOperator).Assembly.GetCustomAttribute(typeof(AssemblyCopyrightAttribute))).Copyright;
+        public string Copyright => ((AssemblyCopyrightAttribute)typeof(VprLoader).Assembly.GetCustomAttribute(typeof(AssemblyCopyrightAttribute))).Copyright;
 
         public string Description => LangResources.VprLoader_Description;
 
         public string PluginName => typeof(VprLoader).Name;
 
-        public Version Version => new Version(((AssemblyVersionAttribute)typeof(WorldOperator).Assembly.GetCustomAttribute(typeof(AssemblyVersionAttribute))).Version);
+        public Version Version => new Version(((AssemblyVersionAttribute)typeof(VprLoader).Assembly.GetCustomAttribute(typeof(AssemblyVersionAttribute))).Version);
 
         public string[] SupportedFileExtensions => new string[] { "*.vpr" };
 

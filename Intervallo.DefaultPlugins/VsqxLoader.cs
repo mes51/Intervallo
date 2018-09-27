@@ -21,13 +21,13 @@ namespace Intervallo.DefaultPlugins
     [Export(typeof(IScaleLoader))]
     public class VsqxLoader : IScaleLoader
     {
-        public string Copyright => ((AssemblyCopyrightAttribute)typeof(WorldOperator).Assembly.GetCustomAttribute(typeof(AssemblyCopyrightAttribute))).Copyright;
+        public string Copyright => ((AssemblyCopyrightAttribute)typeof(VsqxLoader).Assembly.GetCustomAttribute(typeof(AssemblyCopyrightAttribute))).Copyright;
 
         public string Description => LangResources.VsqxLoader_Description;
 
         public string PluginName => typeof(VsqxLoader).Name;
 
-        public Version Version => new Version(((AssemblyVersionAttribute)typeof(WorldOperator).Assembly.GetCustomAttribute(typeof(AssemblyVersionAttribute))).Version);
+        public Version Version => new Version(((AssemblyVersionAttribute)typeof(VsqxLoader).Assembly.GetCustomAttribute(typeof(AssemblyVersionAttribute))).Version);
 
         public string[] SupportedFileExtensions => new string[] { "*.vsqx" };
 
