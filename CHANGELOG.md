@@ -1,5 +1,10 @@
 # Change Log
 
+## ver 0.0.14
+
+* Json読み込みプラグイン追加
+    * Jsonのフォーマットはgist参照: https://gist.github.com/mes51/8784aea945eba8200560724303bfee1b
+
 ## ver 0.0.13
 
 * vsqxでトラック数が1つしかない時にノートの空白を埋めるオプションが選択できなかったのを修正
