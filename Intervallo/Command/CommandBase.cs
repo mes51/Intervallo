@@ -15,7 +15,21 @@ namespace Intervallo.Command
             Window = window;
         }
 
-        public event EventHandler CanExecuteChanged;
+        event EventHandler InternalCanExecuteChanged;
+
+        public event EventHandler CanExecuteChanged
+        {
+            add
+            {
+                CommandManager.RequerySuggested += value;
+                InternalCanExecuteChanged += value;
+            }
+            remove
+            {
+                CommandManager.RequerySuggested -= value;
+                InternalCanExecuteChanged -= value;
+            }
+        }
 
         protected MainWindow Window { get; }
 
@@ -29,7 +43,7 @@ namespace Intervallo.Command
         // XXX: change access level to protected
         public void OnCanExecuteChanged()
         {
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            InternalCanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }
