@@ -373,6 +373,7 @@ namespace Intervallo.DefaultPlugins.Vocaloid
 
         public Portamento(int portamento)
         {
+            portamento = 127 - portamento;
             var beginMarginTick = 0.0;
             var blendTick = 340.0;
             var diff = Math.Abs(portamento - 64);
