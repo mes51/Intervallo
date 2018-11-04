@@ -170,6 +170,9 @@
   <data name="MainMenu_Export" xml:space="preserve">
     <value>書き出し(_W)...</value>
   </data>
+  <data name="MainMenu_ExportSineWave" xml:space="preserve">
+    <value>音階をSin波として出力(_F)</value>
+  </data>
   <data name="MainMenu_FileMenu" xml:space="preserve">
     <value>ファイル(_F)</value>
   </data>

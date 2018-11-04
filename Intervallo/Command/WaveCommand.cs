@@ -7,9 +7,16 @@ using Intervallo.Form;
 
 namespace Intervallo.Command
 {
-    public class PreviewCommand : CommandBase
+    public class WaveCommand : CommandBase
     {
-        public PreviewCommand(MainWindow window) : base(window) { }
+        public WaveCommand(MainWindow window, Action action) : this(window, _ => action()) { }
+
+        public WaveCommand(MainWindow window, Action<object> action) : base(window)
+        {
+            Action = action;
+        }
+
+        Action<object> Action { get; }
 
         public override bool CanExecute(object parameter)
         {
@@ -18,7 +25,7 @@ namespace Intervallo.Command
 
         public override void Execute(object parameter)
         {
-            Window.ExecPlayOrStop();
+            Action(parameter);
         }
     }
 }

@@ -132,10 +132,9 @@
     <Compile Include="Cache\WaveLineCache.cs" />
     <Compile Include="Command\ActionCommand.cs" />
     <Compile Include="Command\CommandBase.cs" />
-    <Compile Include="Command\ExportCommand.cs" />
     <Compile Include="Command\LoadScaleCommand.cs" />
     <Compile Include="Command\OpenCommand.cs" />
-    <Compile Include="Command\PreviewCommand.cs" />
+    <Compile Include="Command\WaveCommand.cs" />
     <Compile Include="Config\ApplicationSettings.cs" />
     <Compile Include="Config\AudioSettings.cs" />
     <Compile Include="Config\GeneralSettings.cs" />

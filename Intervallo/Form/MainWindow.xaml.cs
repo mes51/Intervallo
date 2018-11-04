@@ -37,6 +37,7 @@ namespace Intervallo.Form
 
         public CommandBase OpenCommand { get; }
         public CommandBase ExportCommand { get; }
+        public CommandBase ExportF0SineCommand { get; }
         public CommandBase ExitCommand { get; }
         public CommandBase LoadScaleCommand { get; }
         public CommandBase LoadScaleFromWaveCommand { get; }
@@ -51,7 +52,8 @@ namespace Intervallo.Form
             // create command
 
             OpenCommand = new OpenCommand(this);
-            ExportCommand = new ExportCommand(this);
+            ExportCommand = new WaveCommand(this, () => Window.Dispatcher.Invoke(() => Window.ExecExportWave()));
+            ExportF0SineCommand = new WaveCommand(this, () => Window.Dispatcher.Invoke(() => ExecExportF0Sine()));
             ExitCommand = new ActionCommand(this, () => Close(), true);
             LoadScaleCommand = new LoadScaleCommand(this, true);
             LoadScaleFromWaveCommand = new LoadScaleCommand(this, false);
@@ -70,7 +72,7 @@ namespace Intervallo.Form
                     OpenFile(WaveData.FilePath);
                 }
             });
-            PreviewCommand = new PreviewCommand(this);
+            PreviewCommand = new WaveCommand(this, () => Window.ExecPlayOrStop());
             ClearCacheCommand = new ActionCommand(this, () => CacheFile.ClearChaceFile(), true);
             OptionCommand = new ActionCommand(this, () =>
             {
@@ -344,6 +346,40 @@ namespace Intervallo.Form
             });
         }
 
+        async void ExportF0Sine(string filePath, double[] f0, double framePeriod, int sampleRate, int sampleCount)
+        {
+            Player?.Stop();
+
+            await Task.Run(() =>
+            {
+                framePeriod *= 0.001;
+                var timePerSample = 1.0 / sampleRate;
+                var phase = 0.0;
+                var samples = new double[sampleCount];
+                for (var i = 0; i < samples.Length; i++)
+                {
+                    samples[i] = Math.Sin(phase);
+                    var frameIndex = (int)(i * timePerSample / framePeriod);
+                    phase += frameIndex < f0.Length ? Math.PI * 2.0 * f0[frameIndex] * timePerSample : 0.0;
+
+                    if (i % 1000 == 0)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            MainView.Progress = i / (double)sampleCount * 100.0;
+                        });
+                    }
+                }
+
+                new Wavefile(sampleRate, WaveBit.Bit16, samples).Write(filePath);
+
+                Dispatcher.Invoke(() =>
+                {
+                    Lock = false;
+                });
+            });
+        }
+
         void OpenFile(string filePath)
         {
             Player?.Stop();
@@ -528,6 +564,20 @@ namespace Intervallo.Form
             if (open.ShowDialog() ?? false)
             {
                 LoadScaleFromWave(open.FileName);
+            }
+        }
+
+        public void ExecExportF0Sine()
+        {
+            var save = new SaveFileDialog();
+            save.Filter = "Wave PCM(*.wav)|*.wav";
+            save.InitialDirectory = Path.GetDirectoryName(WaveData.FilePath);
+            save.FileName = Path.Combine(Path.GetDirectoryName(WaveData.FilePath), Path.GetFileNameWithoutExtension(WaveData.FilePath) + "_f0.wav");
+            if (save.ShowDialog() ?? false)
+            {
+                Lock = true;
+                MainView.MessageText = LangResources.ProgressMessage_ExportWave;
+                ExportF0Sine(save.FileName, MainView.EditableAudioScale.F0, AnalyzedAudio.AnalyzedAudio.FramePeriod, AnalyzedAudio.SampleRate, AnalyzedAudio.SampleCount);
             }
         }
 

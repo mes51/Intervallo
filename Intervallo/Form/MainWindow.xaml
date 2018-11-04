@@ -32,6 +32,8 @@
                 <MenuItem Header="{x:Static p:LangResources.MainMenu_OpenFile}" Command="{Binding ElementName=Window, Path=OpenCommand}" InputGestureText="Ctrl+O" />
                 <MenuItem Header="{x:Static p:LangResources.MainMenu_Export}" Command="{Binding ElementName=Window, Path=ExportCommand}" InputGestureText="Ctrl+Shift+Alt+S" />
                 <Separator />
+                <MenuItem Header="{x:Static p:LangResources.MainMenu_ExportSineWave}" Command="{Binding ElementName=Window, Path=ExportF0SineCommand}" />
+                <Separator />
                 <MenuItem Header="{x:Static p:LangResources.MainMenu_Exit}" Command="{Binding ElementName=Window, Path=ExitCommand}" InputGestureText="Alt+F4" />
             </MenuItem>
             <MenuItem Header="{x:Static p:LangResources.MainMenu_EditMenu}">

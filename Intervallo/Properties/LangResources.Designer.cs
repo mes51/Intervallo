@@ -47,7 +47,7 @@ namespace Intervallo.Properties {
         }
         
         /// <summary>
-        ///   厳密に型指定されたこのリソース クラスを使用して、すべての検索リソースに対し、
+        ///   すべてについて、現在のスレッドの CurrentUICulture プロパティをオーバーライドします
         ///   現在のスレッドの CurrentUICulture プロパティをオーバーライドします。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
@@ -206,6 +206,15 @@ namespace Intervallo.Properties {
         public static string MainMenu_Export {
             get {
                 return ResourceManager.GetString("MainMenu_Export", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   音階をSin波として出力(_F) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string MainMenu_ExportSineWave {
+            get {
+                return ResourceManager.GetString("MainMenu_ExportSineWave", resourceCulture);
             }
         }
         
