@@ -13,14 +13,17 @@ namespace Intervallo.DefaultPlugins.WORLD
         const double SafeGuardMinimum = 0.000000000001;
         const double PI2 = 2.0 * Math.PI;
 
-        private XorShift Rand { get; }
+        int Fs { get; }
 
-        public Synthesis()
+        private MVN Rand { get; }
+
+        public Synthesis(int fs)
         {
-            Rand = new XorShift();
+            Fs = fs;
+            Rand = new MVN(fs);
         }
 
-        public void Synthesize(double[] f0, int f0Length, double[][] spectrogram, double[][] aperiodicity, int fftSize, double framePeriod, int fs, double[] y)
+        public void Synthesize(double[] f0, int f0Length, double[][] spectrogram, double[][] aperiodicity, int fftSize, double framePeriod, double[] y)
         {
             var minimumPhase = MinimumPhaseAnalysis.Create(fftSize);
             var inverseRealFFT = InverseRealFFT.Create(fftSize);
@@ -30,7 +33,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             var pulseLocationsIndex = new int[y.Length];
             var pulseLocationsTimeShift = new double[y.Length];
             var interpolatedVUV = new double[y.Length];
-            var numberOfPulses = GetTimeBase(f0, f0Length, fs, framePeriod / 1000.0, y.Length, fs / fftSize + 1.0, pulseLocations, pulseLocationsIndex, pulseLocationsTimeShift, interpolatedVUV);
+            var numberOfPulses = GetTimeBase(f0, f0Length, Fs, framePeriod / 1000.0, y.Length, Fs / fftSize + 1.0, pulseLocations, pulseLocationsIndex, pulseLocationsTimeShift, interpolatedVUV);
 
             var dcRemover = GetDCRemover(fftSize);
 
@@ -41,7 +44,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             {
                 var noiseSize = pulseLocationsIndex[Math.Min(numberOfPulses - 1, i + 1)] - pulseLocationsIndex[i];
 
-                GetOneFrameSegment(interpolatedVUV[pulseLocationsIndex[i]], noiseSize, spectrogram, fftSize, aperiodicity, f0Length, framePeriod, pulseLocations[i], pulseLocationsTimeShift[i], fs, forwardRealFFT, inverseRealFFT, minimumPhase, dcRemover, impulseResponse);
+                GetOneFrameSegment(interpolatedVUV[pulseLocationsIndex[i]], noiseSize, spectrogram, fftSize, aperiodicity, f0Length, framePeriod, pulseLocations[i], pulseLocationsTimeShift[i], Fs, forwardRealFFT, inverseRealFFT, minimumPhase, dcRemover, impulseResponse);
                 
                 for (var j = 0; j < fftSize; j++)
                 {
@@ -123,7 +126,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             var waveform = forwardRealFFT.Waveform;
             for (var i = 0; i < noiseSize; i++)
             {
-                waveform[i] = Rand.Next();
+                waveform[i] = Rand.GenerateMVN();
             }
 
             var average = noiseSize > 0 ? waveform.Take(noiseSize).Average() : 1.0;
@@ -490,6 +493,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             AudioBuffer = new double[bufferSize * 2 + fftSize];
             Buffer = new RingBuffer(ringBufferCapacity);
             FFTSize = fftSize;
+            Rand = new MVN(sampleRate);
 
             ImpulseResponse = new double[fftSize];
             DCRemover = GetDCRemover(fftSize / 2);
@@ -507,7 +511,7 @@ namespace Intervallo.DefaultPlugins.WORLD
 
         public int SynthesizedSample { get; private set; }
 
-        XorShift Rand { get; } = new XorShift();
+        MVN Rand { get; }
 
         RingBuffer Buffer { get; }
 
@@ -646,7 +650,7 @@ namespace Intervallo.DefaultPlugins.WORLD
             var waveform = forwardRealFFT.Waveform;
             for (var i = 0; i < noiseSize; i++)
             {
-                waveform[i] = Rand.Next();
+                waveform[i] = Rand.GenerateMVN();
             }
 
             var average = noiseSize > 0 ? waveform.Take(noiseSize).Average() : 1.0;

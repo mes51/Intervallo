@@ -387,19 +387,19 @@ namespace Intervallo.DefaultPlugins
 
             // aperiodicity estimate
 
-            var d4c = new D4C();
+            var d4c = new D4C(SampleRate);
             d4c.Threshold = 0.85;
             Aperiodicity = Enumerable.Range(0, f0Length).Select((i) => new double[FFTSize / 2 + 1]).ToArray();
-            d4c.Estimate(Wave, SampleRate, TimeAxis, F0, f0Length, FFTSize, Aperiodicity);
+            d4c.Estimate(Wave, TimeAxis, F0, f0Length, FFTSize, Aperiodicity);
         }
 
         public double[] Synthesize()
         {
             var yLength = (int)((F0.Length - 1) * FramePeriod / 1000.0 * SampleRate) + 1;
             var y = new double[yLength];
-            var synthesis = new Synthesis();
+            var synthesis = new Synthesis(SampleRate);
 
-            synthesis.Synthesize(F0, F0.Length, Spectrogram, Aperiodicity, FFTSize, FramePeriod, SampleRate, y);
+            synthesis.Synthesize(F0, F0.Length, Spectrogram, Aperiodicity, FFTSize, FramePeriod, y);
 
             return y;
         }

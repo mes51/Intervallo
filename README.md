@@ -23,4 +23,5 @@ end
 
 * 本体: MIT
 * WORLD(Original): [修正BSD](https://github.com/mmorise/World/blob/master/LICENSE.txt)
+* NoiseGenerators(Original): [MIT])(https://github.com/mmorise/NoiseGenerators/blob/master/LICENSE)
 * 他の使用しているライブラリのライセンスはアプリ内のLibraryLicenseを参照

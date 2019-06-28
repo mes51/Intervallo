@@ -79,6 +79,7 @@
     <Compile Include="WORLD\Harvest.cs" />
     <Compile Include="WORLD\MatlabFunctions.cs" />
     <Compile Include="Parallel.cs" />
+    <Compile Include="WORLD\MVN.cs" />
     <Compile Include="WORLD\SubSequence.cs" />
     <Compile Include="WORLD\Synthesis.cs" />
     <Compile Include="Util.cs" />
