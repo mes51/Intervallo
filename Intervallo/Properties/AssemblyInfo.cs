@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Intervallo")]
-[assembly: AssemblyCopyright("Copyright © mes 2017")]
+[assembly: AssemblyCopyright("Copyright © mes 2017-2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // すべての値を指定するか、下のように '*' を使ってビルドおよびリビジョン番号を 
 // 既定値にすることができます:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.0.15.0")]
+[assembly: AssemblyVersion("0.0.16.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]

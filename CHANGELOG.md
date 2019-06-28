@@ -1,5 +1,10 @@
 # Change Log
 
+## ver 0.0.16
+
+* WORLDでMVNを利用するように
+    * https://github.com/mmorise/NoiseGenerators
+
 ## ver 0.0.15
 
 * 音階をSin波として出力する機能を追加
